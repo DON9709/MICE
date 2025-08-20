@@ -1,8 +1,8 @@
 //
 //  SupabaseManager.swift
-//  Heatmap
+//  MICE
 //
-//  Created by 이돈혁 on 7/4/25.
+//  Created by 이돈혁 on 8/20/25.
 //
 
 import Foundation
@@ -23,10 +23,15 @@ class SupabaseManager {
     let supabase: SupabaseClient
 
     private init() {
-        let supabaseUrl = URL(string: "https://tapgtggjidgehsftsfuk.supabase.co")!
-        let supabaseKey = "키 집어넣어야됨"
+        guard
+            let urlString = Bundle.main.object(forInfoDictionaryKey: "SUPABASE_URL") as? String,
+            let key = Bundle.main.object(forInfoDictionaryKey: "SUPABASE_KEY") as? String,
+            let supabaseUrl = URL(string: urlString)
+        else {
+            fatalError("Supabase 설정 로드 실패")
+        }
 
-        self.supabase = SupabaseClient(supabaseURL: supabaseUrl, supabaseKey: supabaseKey)
+        self.supabase = SupabaseClient(supabaseURL: supabaseUrl, supabaseKey: key)
     }
 
     func registerOrUpdateUser(appleUID: String, name: String?, email: String?, provider: String) {
