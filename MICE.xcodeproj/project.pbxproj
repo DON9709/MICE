@@ -6,6 +6,14 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F6FEBA652E5564F00091320B /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = F6FEBA642E5564F00091320B /* Auth */; };
+		F6FEBA672E5564F00091320B /* Functions in Frameworks */ = {isa = PBXBuildFile; productRef = F6FEBA662E5564F00091320B /* Functions */; };
+		F6FEBA692E5564F00091320B /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = F6FEBA682E5564F00091320B /* PostgREST */; };
+		F6FEBA6B2E5564F00091320B /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = F6FEBA6A2E5564F00091320B /* Storage */; };
+		F6FEBA6E2E5565050091320B /* FSCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = F6FEBA6D2E5565050091320B /* FSCalendar */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		F6FEBA432E55479F0091320B /* MICE.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MICE.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +44,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F6FEBA6B2E5564F00091320B /* Storage in Frameworks */,
+				F6FEBA692E5564F00091320B /* PostgREST in Frameworks */,
+				F6FEBA672E5564F00091320B /* Functions in Frameworks */,
+				F6FEBA6E2E5565050091320B /* FSCalendar in Frameworks */,
+				F6FEBA652E5564F00091320B /* Auth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +91,11 @@
 			);
 			name = MICE;
 			packageProductDependencies = (
+				F6FEBA642E5564F00091320B /* Auth */,
+				F6FEBA662E5564F00091320B /* Functions */,
+				F6FEBA682E5564F00091320B /* PostgREST */,
+				F6FEBA6A2E5564F00091320B /* Storage */,
+				F6FEBA6D2E5565050091320B /* FSCalendar */,
 			);
 			productName = MICE;
 			productReference = F6FEBA432E55479F0091320B /* MICE.app */;
@@ -107,6 +125,10 @@
 			);
 			mainGroup = F6FEBA3A2E55479F0091320B;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				F6FEBA632E5564F00091320B /* XCRemoteSwiftPackageReference "supabase-swift" */,
+				F6FEBA6C2E5565050091320B /* XCRemoteSwiftPackageReference "FSCalendar" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F6FEBA442E55479F0091320B /* Products */;
 			projectDirPath = "";
@@ -345,6 +367,53 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F6FEBA632E5564F00091320B /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.1;
+			};
+		};
+		F6FEBA6C2E5565050091320B /* XCRemoteSwiftPackageReference "FSCalendar" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/WenchaoD/FSCalendar";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.8.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F6FEBA642E5564F00091320B /* Auth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F6FEBA632E5564F00091320B /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Auth;
+		};
+		F6FEBA662E5564F00091320B /* Functions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F6FEBA632E5564F00091320B /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Functions;
+		};
+		F6FEBA682E5564F00091320B /* PostgREST */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F6FEBA632E5564F00091320B /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = PostgREST;
+		};
+		F6FEBA6A2E5564F00091320B /* Storage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F6FEBA632E5564F00091320B /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Storage;
+		};
+		F6FEBA6D2E5565050091320B /* FSCalendar */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F6FEBA6C2E5565050091320B /* XCRemoteSwiftPackageReference "FSCalendar" */;
+			productName = FSCalendar;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F6FEBA3B2E55479F0091320B /* Project object */;
 }
