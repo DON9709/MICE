@@ -1,0 +1,42 @@
+# Xcode 빌드
+build/
+DerivedData/
+*.xcworkspace
+xcuserdata/
+
+# User-specific
+*.xcuserstate
+*.xcuserdatad
+*.orig
+
+# Swift Package Manager
+.swiftpm/
+.build/
+Packages/
+Package.resolved
+
+# Cocoapods (사용한다면)
+Pods/
+Podfile.lock
+
+# Carthage (사용한다면)
+Carthage/
+
+# Fastlane (사용한다면)
+fastlane/report.xml
+fastlane/screenshots
+fastlane/test_output
+
+# 로그 파일
+*.log
+
+# API 키 또는 민감정보 (예: .env 파일 등)
+.env
+*.key
+*.pem
+*.mobileprovision
+*.xcconfig
+*.p12
+
+# DS_Store (macOS 시스템 파일)
+.DS_Store
