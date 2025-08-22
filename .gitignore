@@ -43,3 +43,6 @@ Supabase.xcconfig
 
 # DS_Store (macOS 시스템 파일)
 .DS_Store
+
+# 보안용 API 키 파일
+SecureAPIKeys.plist

@@ -23,15 +23,12 @@ class SupabaseManager {
     let supabase: SupabaseClient
 
     private init() {
-        guard
-            let urlString = Bundle.main.object(forInfoDictionaryKey: "SUPABASE_URL") as? String,
-            let key = Bundle.main.object(forInfoDictionaryKey: "SUPABASE_KEY") as? String,
-            let supabaseUrl = URL(string: urlString)
-        else {
-            fatalError("Supabase 설정 로드 실패")
-        }
-
-        self.supabase = SupabaseClient(supabaseURL: supabaseUrl, supabaseKey: key)
+        let dict = Bundle.parsePlist(ofName: "SecureAPIKeys")
+        let value = dict["SUPABASE_ANON_KEY"] as! String
+        let value2 = dict["SUPABASE_URL"] as! String
+        let supabaseUrl = URL(string: value2)!
+        let supabaseKey = value
+        self.supabase = SupabaseClient(supabaseURL: supabaseUrl, supabaseKey: supabaseKey)
     }
 
     func registerOrUpdateUser(appleUID: String, name: String?, email: String?, provider: String) {
@@ -52,7 +49,7 @@ class SupabaseManager {
                     .value as? [[String: Any]]
 
                 if let existing = existingUsers?.first {
-                    print("기존 사용자 업데이트")
+                    print("기존 사용자 발견. 업데이트 진행")
 
                     try await client
                         .from("users")
@@ -63,7 +60,7 @@ class SupabaseManager {
                         .eq("apple_uid", value: appleUID)
                         .execute()
                 } else {
-                    print("새로운 사용자 등록")
+                    print("새로운 사용자. 등록 진행")
 
                     try await client
                         .from("users")
@@ -106,3 +103,21 @@ class SupabaseManager {
         }
     }
 }
+
+extension Bundle {
+
+    static func parsePlist(ofName name: String) -> [String: AnyObject] {
+        guard let plistUrl = Bundle.main.url(forResource: name, withExtension: "plist") else {
+            fatalError("Couldn't find file '\(name).plist'.")
+        }
+        
+        guard let plistData = try? Data(contentsOf: plistUrl),
+              let dict = try? PropertyListSerialization.propertyList(from: plistData, format: nil) as? [String: AnyObject] else {
+            fatalError("Couldn't load dictionary from data.")
+        }
+        
+        return dict
+    }
+}
+
+
