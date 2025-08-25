@@ -37,10 +37,8 @@ class ExhibitionCell: UICollectionViewCell {
         return label
     }()
     
-    // 찜(북마크) 버튼
     lazy var bookmarkButton: UIButton = {
         let button = UIButton(type: .system)
-        // SF Symbols 사용 (iOS 13+)
         button.setImage(UIImage(systemName: "bookmark"), for: .normal)
         button.tintColor = .white
         button.backgroundColor = UIColor(white: 0, alpha: 0.3)
@@ -69,7 +67,7 @@ class ExhibitionCell: UICollectionViewCell {
         
         thumbnailImageView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            make.height.equalTo(150) // 높이 고정
+            make.height.equalTo(150)
         }
         
         titleLabel.snp.makeConstraints { make in
@@ -88,9 +86,8 @@ class ExhibitionCell: UICollectionViewCell {
         }
     }
     
-    // ViewModel의 데이터를 Cell에 바인딩하는 함수
     public func configure(with exhibition: Exhibition) {
-        // thumbnailImageView.image = UIImage(named: exhibition.imageName) // 실제 이미지 로딩
+        // thumbnailImageView.image = UIImage(named: exhibition.imageName)
         titleLabel.text = exhibition.title
         dateLabel.text = exhibition.date
         

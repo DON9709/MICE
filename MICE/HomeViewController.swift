@@ -15,7 +15,6 @@ class HomeViewController: UIViewController {
     
     // MARK: - UI Components
 
-    // 전체를 감싸는 스크롤뷰
     private let scrollView = UIScrollView()
     private let contentView = UIView()
 
@@ -34,14 +33,19 @@ class HomeViewController: UIViewController {
     }()
     
     // --- 수집한 스탬프 섹션 ---
-    private lazy var stampSectionTitleLabel: UILabel = createSectionTitle(title: viewModel.stampSectionTitle)
-    private let stampBackgroundView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .systemGray6
-        view.layer.cornerRadius = 10
-        return view
-    }()
-    private let stampStackView: UIStackView = createHorizontalStackView()
+        private lazy var stampSectionTitleLabel: UILabel = createSectionTitle(title: viewModel.stampSectionTitle)
+        private let stampBackgroundView: UIView = {
+            let view = UIView()
+            view.backgroundColor = .systemGray6
+            view.layer.cornerRadius = 10
+            return view
+        }()
+        private let stampScrollView: UIScrollView = {
+            let scrollView = UIScrollView()
+            scrollView.showsHorizontalScrollIndicator = false
+            return scrollView
+        }()
+        private lazy var stampStackView: UIStackView = createHorizontalStackView()
 
     // --- 주변 문화 전시 공간 섹션 ---
     private lazy var nearbySectionTitleLabel: UILabel = createSectionTitle(title: viewModel.nearbySectionTitle)
@@ -65,11 +69,9 @@ class HomeViewController: UIViewController {
     // MARK: - UI Setup & Layout
     
     private func setupCollectionView() {
-        // DataSource 설정
         nearbyCollectionView.dataSource = self
         hotCollectionView.dataSource = self
         
-        // 사용할 Cell 등록
         nearbyCollectionView.register(ExhibitionCell.self, forCellWithReuseIdentifier: ExhibitionCell.identifier)
         hotCollectionView.register(ExhibitionCell.self, forCellWithReuseIdentifier: ExhibitionCell.identifier)
     }
@@ -78,26 +80,31 @@ class HomeViewController: UIViewController {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
 
-        // 최상단 타이틀/버튼
         contentView.addSubview(titleLabel)
         contentView.addSubview(notificationButton)
 
-        // 각 섹션 뷰들 추가
-        [stampSectionTitleLabel, stampBackgroundView, stampStackView,
-         nearbySectionTitleLabel, nearbyCollectionView,
-         hotSectionTitleLabel, hotCollectionView].forEach { contentView.addSubview($0) }
-        
-        stampBackgroundView.addSubview(stampStackView)
+    
+        stampBackgroundView.addSubview(stampScrollView)
+        stampScrollView.addSubview(stampStackView)
+
+        // stampScrollView, nearbySectionTitleLabel, nearbyCollectionView,
+        // hotSectionTitleLabel, hotCollectionView].forEach { contentView.addSubview($0) }
+        contentView.addSubview(stampSectionTitleLabel)
+        contentView.addSubview(stampBackgroundView)
+        contentView.addSubview(nearbySectionTitleLabel)
+        contentView.addSubview(nearbyCollectionView)
+        contentView.addSubview(hotSectionTitleLabel)
+        contentView.addSubview(hotCollectionView)
 
         // --- SnapKit 제약조건 설정 ---
-        
+
         scrollView.snp.makeConstraints { make in
             make.edges.equalTo(view.safeAreaLayoutGuide)
         }
-        
+
         contentView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-            make.width.equalToSuperview() // 스크롤뷰의 너비와 동일하게 설정 (중요)
+            make.width.equalToSuperview()
         }
 
         titleLabel.snp.makeConstraints { make in
@@ -110,24 +117,30 @@ class HomeViewController: UIViewController {
             make.trailing.equalToSuperview().inset(20)
             make.width.height.equalTo(30)
         }
-        
-        // --- 스탬프 섹션 레이아웃 ---
+
+        // --- 스탬프 섹션 레이아웃  ---
         stampSectionTitleLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(30)
             make.leading.equalTo(titleLabel)
         }
-        
+
         stampBackgroundView.snp.makeConstraints { make in
             make.top.equalTo(stampSectionTitleLabel.snp.bottom).offset(12)
             make.leading.trailing.equalToSuperview().inset(20)
             make.height.equalTo(100) // 배경 높이 고정
         }
-        
-        stampStackView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(16)
+
+        stampScrollView.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)) // 내부 여백 조정
+            make.height.equalTo(80) // 스크롤뷰 높이 유지
         }
 
-        // --- 주변 문화 전시 공간 레이아웃 ---
+        stampStackView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+            make.height.equalToSuperview()
+        }
+
+        // --- 주변 문화 전시 공간 레이아웃  ---
         nearbySectionTitleLabel.snp.makeConstraints { make in
             make.top.equalTo(stampBackgroundView.snp.bottom).offset(40)
             make.leading.equalTo(titleLabel)
@@ -136,7 +149,7 @@ class HomeViewController: UIViewController {
         nearbyCollectionView.snp.makeConstraints { make in
             make.top.equalTo(nearbySectionTitleLabel.snp.bottom).offset(12)
             make.leading.trailing.equalToSuperview()
-            make.height.equalTo(200) // 셀 높이(150) + 레이블 높이 + 간격
+            make.height.equalTo(200)
         }
 
         // --- 지금 핫한 전시 공간 레이아웃 ---
@@ -149,22 +162,24 @@ class HomeViewController: UIViewController {
             make.top.equalTo(hotSectionTitleLabel.snp.bottom).offset(12)
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(200)
-            make.bottom.equalToSuperview().inset(20) // contentView의 끝 지정
+            make.bottom.equalToSuperview().inset(20)
         }
     }
     
-    // --- Helper Methods ---
+    // MARK: - Helper Methods
     
-    // 스탬프 더미 데이터를 UI에 채우는 함수
     private func populateStampData() {
         viewModel.stamps.forEach { stamp in
             let imageView = UIImageView()
-            // imageView.image = UIImage(named: stamp.imageName) // 실제 이미지
             imageView.backgroundColor = .darkGray
-            imageView.layer.cornerRadius = 35 // 원형 이미지 (크기 70x70)
+            imageView.isOpaque = false
             imageView.clipsToBounds = true
+            
+            let stampSize: CGFloat = 80
+            imageView.layer.cornerRadius = stampSize / 2
+            
             imageView.snp.makeConstraints { make in
-                make.width.height.equalTo(70)
+                make.width.height.equalTo(stampSize)
             }
             stampStackView.addArrangedSubview(imageView)
         }
@@ -181,7 +196,7 @@ class HomeViewController: UIViewController {
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.spacing = 16
-        stackView.distribution = .fillEqually
+        stackView.distribution = .equalSpacing
         return stackView
     }
 
@@ -190,7 +205,6 @@ class HomeViewController: UIViewController {
         layout.scrollDirection = .horizontal
         layout.itemSize = CGSize(width: 150, height: 200)
         layout.minimumLineSpacing = 16
-        // 컬렉션뷰 좌측에만 패딩 추가
         layout.sectionInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
 
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
