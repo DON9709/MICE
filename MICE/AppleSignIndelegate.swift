@@ -1,8 +1,8 @@
 //
 //  AppleSignIndelegate.swift
-//  Heatmap
+//  MICE
 //
-//  Created by 이돈혁 on 7/3/25.
+//  Created by 이돈혁 on 8/20/25.
 //
 
 import Foundation
@@ -44,7 +44,7 @@ class AppleSignInDelegate: NSObject, ASAuthorizationControllerDelegate, ASAuthor
 
             guard let identityTokenData = credential.identityToken,
                   let identityTokenString = String(data: identityTokenData, encoding: .utf8) else {
-                print("❌ Failed to convert identityToken to String.")
+                print("Failed to convert identityToken to String.")
                 return
             }
 
@@ -54,7 +54,7 @@ class AppleSignInDelegate: NSObject, ASAuthorizationControllerDelegate, ASAuthor
                         credentials: .init(provider: .apple, idToken: identityTokenString)
                     )
 
-                    // ✅ 바로 이어서 세션 설정
+                    // 바로 이어서 세션 설정
                     //try await SupabaseManager.shared.client.auth.setSession(from: credential)
 
                     print("Supabase 인증 및 세션 설정 완료")
