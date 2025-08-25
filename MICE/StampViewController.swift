@@ -27,6 +27,36 @@ class StampViewController: UIViewController {
     //StampGrid
     private let stampCollectionView: UICollectionView//전체 스탬프
     
+    //StampFilterButton items
+    var items: [UIAction] {
+        let museum = UIAction(
+            title: "박물관",
+            handler: { [unowned self] _ in
+                self.stampFilterButton.setTitle("박물관", for: .normal)
+            })
+        
+        let gallery = UIAction(
+            title: "미술관",
+            handler: { [unowned self] _ in
+                self.stampFilterButton.setTitle("미술관", for: .normal)
+            })
+        
+        let exhibition = UIAction(
+            title: "전시관",
+            handler: { [unowned self] _ in
+                self.stampFilterButton.setTitle("전시관", for: .normal)
+            })
+        
+        let memorial = UIAction(
+            title: "기념관",
+            handler: { [unowned self] _ in
+                self.stampFilterButton.setTitle("기념관", for: .normal)
+            })
+        
+        return ([museum, gallery, exhibition, memorial])
+        
+    }
+    
     // MARK: - Init (콜렉션 레이아웃)
     init() {
         let flow = UICollectionViewFlowLayout()
@@ -43,9 +73,11 @@ class StampViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
         setupViews()
         setupLayout()
-//        setupActions()
+        setupMenu()
+        //        setupActions()
     }
     
     private func setupViews() {
@@ -54,11 +86,11 @@ class StampViewController: UIViewController {
         backButton.tintColor = .label
         
         backButtonTitleLabel.text = "달성 기록"
-        backButtonTitleLabel.font = .systemFont(ofSize: 17, weight: .semibold)
+        backButtonTitleLabel.font = .systemFont(ofSize: 16, weight: .semibold)
         backButtonTitleLabel.textAlignment = .center
         
         //헤더 스탬프
-        headerStampContainer.backgroundColor = .clear
+        headerStampContainer.backgroundColor = .white
         headerStampContainer.layer.cornerRadius = 64
         headerStampContainer.clipsToBounds = false
         
@@ -69,11 +101,14 @@ class StampViewController: UIViewController {
         headerStampLabel.textAlignment = .center
         
         //필터버튼
-        stampFilterButton.setTitle("카테고리", for: .normal)
-        stampFilterButton.titleLabel?.font = .systemFont(ofSize: 14, weight: .medium)
+        stampFilterButton.frame = CGRect(x: 200, y: 250, width: 350, height: 50)
+        stampFilterButton.backgroundColor = .gray
+        stampFilterButton.layer.cornerRadius = 10
+        stampFilterButton.setTitle("박물관", for: .normal)
+        stampFilterButton.titleLabel?.font = .systemFont(ofSize: 15, weight: .medium)
         
         //콜렉션뷰
-        stampCollectionView.backgroundColor = .clear
+        stampCollectionView.backgroundColor = .white
         stampCollectionView.register(StampColletionCell.self, forCellWithReuseIdentifier: StampColletionCell.identifier)
         stampCollectionView.dataSource = self
         stampCollectionView.delegate = self
@@ -124,10 +159,19 @@ class StampViewController: UIViewController {
         }
     }
     
-//    private func setupActions() {
-//        
-//    }
+    private func setupMenu() {
+        let menu = UIMenu(title: "카테고리",
+                           children: items)
+        
+        stampFilterButton.menu = menu
+        stampFilterButton.showsMenuAsPrimaryAction = true
+    }
 }
+
+//    private func setupActions() {
+//
+//    }
+
 
 // MARK: - DataSource & Delegate
 extension StampViewController: UICollectionViewDataSource, UICollectionViewDelegate {
@@ -144,7 +188,7 @@ extension StampViewController: UICollectionViewDataSource, UICollectionViewDeleg
         // TODO: 상세 페이지로 이동 등
     }
 }
-    
+
 final class StampColletionCell: UICollectionViewCell {
     static let identifier = "StampCell"
     private let imageView = UIImageView()
@@ -164,6 +208,6 @@ final class StampColletionCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 }
-#Preview {
-    StampViewController()
-}
+//#Preview {
+//    StampViewController()
+//}
