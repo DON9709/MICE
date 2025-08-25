@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A8D4F2C12E5BF2420003787B /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = A8D4F2C02E5BF2420003787B /* SnapKit */; };
 		F6FEBA652E5564F00091320B /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = F6FEBA642E5564F00091320B /* Auth */; };
 		F6FEBA672E5564F00091320B /* Functions in Frameworks */ = {isa = PBXBuildFile; productRef = F6FEBA662E5564F00091320B /* Functions */; };
 		F6FEBA692E5564F00091320B /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = F6FEBA682E5564F00091320B /* PostgREST */; };
@@ -47,6 +48,7 @@
 				F6FEBA6B2E5564F00091320B /* Storage in Frameworks */,
 				F6FEBA692E5564F00091320B /* PostgREST in Frameworks */,
 				F6FEBA672E5564F00091320B /* Functions in Frameworks */,
+				A8D4F2C12E5BF2420003787B /* SnapKit in Frameworks */,
 				F6FEBA6E2E5565050091320B /* FSCalendar in Frameworks */,
 				F6FEBA652E5564F00091320B /* Auth in Frameworks */,
 			);
@@ -96,6 +98,7 @@
 				F6FEBA682E5564F00091320B /* PostgREST */,
 				F6FEBA6A2E5564F00091320B /* Storage */,
 				F6FEBA6D2E5565050091320B /* FSCalendar */,
+				A8D4F2C02E5BF2420003787B /* SnapKit */,
 			);
 			productName = MICE;
 			productReference = F6FEBA432E55479F0091320B /* MICE.app */;
@@ -128,6 +131,7 @@
 			packageReferences = (
 				F6FEBA632E5564F00091320B /* XCRemoteSwiftPackageReference "supabase-swift" */,
 				F6FEBA6C2E5565050091320B /* XCRemoteSwiftPackageReference "FSCalendar" */,
+				A8D4F2BF2E5BF2420003787B /* XCRemoteSwiftPackageReference "SnapKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F6FEBA442E55479F0091320B /* Products */;
@@ -369,6 +373,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		A8D4F2BF2E5BF2420003787B /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
 		F6FEBA632E5564F00091320B /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/supabase/supabase-swift";
@@ -388,6 +400,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		A8D4F2C02E5BF2420003787B /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A8D4F2BF2E5BF2420003787B /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
 		F6FEBA642E5564F00091320B /* Auth */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F6FEBA632E5564F00091320B /* XCRemoteSwiftPackageReference "supabase-swift" */;
