@@ -18,7 +18,9 @@ class StampViewController: UIViewController {
     let backButtonTitleLabel = UILabel()//뒤로가기버튼 라벨
     
     //HeaderRecnetlyStamps
-    let headerStampContainer = UIView()
+    let firstHeaderStampContainer = UIView()
+    let secondHeaderStampContainer = UIView()
+    let thirdHeaderStampContainer = UIView()
     let headerStampLabel = UILabel()
     
     //filterButton
@@ -89,10 +91,20 @@ class StampViewController: UIViewController {
         backButtonTitleLabel.font = .systemFont(ofSize: 16, weight: .semibold)
         backButtonTitleLabel.textAlignment = .center
         
-        //헤더 스탬프
-        headerStampContainer.backgroundColor = .white
-        headerStampContainer.layer.cornerRadius = 64
-        headerStampContainer.clipsToBounds = false
+        //헤더 스탬프1
+        firstHeaderStampContainer.backgroundColor = .gray
+        firstHeaderStampContainer.layer.cornerRadius = 64
+        firstHeaderStampContainer.clipsToBounds = false
+        
+        //헤더 스탬프2
+        secondHeaderStampContainer.backgroundColor = .blue
+        secondHeaderStampContainer.layer.cornerRadius = 40
+        secondHeaderStampContainer.clipsToBounds = false
+        
+        //헤더 스탬프3
+        thirdHeaderStampContainer.backgroundColor = .red
+        thirdHeaderStampContainer.layer.cornerRadius = 40
+        thirdHeaderStampContainer.clipsToBounds = false
         
         //라벨
         headerStampLabel.text = "획득한 스탬프명"
@@ -115,7 +127,9 @@ class StampViewController: UIViewController {
         
         view.addSubview(backButton)
         view.addSubview(backButtonTitleLabel)
-        view.addSubview(headerStampContainer)
+        view.addSubview(firstHeaderStampContainer)
+        view.addSubview(secondHeaderStampContainer)
+        view.addSubview(thirdHeaderStampContainer)
         view.addSubview(headerStampLabel)
         view.addSubview(stampFilterButton)
         view.addSubview(stampCollectionView)
@@ -136,16 +150,31 @@ class StampViewController: UIViewController {
             make.leading.equalTo(backButton.snp.trailing).offset(3)
         }
         
-        //헤더 스탬프
-        headerStampContainer.snp.makeConstraints { make in
+        //헤더 스탬프1
+        firstHeaderStampContainer.snp.makeConstraints { make in
             make.top.equalTo(backButton.snp.bottom).offset(8)
             make.centerX.equalToSuperview()
             make.size.equalTo(CGSize(width: 128, height: 128))
         }
         headerStampLabel.snp.makeConstraints { make in
-            make.top.equalTo(headerStampContainer.snp.bottom).offset(12)
+            make.top.equalTo(firstHeaderStampContainer.snp.bottom).offset(12)
             make.centerX.equalToSuperview()
         }
+        
+        //헤더 스탬프2
+        secondHeaderStampContainer.snp.makeConstraints { make in
+            make.size.equalTo(CGSize(width: 80, height: 80))
+            make.centerY.equalTo(firstHeaderStampContainer)
+            make.trailing.equalToSuperview().inset(16)
+        }
+        
+        //헤더 스탬프3
+        thirdHeaderStampContainer.snp.makeConstraints { make in
+            make.size.equalTo(CGSize(width: 80, height: 80))
+            make.centerY.equalTo(firstHeaderStampContainer)
+            make.leading.equalToSuperview().inset(16)
+        }
+        
         //필터버튼
         stampFilterButton.snp.makeConstraints { make in
             make.top.equalTo(headerStampLabel.snp.bottom).offset(12)
