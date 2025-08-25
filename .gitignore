@@ -36,7 +36,13 @@ fastlane/test_output
 *.pem
 *.mobileprovision
 *.xcconfig
+
+# Supabase 설정 파일 (보안상 중요)
+Supabase.xcconfig
 *.p12
 
 # DS_Store (macOS 시스템 파일)
 .DS_Store
+
+# 보안용 API 키 파일
+SecureAPIKeys.plist
