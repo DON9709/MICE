@@ -44,7 +44,7 @@ class AppleSignInDelegate: NSObject, ASAuthorizationControllerDelegate, ASAuthor
 
             guard let identityTokenData = credential.identityToken,
                   let identityTokenString = String(data: identityTokenData, encoding: .utf8) else {
-                print("❌ Failed to convert identityToken to String.")
+                print("Failed to convert identityToken to String.")
                 return
             }
 
