@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 
+
 		F646ECA02E5BF76300426176 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = F646EC9F2E5BF76300426176 /* Supabase */; };
 		F646ECA32E5BFB5C00426176 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = F646ECA22E5BFB5C00426176 /* SnapKit */; };
 		F6D2F4222E55A9F500ED75D0 /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = F6D2F4212E55A9F500ED75D0 /* Auth */; };
@@ -396,6 +397,7 @@
 
 /* Begin XCRemoteSwiftPackageReference section */
 
+
 		F646ECA12E5BFB5C00426176 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
 
 			isa = XCRemoteSwiftPackageReference;
@@ -406,7 +408,9 @@
 			};
 		};
 
+
 		F6D2F4202E55A9F500ED75D0 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+
 
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/supabase/supabase-swift";
@@ -426,6 +430,7 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+
 
 		F646EC9F2E5BF76300426176 /* Supabase */ = {
 			isa = XCSwiftPackageProductDependency;
