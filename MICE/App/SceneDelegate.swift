@@ -25,10 +25,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         // 각 탭에 들어갈 뷰 컨트롤러 생성
         let homeVC = HomeViewController()
-        // 아래는 임시 뷰 컨트롤러, 실제 뷰 컨트롤러로 교체해야 합니다.
-        let stampVC = UIViewController()
+        let stampVC = StampViewController()
         let searchVC = SearchViewController()
         let myPageVC = MypageViewController()
+
         
         homeVC.tabBarItem = UITabBarItem(title: "홈", image: UIImage(systemName: "house"), tag: 0)
         stampVC.tabBarItem = UITabBarItem(title: "스탬프", image: UIImage(systemName: "checkmark.seal"), tag: 1)
