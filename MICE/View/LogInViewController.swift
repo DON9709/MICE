@@ -5,7 +5,6 @@
 //  Created by 이돈혁 on 8/25/25.
 //
 
-
 import UIKit
 import SnapKit
 import Combine
@@ -91,7 +90,10 @@ final class LogInViewController: UIViewController {
     }
 
     @objc private func guestButtonTapped() {
-        viewModel.transform(input: .didTapGuest)
+        let sceneDelegate = UIApplication.shared.connectedScenes
+            .first(where: { $0.activationState == .foregroundActive })?
+            .delegate as? SceneDelegate
+        sceneDelegate?.setRootViewControllerToMainTabBar()
     }
 
     @objc private func appleLoginButtonTapped() {
