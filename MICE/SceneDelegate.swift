@@ -27,7 +27,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let homeVC = HomeViewController()
         // 아래는 임시 뷰 컨트롤러, 실제 뷰 컨트롤러로 교체해야 합니다.
         let stampVC = UIViewController()
-        let searchVC = UIViewController()
+        let searchVC = SearchViewController()
         let myPageVC = UIViewController()
         
         homeVC.tabBarItem = UITabBarItem(title: "홈", image: UIImage(systemName: "house"), tag: 0)
