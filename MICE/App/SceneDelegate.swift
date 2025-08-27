@@ -24,9 +24,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let tabBarController = UITabBarController()
         
         // 각 탭에 들어갈 뷰 컨트롤러 생성
-        let homeVC = HomeViewController()
-        let stampVC = StampViewController()
-        let searchVC = SearchViewController()
+        let homeVC = UINavigationController(rootViewController: HomeViewController())
+        let stampVC = UINavigationController(rootViewController: StampViewController())
+        let searchVC = UINavigationController(rootViewController: SearchViewController())
         // 아래는 임시 뷰 컨트롤러, 실제 뷰 컨트롤러로 교체해야 합니다.
         let myPageVC = UIViewController()
         
