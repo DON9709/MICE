@@ -90,10 +90,7 @@ final class LogInViewController: UIViewController {
     }
 
     @objc private func guestButtonTapped() {
-        let sceneDelegate = UIApplication.shared.connectedScenes
-            .first(where: { $0.activationState == .foregroundActive })?
-            .delegate as? SceneDelegate
-        sceneDelegate?.setRootViewControllerToMainTabBar()
+        dismiss(animated: true, completion: nil)
     }
 
     @objc private func appleLoginButtonTapped() {
