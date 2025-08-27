@@ -216,13 +216,7 @@ extension StampViewController: UICollectionViewDataSource, UICollectionViewDeleg
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         //StampDetailViewController push/present
         let detailVC = StampDetailViewController()
-        if let nav = self.navigationController {
-            nav.pushViewController(detailVC, animated: true)
-        } else {
-            let nav = UINavigationController(rootViewController: detailVC)
-            nav.modalPresentationStyle = .fullScreen
-            self.present(nav, animated: true)
-        }
+            navigationController?.pushViewController(detailVC, animated: true)
     }
 }
 
