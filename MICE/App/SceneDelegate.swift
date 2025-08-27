@@ -24,10 +24,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let tabBarController = UITabBarController()
         
         // 각 탭에 들어갈 뷰 컨트롤러 생성
-        let homeVC = HomeViewController()
-        let stampVC = StampViewController()
-        let searchVC = SearchViewController()
-        let myPageVC = MypageViewController()
+
+        let homeVC = UINavigationController(rootViewController: HomeViewController())
+        let stampVC = UINavigationController(rootViewController: StampViewController())
+        let searchVC = UINavigationController(rootViewController: SearchViewController())
+        let myPageVC = UINavigationController(rootViewController: MypageViewController())
 
         
         homeVC.tabBarItem = UITabBarItem(title: "홈", image: UIImage(systemName: "house"), tag: 0)
