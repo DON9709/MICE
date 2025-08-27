@@ -70,7 +70,7 @@ class StampDetailViewController: UIViewController {
         view.backgroundColor = .white
         setupViews()
         setupLayout()
-        //        setupActions()
+        setupActions()
     }
     
     override func viewWillAppear(_ animated: Bool) {
