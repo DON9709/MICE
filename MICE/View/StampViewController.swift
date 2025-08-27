@@ -79,7 +79,7 @@ class StampViewController: UIViewController {
         setupViews()
         setupLayout()
         setupMenu()
-        //        setupActions()
+        setupActions()
     }
     
     private func setupViews() {
@@ -190,18 +190,18 @@ class StampViewController: UIViewController {
     
     private func setupMenu() {
         let menu = UIMenu(title: "카테고리",
-                           children: items)
+                          children: items)
         
         stampFilterButton.menu = menu
         stampFilterButton.showsMenuAsPrimaryAction = true
     }
+    
+    private func setupActions() {
+        backButton.addTarget(self, action: #selector(tapBack), for: .touchUpInside)
+        
+    }
+    
 }
-
-//    private func setupActions() {
-//
-//    }
-
-
 // MARK: - DataSource & Delegate
 extension StampViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -214,7 +214,15 @@ extension StampViewController: UICollectionViewDataSource, UICollectionViewDeleg
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        // TODO: 상세 페이지로 이동 등
+        //StampDetailViewController push/present
+        let detailVC = StampDetailViewController()
+        if let nav = self.navigationController {
+            nav.pushViewController(detailVC, animated: true)
+        } else {
+            let nav = UINavigationController(rootViewController: detailVC)
+            nav.modalPresentationStyle = .fullScreen
+            self.present(nav, animated: true)
+        }
     }
 }
 
@@ -235,6 +243,16 @@ final class StampColletionCell: UICollectionViewCell {
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+private extension StampViewController {
+    @objc private func tapBack() {
+        if let nav = self.navigationController {
+            nav.popViewController(animated: true)
+        } else {
+            self.dismiss(animated: true)
+        }
     }
 }
 //#Preview {

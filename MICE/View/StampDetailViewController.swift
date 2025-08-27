@@ -156,9 +156,14 @@ class StampDetailViewController: UIViewController {
     
     private func setupLayout() {
         
+        
     }
     
     private func setupActions() {
         
     }
+}
+
+#Preview {
+    StampViewController()
 }
