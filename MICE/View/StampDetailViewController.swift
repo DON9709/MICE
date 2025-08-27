@@ -176,6 +176,7 @@ class StampDetailViewController: UIViewController {
     private func setupLayout() {
         let topBar = UIView()
         view.addSubview(topBar)
+        view.addSubview(stampImageView)
         
         topBar.addSubview(backButton)
         topBar.addSubview(backButtonTitleLabel)
@@ -217,9 +218,16 @@ class StampDetailViewController: UIViewController {
         }
         
         // HeaderCard Layout
+        // Url로 이미지 추가
         headerCardView.snp.remakeConstraints { make in
             make.left.right.equalToSuperview().inset(16)
             make.height.greaterThanOrEqualTo(160)
+        }
+        
+        stampImageView.snp.makeConstraints { make in
+            make.right.equalTo(headerCardView.snp.right).inset(13)
+            make.size.equalTo(84)
+            make.bottom.equalTo(headerCardView.snp.bottom).offset(42)
         }
         
         // Create infoStack inside headerCardView
@@ -227,20 +235,15 @@ class StampDetailViewController: UIViewController {
         infoStack.axis = .vertical
         infoStack.spacing = 4
         headerCardView.addSubview(stampTitleLabel)
-        headerCardView.addSubview(stampImageView)
         headerCardView.addSubview(favoriteButton)
         headerCardView.addSubview(infoStack)
+        headerCardView.backgroundColor = .green
         
         stampTitleLabel.snp.makeConstraints { make in
             make.top.left.equalToSuperview().offset(16)
             make.right.equalTo(stampImageView.snp.left).offset(-12)
         }
-        
-        stampImageView.snp.makeConstraints { make in
-            make.bottom.right.equalToSuperview().inset(8)
-            make.size.equalTo(64)
-        }
-        
+
         favoriteButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(12)
             make.size.equalTo(30)
@@ -311,6 +314,6 @@ private extension StampDetailViewController {
         }
     }
 }
-#Preview {
-    StampDetailViewController()
-}
+//#Preview {
+//    StampDetailViewController()
+//}
