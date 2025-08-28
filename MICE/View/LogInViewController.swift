@@ -5,7 +5,6 @@
 //  Created by 이돈혁 on 8/25/25.
 //
 
-
 import UIKit
 import SnapKit
 import Combine
@@ -91,7 +90,7 @@ final class LogInViewController: UIViewController {
     }
 
     @objc private func guestButtonTapped() {
-        viewModel.transform(input: .didTapGuest)
+        dismiss(animated: true, completion: nil)
     }
 
     @objc private func appleLoginButtonTapped() {
