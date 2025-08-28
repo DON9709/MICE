@@ -13,21 +13,25 @@ class SearchResultCell: UITableViewCell {
     static let identifier = "SearchResultCell"
     
     // MARK: - UI Components
-    
     private let containerView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
         view.layer.cornerRadius = 12
-        view.layer.borderWidth = 1.0
         view.layer.borderColor = UIColor.systemGray5.cgColor
-        view.clipsToBounds = true
+        view.layer.borderWidth = 1.0
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOpacity = 0.1
+        view.layer.shadowOffset = CGSize(width: 0, height: 2)
+        view.layer.shadowRadius = 4
         return view
     }()
     
     private let thumbnailImageView: UIImageView = {
         let iv = UIImageView()
-        iv.backgroundColor = .lightGray
+        iv.backgroundColor = .systemGray6
         iv.contentMode = .scaleAspectFill
+        iv.layer.cornerRadius = 12
+        iv.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         iv.clipsToBounds = true
         return iv
     }()
@@ -48,12 +52,11 @@ class SearchResultCell: UITableViewCell {
     private let missionInfoLabel = UILabel.createSubLabel()
     
     // MARK: - Life Cycle
-
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        // 셀 기본 배경을 투명하게 해서 containerView의 그림자가 보이도록 함
         self.backgroundColor = .clear
         self.contentView.backgroundColor = .clear
+        self.selectionStyle = .none
         setupUI()
     }
     
@@ -62,21 +65,16 @@ class SearchResultCell: UITableViewCell {
     }
     
     // MARK: - UI Setup
-
     private func setupUI() {
         contentView.addSubview(containerView)
         
-        containerView.addSubview(thumbnailImageView)
-        
-        // 텍스트들을 담을 스택뷰
         let textStackView = UIStackView(arrangedSubviews: [placeNameLabel, closedInfoLabel, hoursInfoLabel, missionInfoLabel])
         textStackView.axis = .vertical
         textStackView.spacing = 6
         textStackView.alignment = .leading
         
+        containerView.addSubview(thumbnailImageView)
         containerView.addSubview(textStackView)
-        
-        // --- 제약 조건 설정 ---
         
         containerView.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(UIEdgeInsets(top: 8, left: 20, bottom: 8, right: 20))
@@ -88,14 +86,13 @@ class SearchResultCell: UITableViewCell {
         }
         
         textStackView.snp.makeConstraints { make in
-            make.top.equalTo(thumbnailImageView.snp.bottom).offset(12)
+            make.top.equalTo(thumbnailImageView.snp.bottom).offset(16)
             make.leading.trailing.equalToSuperview().inset(16)
-            make.bottom.equalToSuperview().inset(12)
+            make.bottom.equalToSuperview().inset(16)
         }
     }
     
     // MARK: - Configuration
-
     func configure(with result: SearchResult) {
         // thumbnailImageView.image = UIImage(named: result.imageName)
         placeNameLabel.text = result.placeName
@@ -105,7 +102,6 @@ class SearchResultCell: UITableViewCell {
     }
 }
 
-// UILabel 생성을 위한 간단한 Extension
 fileprivate extension UILabel {
     static func createSubLabel() -> UILabel {
         let label = UILabel()
