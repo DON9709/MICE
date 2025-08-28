@@ -1,8 +1,8 @@
 //
 //  AppleSignIndelegate.swift
-//  Heatmap
+//  MICE
 //
-//  Created by 이돈혁 on 7/3/25.
+//  Created by 이돈혁 on 8/20/25.
 //
 
 import Foundation
@@ -30,7 +30,7 @@ class AppleSignInDelegate: NSObject, ASAuthorizationControllerDelegate, ASAuthor
             let fullName = credential.fullName
             let email = credential.email
             
-            print("✅ Apple 로그인 성공")
+            print("Apple 로그인 성공")
             print("User ID: \(self.userID ?? "")")
             print("이름: \(fullName?.givenName ?? "") \(fullName?.familyName ?? "")")
             print("이메일: \(email ?? "")")
@@ -44,7 +44,7 @@ class AppleSignInDelegate: NSObject, ASAuthorizationControllerDelegate, ASAuthor
 
             guard let identityTokenData = credential.identityToken,
                   let identityTokenString = String(data: identityTokenData, encoding: .utf8) else {
-                print("❌ Failed to convert identityToken to String.")
+                print("Failed to convert identityToken to String.")
                 return
             }
 
@@ -54,10 +54,10 @@ class AppleSignInDelegate: NSObject, ASAuthorizationControllerDelegate, ASAuthor
                         credentials: .init(provider: .apple, idToken: identityTokenString)
                     )
 
-                    // ✅ 바로 이어서 세션 설정
+                    // 바로 이어서 세션 설정
                     //try await SupabaseManager.shared.client.auth.setSession(from: credential)
 
-                    print("✅ Supabase 인증 및 세션 설정 완료")
+                    print("Supabase 인증 및 세션 설정 완료")
 
                     SupabaseManager.shared.registerOrUpdateUser(
                         appleUID: credential.user,
@@ -69,7 +69,7 @@ class AppleSignInDelegate: NSObject, ASAuthorizationControllerDelegate, ASAuthor
                     UserDefaults.standard.set(credential.user, forKey: "apple_uid")
 
                 } catch {
-                    print("❌ Supabase 인증 실패: \(error.localizedDescription)")
+                    print("Supabase 인증 실패: \(error.localizedDescription)")
                 }
             }
 
@@ -78,6 +78,6 @@ class AppleSignInDelegate: NSObject, ASAuthorizationControllerDelegate, ASAuthor
     }
 
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
-        print("❌ Apple 로그인 실패: \(error.localizedDescription)")
+        print("Apple 로그인 실패: \(error.localizedDescription)")
     }
 }
