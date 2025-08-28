@@ -7,11 +7,13 @@
 
 import UIKit
 import SnapKit
+import Combine
 
 class StampViewController: UIViewController {
     
     //ViewModel
     private let viewModel = StampViewModel()
+    private var cancellables = Set<AnyCancellable>()
     
     //Navigation
     let backButton = UIButton(type: .system)//뒤로가기버튼 -> 홈 화면으로 이동
@@ -28,36 +30,6 @@ class StampViewController: UIViewController {
     
     //StampGrid
     private let stampCollectionView: UICollectionView//전체 스탬프
-    
-    //StampFilterButton items
-    var items: [UIAction] {
-        let museum = UIAction(
-            title: "박물관",
-            handler: { [unowned self] _ in
-                self.stampFilterButton.setTitle("박물관", for: .normal)
-            })
-        
-        let gallery = UIAction(
-            title: "미술관",
-            handler: { [unowned self] _ in
-                self.stampFilterButton.setTitle("미술관", for: .normal)
-            })
-        
-        let exhibition = UIAction(
-            title: "전시관",
-            handler: { [unowned self] _ in
-                self.stampFilterButton.setTitle("전시관", for: .normal)
-            })
-        
-        let memorial = UIAction(
-            title: "기념관",
-            handler: { [unowned self] _ in
-                self.stampFilterButton.setTitle("기념관", for: .normal)
-            })
-        
-        return ([museum, gallery, exhibition, memorial])
-        
-    }
     
     // MARK: - Init (콜렉션 레이아웃)
     init() {
@@ -80,6 +52,13 @@ class StampViewController: UIViewController {
         setupLayout()
         setupMenu()
         setupActions()
+        
+        viewModel.$selectedCategory
+            .receive(on: RunLoop.main)
+            .sink { [weak self] category in
+                self?.stampFilterButton.setTitle(category, for: .normal)
+            }
+            .store(in: &cancellables)
     }
     
     private func setupViews() {
@@ -190,7 +169,7 @@ class StampViewController: UIViewController {
     
     private func setupMenu() {
         let menu = UIMenu(title: "카테고리",
-                          children: items)
+                          children: viewModel.items)
         
         stampFilterButton.menu = menu
         stampFilterButton.showsMenuAsPrimaryAction = true
