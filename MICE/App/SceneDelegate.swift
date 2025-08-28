@@ -10,40 +10,10 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
-    
-    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
-        
         window = UIWindow(windowScene: windowScene)
-        
-        // 탭 바 컨트롤러 생성
-        let tabBarController = UITabBarController()
-        
-        // 각 탭에 들어갈 뷰 컨트롤러 생성
-        let homeVC = HomeViewController()
-        // 아래는 임시 뷰 컨트롤러, 실제 뷰 컨트롤러로 교체해야 합니다.
-        let stampVC = UIViewController()
-        let searchVC = SearchViewController()
-        let myPageVC = MypageViewController()
-        
-        homeVC.tabBarItem = UITabBarItem(title: "홈", image: UIImage(systemName: "house"), tag: 0)
-        stampVC.tabBarItem = UITabBarItem(title: "스탬프", image: UIImage(systemName: "checkmark.seal"), tag: 1)
-        searchVC.tabBarItem = UITabBarItem(title: "검색", image: UIImage(systemName: "magnifyingglass"), tag: 2)
-        myPageVC.tabBarItem = UITabBarItem(title: "마이페이지", image: UIImage(systemName: "person"), tag: 3)
-        
-        // 탭 바에 뷰 컨트롤러들 설정
-        tabBarController.viewControllers = [homeVC, stampVC, searchVC, myPageVC]
-        
-        // 탭 바 색상 등 외형 설정
-        tabBarController.tabBar.tintColor = .black
-        tabBarController.tabBar.backgroundColor = .white
-        
-        // 윈도우의 첫 화면으로 탭 바 컨트롤러를 지정
-        window?.rootViewController = tabBarController
+        window?.rootViewController = MainTabBarController()
         window?.makeKeyAndVisible()
         func sceneDidDisconnect(_ scene: UIScene) {
             // Called as the scene is being released by the system.
@@ -76,7 +46,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
     }
     func setRootViewControllerToMainTabBar() {
-        window?.rootViewController = UITabBarController()
+        window?.rootViewController = MainTabBarController()
         window?.makeKeyAndVisible()
     }
     
