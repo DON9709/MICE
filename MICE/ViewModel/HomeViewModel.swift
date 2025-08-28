@@ -10,7 +10,7 @@ import Foundation
 class HomeViewModel {
     
     // View가 구독(observing)할 수 있도록 데이터를 준비합니다.
-    let stamps: [Stamp]
+    let stamps: [Stampdummy]
     let nearbyExhibitions: [Exhibition]
     let hotExhibitions: [Exhibition]
     
@@ -23,13 +23,13 @@ class HomeViewModel {
     init() {
         // --- 더미 데이터 생성 ---
         self.stamps = [
-            Stamp(imageName: "stamp.dummy"),
-            Stamp(imageName: "stamp.dummy"),
-            Stamp(imageName: "stamp.dummy"),
-            Stamp(imageName: "stamp.dummy"),
-            Stamp(imageName: "stamp.dummy"),
-            Stamp(imageName: "stamp.dummy"),
-            Stamp(imageName: "stamp.dummy")
+            Stampdummy(imageName: "stamp.dummy"),
+            Stampdummy(imageName: "stamp.dummy"),
+            Stampdummy(imageName: "stamp.dummy"),
+            Stampdummy(imageName: "stamp.dummy"),
+            Stampdummy(imageName: "stamp.dummy"),
+            Stampdummy(imageName: "stamp.dummy"),
+            Stampdummy(imageName: "stamp.dummy")
         ]
         
         self.nearbyExhibitions = [
