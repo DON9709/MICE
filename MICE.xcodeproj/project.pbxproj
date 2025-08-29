@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F619A92D2E617757005F11D3 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = F619A92C2E617757005F11D3 /* Kingfisher */; };
 		F646ECA02E5BF76300426176 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = F646EC9F2E5BF76300426176 /* Supabase */; };
 		F646ECA32E5BFB5C00426176 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = F646ECA22E5BFB5C00426176 /* SnapKit */; };
 		F6D2F4222E55A9F500ED75D0 /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = F6D2F4212E55A9F500ED75D0 /* Auth */; };
@@ -50,6 +51,7 @@
 				F6D2F4242E55A9F500ED75D0 /* Functions in Frameworks */,
 				F6D2F4222E55A9F500ED75D0 /* Auth in Frameworks */,
 				F646ECA32E5BFB5C00426176 /* SnapKit in Frameworks */,
+				F619A92D2E617757005F11D3 /* Kingfisher in Frameworks */,
 				F646ECA02E5BF76300426176 /* Supabase in Frameworks */,
 				F6D2F4282E55A9F500ED75D0 /* Storage in Frameworks */,
 				F6FEBA6E2E5565050091320B /* FSCalendar in Frameworks */,
@@ -110,6 +112,7 @@
 				F6D2F4272E55A9F500ED75D0 /* Storage */,
 				F646EC9F2E5BF76300426176 /* Supabase */,
 				F646ECA22E5BFB5C00426176 /* SnapKit */,
+				F619A92C2E617757005F11D3 /* Kingfisher */,
 			);
 			productName = MICE;
 			productReference = F6FEBA432E55479F0091320B /* MICE.app */;
@@ -143,6 +146,7 @@
 				F6FEBA6C2E5565050091320B /* XCRemoteSwiftPackageReference "FSCalendar" */,
 				F6D2F4202E55A9F500ED75D0 /* XCRemoteSwiftPackageReference "supabase-swift" */,
 				F646ECA12E5BFB5C00426176 /* XCRemoteSwiftPackageReference "SnapKit" */,
+				F619A92B2E617757005F11D3 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F6FEBA442E55479F0091320B /* Products */;
@@ -182,7 +186,9 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = MICE/MICE.entitlements;
 				CODE_SIGN_STYLE = Automatic;
+
 				CURRENT_PROJECT_VERSION = 20250829;
+
 				DEVELOPMENT_TEAM = FL83497G8F;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MICE/Info.plist;
@@ -196,6 +202,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.MyeongGyun.MICE;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -388,6 +395,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		F619A92B2E617757005F11D3 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.5.0;
+			};
+		};
 		F646ECA12E5BFB5C00426176 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SnapKit/SnapKit";
@@ -415,6 +430,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		F619A92C2E617757005F11D3 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F619A92B2E617757005F11D3 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
 		F646EC9F2E5BF76300426176 /* Supabase */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F6D2F4202E55A9F500ED75D0 /* XCRemoteSwiftPackageReference "supabase-swift" */;
