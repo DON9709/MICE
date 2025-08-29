@@ -78,9 +78,9 @@ final class LogInViewController: UIViewController {
             .sink { [weak self] output in
                 switch output {
                 case .navigateToMain:
-                    // Navigate to main screen
-                    // Placeholder: implement navigation logic here
-                    break
+                    let myPageVC = MypageViewController()
+                    myPageVC.modalPresentationStyle = .fullScreen
+                    self?.present(myPageVC, animated: true, completion: nil)
                 case .showAppleLogin:
                     // Handle showAppleLogin if needed
                     break
