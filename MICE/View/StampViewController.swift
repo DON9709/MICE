@@ -35,8 +35,7 @@ class StampViewController: UIViewController {
         let flow = UICollectionViewFlowLayout()
         flow.minimumInteritemSpacing = 12
         flow.minimumLineSpacing = 16
-        let side = (UIScreen.main.bounds.width - 32 - (12 * 3)) / 4.0
-        flow.itemSize = CGSize(width: side, height: side)
+        flow.itemSize = CGSize(width: 72, height: 72)
         flow.sectionInset = UIEdgeInsets(top: 8, left: 16, bottom: 16, right: 16)
         stampCollectionView = UICollectionView(frame: .zero, collectionViewLayout: flow)
         super.init(nibName: nil, bundle: nil)
@@ -95,6 +94,12 @@ class StampViewController: UIViewController {
         thirdHeaderStampLabel.textAlignment = .center
         
         //필터버튼
+        stampFilterButton.setImage(UIImage(systemName: "chevron.down"), for: .normal)
+        stampFilterButton.semanticContentAttribute = .forceRightToLeft
+        stampFilterButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: 6, bottom: 0, right: -6)
+        stampFilterButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 10, bottom: 6, right: 10)
+        stampFilterButton.tintColor = .black
+
         stampFilterButton.backgroundColor = .gray
         stampFilterButton.layer.cornerRadius = 10
         stampFilterButton.titleLabel?.font = .systemFont(ofSize: 15, weight: .medium)
@@ -214,7 +219,7 @@ final class StampColletionCell: UICollectionViewCell {
         contentView.addSubview(imageView)
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
-        imageView.layer.cornerRadius = 40
+        imageView.layer.cornerRadius = 36
         imageView.layer.shouldRasterize = true
         imageView.backgroundColor = .systemGray6
         imageView.snp.makeConstraints { make in
