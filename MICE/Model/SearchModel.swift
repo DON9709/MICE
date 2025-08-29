@@ -9,6 +9,7 @@ import Foundation
 
 // 검색 결과 데이터 모델
 struct SearchResult {
+    let imageName: String
     let placeName: String
     let closedInfo: String // 휴업일
     let hoursInfo: String // 영업시간
