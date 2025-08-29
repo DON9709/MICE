@@ -16,6 +16,6 @@ struct Exhibition {
 }
 
 
-struct Stamp {
+struct Stampdummy {
     let imageName: String
 }
