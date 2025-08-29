@@ -14,11 +14,7 @@ class StampViewController: UIViewController {
     //ViewModel
     private let viewModel = StampViewModel()
     private var cancellables = Set<AnyCancellable>()
-    
-    //Navigation
-    let backButton = UIButton(type: .system)//뒤로가기버튼 -> 홈 화면으로 이동
-    let backButtonTitleLabel = UILabel()//뒤로가기버튼 라벨
-    
+
     //HeaderRecnetlyStamps
     let firstHeaderStampContainer = UIView()
     let secondHeaderStampContainer = UIView()
@@ -62,14 +58,6 @@ class StampViewController: UIViewController {
     }
     
     private func setupViews() {
-        //상단 네비게이션버튼
-        backButton.setImage(UIImage(systemName: "chevron.left"), for: .normal)
-        backButton.tintColor = .label
-        
-        backButtonTitleLabel.text = "달성 기록"
-        backButtonTitleLabel.font = .systemFont(ofSize: 16, weight: .semibold)
-        backButtonTitleLabel.textAlignment = .center
-        
         //헤더 스탬프1
         firstHeaderStampContainer.backgroundColor = .gray
         firstHeaderStampContainer.layer.cornerRadius = 64
@@ -77,12 +65,12 @@ class StampViewController: UIViewController {
         
         //헤더 스탬프2
         secondHeaderStampContainer.backgroundColor = .blue
-        secondHeaderStampContainer.layer.cornerRadius = 40
+        secondHeaderStampContainer.layer.cornerRadius = 48
         secondHeaderStampContainer.clipsToBounds = false
         
         //헤더 스탬프3
         thirdHeaderStampContainer.backgroundColor = .red
-        thirdHeaderStampContainer.layer.cornerRadius = 40
+        thirdHeaderStampContainer.layer.cornerRadius = 48
         thirdHeaderStampContainer.clipsToBounds = false
         
         //라벨
@@ -103,9 +91,7 @@ class StampViewController: UIViewController {
         stampCollectionView.register(StampColletionCell.self, forCellWithReuseIdentifier: StampColletionCell.identifier)
         stampCollectionView.dataSource = self
         stampCollectionView.delegate = self
-        
-        view.addSubview(backButton)
-        view.addSubview(backButtonTitleLabel)
+
         view.addSubview(firstHeaderStampContainer)
         view.addSubview(secondHeaderStampContainer)
         view.addSubview(thirdHeaderStampContainer)
@@ -118,20 +104,10 @@ class StampViewController: UIViewController {
     }
     
     private func setupLayout() {
-        //상단 네비게이션버튼
-        backButton.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(8)
-            make.leading.equalToSuperview().inset(12)
-            make.size.equalTo(CGSize(width: 44, height: 36))
-        }
-        backButtonTitleLabel.snp.makeConstraints { make in
-            make.centerY.equalTo(backButton)
-            make.leading.equalTo(backButton.snp.trailing).offset(3)
-        }
-        
+
         //헤더 스탬프1
         firstHeaderStampContainer.snp.makeConstraints { make in
-            make.top.equalTo(backButton.snp.bottom).offset(8)
+            make.top.equalToSuperview().offset(8)
             make.centerX.equalToSuperview()
             make.size.equalTo(CGSize(width: 128, height: 128))
         }
@@ -142,14 +118,14 @@ class StampViewController: UIViewController {
         
         //헤더 스탬프2
         secondHeaderStampContainer.snp.makeConstraints { make in
-            make.size.equalTo(CGSize(width: 80, height: 80))
+            make.size.equalTo(CGSize(width: 96, height: 96))
             make.centerY.equalTo(firstHeaderStampContainer)
             make.trailing.equalToSuperview().inset(16)
         }
         
         //헤더 스탬프3
         thirdHeaderStampContainer.snp.makeConstraints { make in
-            make.size.equalTo(CGSize(width: 80, height: 80))
+            make.size.equalTo(CGSize(width: 96, height: 96))
             make.centerY.equalTo(firstHeaderStampContainer)
             make.leading.equalToSuperview().inset(16)
         }
@@ -176,7 +152,6 @@ class StampViewController: UIViewController {
     }
     
     private func setupActions() {
-        backButton.addTarget(self, action: #selector(tapBack), for: .touchUpInside)
         
     }
     
