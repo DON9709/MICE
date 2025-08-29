@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 import Combine
+import Kingfisher
 
 class StampViewController: UIViewController {
     
@@ -16,10 +17,12 @@ class StampViewController: UIViewController {
     private var cancellables = Set<AnyCancellable>()
 
     //HeaderRecnetlyStamps
-    let firstHeaderStampContainer = UIView()
-    let secondHeaderStampContainer = UIView()
-    let thirdHeaderStampContainer = UIView()
-    let headerStampLabel = UILabel()
+    let firstHeaderStampView = UIView()
+    let secondHeaderStampView = UIView()
+    let thirdHeaderStampView = UIView()
+    let firstHeaderStampLabel = UILabel()
+    let secondHeaderStampLabel = UILabel()
+    let thirdHeaderStampLabel = UILabel()
     
     //filterButton
     let stampFilterButton = UIButton()//스탬프 카테고리별 필터 드롭다운 텍스트필드 -> 드롭다운형태로 구현하는 방법을 모르겠음, rxswift? cocoapod?
@@ -59,31 +62,41 @@ class StampViewController: UIViewController {
     
     private func setupViews() {
         //헤더 스탬프1
-        firstHeaderStampContainer.backgroundColor = .gray
-        firstHeaderStampContainer.layer.cornerRadius = 64
-        firstHeaderStampContainer.clipsToBounds = false
+        firstHeaderStampView.backgroundColor = .gray
+        firstHeaderStampView.layer.cornerRadius = 64
+        firstHeaderStampView.clipsToBounds = false
         
         //헤더 스탬프2
-        secondHeaderStampContainer.backgroundColor = .blue
-        secondHeaderStampContainer.layer.cornerRadius = 48
-        secondHeaderStampContainer.clipsToBounds = false
+        secondHeaderStampView.backgroundColor = .blue
+        secondHeaderStampView.layer.cornerRadius = 48
+        secondHeaderStampView.clipsToBounds = false
         
         //헤더 스탬프3
-        thirdHeaderStampContainer.backgroundColor = .red
-        thirdHeaderStampContainer.layer.cornerRadius = 48
-        thirdHeaderStampContainer.clipsToBounds = false
+        thirdHeaderStampView.backgroundColor = .red
+        thirdHeaderStampView.layer.cornerRadius = 48
+        thirdHeaderStampView.clipsToBounds = false
         
-        //라벨
-        headerStampLabel.text = "획득한 스탬프명"
-        headerStampLabel.font = .systemFont(ofSize: 13, weight: .medium)
-        headerStampLabel.textColor = .secondaryLabel
-        headerStampLabel.textAlignment = .center
+        //헤더 스탬프1 라벨
+        firstHeaderStampLabel.text = "헤더스탬프 1"
+        firstHeaderStampLabel.font = .systemFont(ofSize: 18, weight: .semibold)
+        firstHeaderStampLabel.textColor = .black
+        firstHeaderStampLabel.textAlignment = .center
+        
+        //헤더 스탬프2 라벨
+        secondHeaderStampLabel.text = "헤더스탬프 2"
+        secondHeaderStampLabel.font = .systemFont(ofSize: 14, weight: .regular)
+        secondHeaderStampLabel.textColor = .black
+        secondHeaderStampLabel.textAlignment = .center
+        
+        //헤더 스탬프3 라벨
+        thirdHeaderStampLabel.text = "헤더스탬프 3"
+        thirdHeaderStampLabel.font = .systemFont(ofSize: 14, weight: .regular)
+        thirdHeaderStampLabel.textColor = .black
+        thirdHeaderStampLabel.textAlignment = .center
         
         //필터버튼
-        stampFilterButton.frame = CGRect(x: 200, y: 250, width: 350, height: 50)
         stampFilterButton.backgroundColor = .gray
         stampFilterButton.layer.cornerRadius = 10
-        stampFilterButton.setTitle("박물관", for: .normal)
         stampFilterButton.titleLabel?.font = .systemFont(ofSize: 15, weight: .medium)
         
         //콜렉션뷰
@@ -92,10 +105,12 @@ class StampViewController: UIViewController {
         stampCollectionView.dataSource = self
         stampCollectionView.delegate = self
 
-        view.addSubview(firstHeaderStampContainer)
-        view.addSubview(secondHeaderStampContainer)
-        view.addSubview(thirdHeaderStampContainer)
-        view.addSubview(headerStampLabel)
+        view.addSubview(firstHeaderStampView)
+        view.addSubview(secondHeaderStampView)
+        view.addSubview(thirdHeaderStampView)
+        view.addSubview(firstHeaderStampLabel)
+        view.addSubview(secondHeaderStampLabel)
+        view.addSubview(thirdHeaderStampLabel)
         view.addSubview(stampFilterButton)
         view.addSubview(stampCollectionView)
         
@@ -106,45 +121,62 @@ class StampViewController: UIViewController {
     private func setupLayout() {
 
         //헤더 스탬프1
-        firstHeaderStampContainer.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(8)
+        firstHeaderStampView.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(77)
             make.centerX.equalToSuperview()
             make.size.equalTo(CGSize(width: 128, height: 128))
         }
-        headerStampLabel.snp.makeConstraints { make in
-            make.top.equalTo(firstHeaderStampContainer.snp.bottom).offset(12)
+        //헤더 스탬프1 라벨
+        firstHeaderStampLabel.snp.makeConstraints { make in
+            make.top.equalTo(firstHeaderStampView.snp.bottom).offset(8)
             make.centerX.equalToSuperview()
         }
         
         //헤더 스탬프2
-        secondHeaderStampContainer.snp.makeConstraints { make in
+        secondHeaderStampView.snp.makeConstraints { make in
             make.size.equalTo(CGSize(width: 96, height: 96))
-            make.centerY.equalTo(firstHeaderStampContainer)
-            make.trailing.equalToSuperview().inset(16)
+            make.centerY.equalTo(firstHeaderStampView)
+            make.leading.equalTo(firstHeaderStampView.snp.trailing).offset(12)
+        }
+        
+        //헤더 스탬프2 라벨
+        secondHeaderStampLabel.snp.makeConstraints { make in
+            make.top.equalTo(secondHeaderStampView.snp.bottom).offset(8)
+            make.centerX.equalTo(secondHeaderStampView)
         }
         
         //헤더 스탬프3
-        thirdHeaderStampContainer.snp.makeConstraints { make in
+        thirdHeaderStampView.snp.makeConstraints { make in
             make.size.equalTo(CGSize(width: 96, height: 96))
-            make.centerY.equalTo(firstHeaderStampContainer)
-            make.leading.equalToSuperview().inset(16)
+            make.centerY.equalTo(firstHeaderStampView)
+            make.trailing.equalTo(firstHeaderStampView.snp.leading).offset(-12)
+        }
+        
+        //헤더 스탬프3 라벨
+        thirdHeaderStampLabel.snp.makeConstraints { make in
+            make.top.equalTo(thirdHeaderStampView.snp.bottom).offset(8)
+            make.centerX.equalTo(thirdHeaderStampView)
         }
         
         //필터버튼
         stampFilterButton.snp.makeConstraints { make in
-            make.top.equalTo(headerStampLabel.snp.bottom).offset(12)
+            make.top.equalTo(thirdHeaderStampLabel.snp.bottom).offset(62)
             make.trailing.equalToSuperview().inset(16)
+            make.width.greaterThanOrEqualTo(81)
+            make.height.equalTo(32)
+            
         }
         //스탬프 그리드
         stampCollectionView.snp.makeConstraints { make in
-            make.top.equalTo(stampFilterButton.snp.bottom).offset(4)
-            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(stampFilterButton.snp.bottom).offset(18)
+            make.leading.equalToSuperview().offset(16)
+            make.trailing.equalToSuperview().inset(16)
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
     }
     
     private func setupMenu() {
-        let menu = UIMenu(title: "카테고리",
+        let menu = UIMenu(title: "카테고리 ▼",
                           children: viewModel.items)
         
         stampFilterButton.menu = menu
@@ -159,7 +191,7 @@ class StampViewController: UIViewController {
 // MARK: - DataSource & Delegate
 extension StampViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        28
+        32
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
