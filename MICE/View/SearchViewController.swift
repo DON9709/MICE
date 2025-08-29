@@ -25,8 +25,6 @@ class SearchViewController: UIViewController {
             stackView.addArrangedSubview(button)
         }
         
-        // [수정] 초기화 시점의 충돌을 막기 위해 여기서 버튼 선택 코드를 제거했습니다.
-        
         return stackView
     }()
     
