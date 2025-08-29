@@ -22,10 +22,21 @@ class MainTabBarController: UITabBarController {
         let myPageVC = MypageViewController()
 
         // 탭 아이템 설정
-        homeVC.tabBarItem = UITabBarItem(title: "홈", image: UIImage(systemName: "house"), tag: 0)
-        stampVC.tabBarItem = UITabBarItem(title: "스탬프", image: UIImage(systemName: "checkmark.seal"), tag: 1)
-        searchVC.tabBarItem = UITabBarItem(title: "검색", image: UIImage(systemName: "magnifyingglass"), tag: 2)
-        myPageVC.tabBarItem = UITabBarItem(title: "마이페이지", image: UIImage(systemName: "person"), tag: 3)
+        homeVC.tabBarItem = UITabBarItem(title: "홈",
+                                         image: UIImage(named: "Home")?.withRenderingMode(.alwaysOriginal),
+                                         selectedImage: UIImage(named: "HomeActive")?.withRenderingMode(.alwaysOriginal))
+
+        stampVC.tabBarItem = UITabBarItem(title: "스탬프",
+                                          image: UIImage(named: "Stamp")?.withRenderingMode(.alwaysOriginal),
+                                          selectedImage: UIImage(named: "StampActive")?.withRenderingMode(.alwaysOriginal))
+
+        searchVC.tabBarItem = UITabBarItem(title: "검색",
+                                           image: UIImage(named: "Search")?.withRenderingMode(.alwaysOriginal),
+                                           selectedImage: UIImage(named: "SearchActive")?.withRenderingMode(.alwaysOriginal))
+
+        myPageVC.tabBarItem = UITabBarItem(title: "My Page",
+                                           image: UIImage(named: "MyPage")?.withRenderingMode(.alwaysOriginal),
+                                           selectedImage: UIImage(named: "MyPageActive")?.withRenderingMode(.alwaysOriginal))
 
         // 탭 배열 구성
         viewControllers = [homeVC, stampVC, searchVC, myPageVC]
