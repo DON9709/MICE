@@ -19,10 +19,10 @@ class SearchViewModel {
     
     // - 하드코딩된 검색 결과 리스트
     let searchResults: [SearchResult] = [
-        SearchResult(placeName: "국립중앙박물관", closedInfo: "휴업일: 월요일", hoursInfo: "영업시간: 10:00 - 18:00", missionInfo: "진행중인 스탬프 미션: 1개"),
-        SearchResult(placeName: "대림미술관", closedInfo: "휴업일: 월요일", hoursInfo: "영업시간: 11:00 - 19:00", missionInfo: "진행중인 스탬프 미션: 1개"),
-        SearchResult(placeName: "부산 시립미술관", closedInfo: "휴업일: 월요일", hoursInfo: "영업시간: 10:00 - 18:00", missionInfo: "진행중인 스탬프 미션: 1개")
-    ]
+            SearchResult(imageName: "exhibition.dummy", placeName: "아침고요수목원 국화전시회", closedInfo: "매주 월요일 휴업", hoursInfo: "09:00 ~ 22:00", missionInfo: "진행중인 스탬프 미션: 1개"),
+            SearchResult(imageName: "exhibition.dummy", placeName: "국립중앙박물관", closedInfo: "매주 월요일 휴업", hoursInfo: "10:00 - 18:00", missionInfo: "진행중인 스탬프 미션: 1개"),
+            SearchResult(imageName: "exhibition.dummy", placeName: "대림미술관", closedInfo: "매주 월요일 휴업", hoursInfo: "11:00 - 19:00", missionInfo: "진행중인 스탬프 미션: 1개")
+        ]
     
     // 2. View의 상태를 관리하는 변수
     // - 검색 중인지 여부 (이 값에 따라 최근 검색어 / 검색 결과가 보입니다)
