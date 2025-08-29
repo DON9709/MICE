@@ -11,9 +11,7 @@ import SnapKit
 class BookmarkViewController: UIViewController {
     
     private let viewModel = BookmarkViewModel()
-    private var pageViewController: UIPageViewController!
-    private var pages = [UIViewController]()
-
+    
     // MARK: - UI Components
     private let backButton: UIButton = {
         let button = UIButton(type: .system)
@@ -25,7 +23,6 @@ class BookmarkViewController: UIViewController {
     private lazy var segmentedControl: UISegmentedControl = {
         let control = UISegmentedControl(items: ["저장한 스탬프", "다녀온 스탬프"])
         control.selectedSegmentIndex = 0
-        control.addTarget(self, action: #selector(segmentedControlDidChange), for: .valueChanged)
         return control
     }()
     
@@ -46,38 +43,36 @@ class BookmarkViewController: UIViewController {
         return stackView
     }()
     
+    private lazy var tableView: UITableView = {
+        let tv = UITableView()
+        tv.dataSource = self
+        tv.delegate = self
+        tv.register(SearchResultCell.self, forCellReuseIdentifier: SearchResultCell.identifier)
+        tv.separatorStyle = .none
+        tv.backgroundColor = .clear
+        return tv
+    }()
+    
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemGray6
         
-        setupPages()
+        // 세그먼트 컨트롤을 눌렀을 때 실행될 함수 연결
+        segmentedControl.addTarget(self, action: #selector(segmentedControlDidChange), for: .valueChanged)
+        
         setupUI()
     }
     
     // MARK: - Setup
-    private func setupPages() {
-        let savedVC = StampListViewController(items: viewModel.savedStamps)
-        let visitedVC = StampListViewController(items: viewModel.visitedStamps)
-        pages.append(savedVC)
-        pages.append(visitedVC)
-        
-        pageViewController = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
-        pageViewController.dataSource = self
-        pageViewController.delegate = self
-        pageViewController.setViewControllers([pages[0]], direction: .forward, animated: true, completion: nil)
-    }
-
     private func setupUI() {
         view.addSubview(backButton)
         view.addSubview(segmentedControl)
         view.addSubview(hashtagScrollView)
         hashtagScrollView.addSubview(hashtagStackView)
+        view.addSubview(tableView)
         
-        addChild(pageViewController)
-        view.addSubview(pageViewController.view)
-        pageViewController.didMove(toParent: self)
-        
+        // --- 제약 조건 ---
         backButton.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).offset(10)
             make.leading.equalToSuperview().offset(16)
@@ -101,7 +96,7 @@ class BookmarkViewController: UIViewController {
             make.trailing.equalToSuperview().inset(20)
         }
         
-        pageViewController.view.snp.makeConstraints { make in
+        tableView.snp.makeConstraints { make in
             make.top.equalTo(hashtagScrollView.snp.bottom).offset(10)
             make.leading.trailing.bottom.equalToSuperview()
         }
@@ -109,10 +104,8 @@ class BookmarkViewController: UIViewController {
     
     // MARK: - Actions & Helpers
     @objc private func segmentedControlDidChange(_ sender: UISegmentedControl) {
-        let selectedIndex = sender.selectedSegmentIndex
-        let currentIndex = pages.firstIndex(of: pageViewController.viewControllers!.first!)!
-        let direction: UIPageViewController.NavigationDirection = selectedIndex > currentIndex ? .forward : .reverse
-        pageViewController.setViewControllers([pages[selectedIndex]], direction: direction, animated: true, completion: nil)
+        // 세그먼트 컨트롤 값이 바뀔 때마다 테이블뷰를 새로고침
+        tableView.reloadData()
     }
     
     private func createHashtagButton(title: String) -> UIButton {
@@ -130,22 +123,32 @@ class BookmarkViewController: UIViewController {
     }
 }
 
-// MARK: - UIPageViewController DataSource & Delegate
-extension BookmarkViewController: UIPageViewControllerDataSource, UIPageViewControllerDelegate {
+// MARK: - UITableView DataSource & Delegate
+extension BookmarkViewController: UITableViewDataSource, UITableViewDelegate {
     
-    func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        guard let index = pages.firstIndex(of: viewController), index > 0 else { return nil }
-        return pages[index - 1]
-    }
-    
-    func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        guard let index = pages.firstIndex(of: viewController), index < pages.count - 1 else { return nil }
-        return pages[index + 1]
-    }
-    
-    func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
-        if completed, let currentVC = pageViewController.viewControllers?.first, let index = pages.firstIndex(of: currentVC) {
-            segmentedControl.selectedSegmentIndex = index
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        // 세그먼트 컨트롤의 선택에 따라 데이터 개수를 결정
+        if segmentedControl.selectedSegmentIndex == 0 {
+            return viewModel.savedStamps.count
+        } else {
+            return viewModel.visitedStamps.count
         }
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchResultCell.identifier, for: indexPath) as? SearchResultCell else {
+            return UITableViewCell()
+        }
+        
+        // 세그먼트 컨트롤의 선택에 따라 사용할 데이터를 결정
+        let stampData: SearchResult
+        if segmentedControl.selectedSegmentIndex == 0 {
+            stampData = viewModel.savedStamps[indexPath.row]
+        } else {
+            stampData = viewModel.visitedStamps[indexPath.row]
+        }
+        
+        cell.configure(with: stampData)
+        return cell
     }
 }

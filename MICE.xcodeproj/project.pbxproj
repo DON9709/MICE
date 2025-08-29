@@ -183,7 +183,7 @@
 				CODE_SIGN_ENTITLEMENTS = MICE/MICE.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 2W9KP2B6Y9;
+				DEVELOPMENT_TEAM = FL83497G8F;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MICE/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -197,7 +197,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.Don.MICE;
+				PRODUCT_BUNDLE_IDENTIFIER = com.MyeongGyun.MICE;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -217,7 +217,7 @@
 				CODE_SIGN_ENTITLEMENTS = MICE/MICE.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 2W9KP2B6Y9;
+				DEVELOPMENT_TEAM = FL83497G8F;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MICE/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -231,7 +231,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.Don.MICE;
+				PRODUCT_BUNDLE_IDENTIFIER = com.MyeongGyun.MICE;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
