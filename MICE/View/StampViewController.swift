@@ -90,7 +90,10 @@ class StampViewController: UIViewController {
         setupLayout()
         setupMenu()
         setupActions()
-        
+        Task {
+            let stamps = try? await StampService.shared.getAllStamps()
+            print(stamps)
+        }
 //        viewModel.$selectedCategory
 //            .receive(on: RunLoop.main)
 //            .sink { [weak self] category in

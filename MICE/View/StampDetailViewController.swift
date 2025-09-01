@@ -15,7 +15,6 @@ class StampDetailViewController: UIViewController {
     
     //Navigation
     let backButton = UIButton(type: .system)//뒤로가기버튼 -> 이전화면으로 이동
-    let backButtonTitleLabel = UILabel()//뒤로가기버튼 라벨
     
     private let scrollView = UIScrollView()
     private let contentStack = UIStackView()
@@ -97,10 +96,6 @@ class StampDetailViewController: UIViewController {
         backButton.setImage(UIImage(systemName: "chevron.left"), for: .normal)
         backButton.tintColor = .label
         
-        backButtonTitleLabel.text = "뒤로 가기"
-        backButtonTitleLabel.font = .systemFont(ofSize: 16, weight: .semibold)
-        backButtonTitleLabel.textAlignment = .center
-        
         //달성한스탬프표시(획득시)
         achievedStampLabel.text = "달성한 스탬프"
         achievedStampLabel.backgroundColor = .systemGray6
@@ -170,36 +165,19 @@ class StampDetailViewController: UIViewController {
         view.addSubview(scrollView)
         scrollView.addSubview(contentStack)
         view.addSubview(getStampButton)
-        
+        view.addSubview(stampImageView)
     }
     
     private func setupLayout() {
-        let topBar = UIView()
-        view.addSubview(topBar)
-        view.addSubview(stampImageView)
-        
-        topBar.addSubview(backButton)
-        topBar.addSubview(backButtonTitleLabel)
-        
-        topBar.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            make.left.right.equalToSuperview()
-            make.height.equalTo(44)
-        }
         
         backButton.snp.makeConstraints { make in
             make.left.equalToSuperview().offset(16)
             make.centerY.equalToSuperview()
             make.size.equalTo(28)
         }
-        
-        backButtonTitleLabel.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.leading.equalTo(backButton.snp.trailing).offset(8)
-        }
-        
+
         achievedStampLabel.snp.makeConstraints { make in
-            make.top.equalTo(topBar.snp.bottom).offset(12)
+            make.top.equalToSuperview().offset(12)
             make.centerX.equalToSuperview()
             make.height.equalTo(26)
             make.left.greaterThanOrEqualToSuperview().offset(16)
@@ -314,6 +292,6 @@ private extension StampDetailViewController {
         }
     }
 }
-//#Preview {
-//    StampDetailViewController()
-//}
+#Preview {
+    StampDetailViewController()
+}
