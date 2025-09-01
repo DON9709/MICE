@@ -16,10 +16,10 @@ struct SearchCategory {
 class SearchViewModel {
     
     let categories: [SearchCategory] = [
-        SearchCategory(title: "박물관", iconName: "museum_icon_unselected", selectedIconName: "museum_icon_selected"),
-        SearchCategory(title: "기념관", iconName: "memorial_icon_unselected", selectedIconName: "memorial_icon_selected"),
-        SearchCategory(title: "전시관", iconName: "exhibition_icon_unselected", selectedIconName: "exhibition_icon_selected"),
-        SearchCategory(title: "미술관", iconName: "artgallery_icon_unselected", selectedIconName: "artgallery_icon_selected")
+        SearchCategory(title: "박물관", iconName: "Museum", selectedIconName: "MuseumActive"),
+        SearchCategory(title: "기념관", iconName: "MemorialHall", selectedIconName: "MemorialHallActive"),
+        SearchCategory(title: "전시관", iconName: "Exhibition", selectedIconName: "ExhibitionActive"),
+        SearchCategory(title: "미술관", iconName: "ArtGallery", selectedIconName: "ArtGalleryActive")
     ]
 
     
