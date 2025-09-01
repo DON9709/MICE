@@ -62,4 +62,34 @@ class StampService {
             .insert(["apple_uid": appleUid, "contentid": contentId])
             .execute()
     }
+
+//  // MARK: - 전체 위시리스트 목록 조회 (stamp 테이블)
+//    func getAllStamps() async throws -> [Stamp] {
+//        let response: [Stamp] = try await client
+//            .from("stamp")
+//            .select()
+//            .execute()
+//            .value
+//        return response
+//    }
+//
+//    // MARK: - 특정 사용자의 위시리스트 조회 (mystamp 테이블)
+//    func getMyStamps(appleUid: String) async throws -> [MyStamp] {
+//        let response: [MyStamp] = try await client
+//            .from("mystamp")
+//            .select()
+//            .eq("apple_uid", value: appleUid)
+//            .execute()
+//            .value
+//        return response
+//    }
+//
+//    //MARK: - 특정 사용자가 특정 버튼을 누르면 wishlist 테이블에 기록됨
+//    func addMyStamp(appleUid: String, contentId: String) async throws {
+//        try await client
+//            .from("mystamp")
+//            .insert(["apple_uid": appleUid, "contentid": contentId])
+//            .execute()
+//    }
 }
+

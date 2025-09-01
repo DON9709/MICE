@@ -21,7 +21,53 @@ final class MypageViewController: UIViewController {
     // MARK: - Setup
     private func setupView() {
         if viewModel.isLoggedIn {
-            // 회원용 UI는 추후 구현
+            let titleLabel = UILabel()
+            titleLabel.translatesAutoresizingMaskIntoConstraints = false
+            titleLabel.text = "마이페이지"
+            titleLabel.font = UIFont.boldSystemFont(ofSize: 24)
+            titleLabel.textColor = .black
+            titleLabel.textAlignment = .left
+            titleLabel.widthAnchor.constraint(equalToConstant: 350).isActive = true
+
+            let profileImageView = UIImageView()
+            profileImageView.translatesAutoresizingMaskIntoConstraints = false
+            profileImageView.image = UIImage(systemName: "person.crop.circle.fill") // 기본 아이콘
+            profileImageView.tintColor = .lightGray
+            profileImageView.contentMode = .scaleAspectFit
+
+            let emailLabel = UILabel()
+            emailLabel.translatesAutoresizingMaskIntoConstraints = false
+            emailLabel.text = viewModel.email
+            emailLabel.font = UIFont.systemFont(ofSize: 16)
+            emailLabel.textColor = .darkGray
+            emailLabel.textAlignment = .center
+            emailLabel.widthAnchor.constraint(equalToConstant: 350).isActive = true
+            emailLabel.heightAnchor.constraint(equalToConstant: 50).isActive = true
+
+            let settingsLabel = UILabel()
+            settingsLabel.translatesAutoresizingMaskIntoConstraints = false
+            settingsLabel.text = "설정"
+            settingsLabel.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+            settingsLabel.textColor = .darkGray
+            settingsLabel.textAlignment = .left
+
+            let stackView = UIStackView(arrangedSubviews: [titleLabel, profileImageView, emailLabel, settingsLabel])
+            stackView.translatesAutoresizingMaskIntoConstraints = false
+            stackView.axis = .vertical
+            stackView.spacing = 16
+            stackView.alignment = .center
+
+            view.addSubview(stackView)
+
+            NSLayoutConstraint.activate([
+                profileImageView.widthAnchor.constraint(equalToConstant: 80),
+                profileImageView.heightAnchor.constraint(equalToConstant: 80),
+
+                stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40),
+                stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
+                stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24)
+            ])
         } else {
             showGuestView()
         }
@@ -47,7 +93,7 @@ final class MypageViewController: UIViewController {
         loginButton.translatesAutoresizingMaskIntoConstraints = false
         loginButton.setTitle("로그인을 해주세요", for: .normal)
         loginButton.setTitleColor(.white, for: .normal)
-        loginButton.backgroundColor = .black
+        loginButton.backgroundColor = UIColor(red: 114/255, green: 76/255, blue: 249/255, alpha: 1.0)
         loginButton.layer.cornerRadius = 8
         loginButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
         loginButton.widthAnchor.constraint(equalToConstant: 350).isActive = true
@@ -78,7 +124,7 @@ final class MypageViewController: UIViewController {
             stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24)
         ])
     }
-
+    
     // MARK: - 액션
     @objc private func handleLoginTapped() {
         let loginVC = LogInViewController()
