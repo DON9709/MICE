@@ -102,7 +102,31 @@ class SupabaseManager {
             print("사용자 프로필 조회 실패: \(error)")
         }
     }
+    
+    func fetchEmail(for appleUID: String) async -> String? {
+        do {
+            let response = try await supabase
+                .from("users")
+                .select("email")
+                .eq("apple_uid", value: appleUID)
+                .limit(1)
+                .execute()
+            
+            guard let users = response.value as? [[String: Any]],
+                  let userData = users.first,
+                  let email = userData["email"] as? String else {
+                print("이메일 조회 실패 또는 형식 오류")
+                return nil
+            }
+
+            return email
+        } catch {
+            print("이메일 조회 중 오류 발생: \(error)")
+            return nil
+        }
+    }
 }
+
 
 extension Bundle {
 
@@ -121,3 +145,5 @@ extension Bundle {
 }
 
 
+
+    

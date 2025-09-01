@@ -9,25 +9,30 @@ import Foundation
 import Combine
 
 final class MypageViewModel: ObservableObject {
-
     // MARK: - 프로퍼티
+    @Published var isLoggedIn: Bool = false
+    @Published var appleUID: String = "알 수 없음"
+    @Published var email: String = "이메일 없음"
 
-    @Published var isLoggedIn: Bool = UserDefaults.standard.bool(forKey: "isLoggedIn")
-    @Published var email: String = UserDefaults.standard.string(forKey: "userEmail") ?? "알 수 없음"
+    private var cancellables = Set<AnyCancellable>()
+
+    init() {
+        UserSession.shared.$appleUID
+            .receive(on: RunLoop.main)
+            .sink { [weak self] uid in
+                self?.isLoggedIn = !uid.isEmpty
+                self?.appleUID = uid.isEmpty ? "알 수 없음" : uid
+            }
+            .store(in: &cancellables)
+    }
 
     // MARK: - 메소드
 
-    func logIn(email: String) {
-        UserDefaults.standard.set(true, forKey: "isLoggedIn")
-        UserDefaults.standard.set(email, forKey: "userEmail")
-        isLoggedIn = true
-        self.email = email
+    func logIn(with uid: String, email: String) {
+        UserSession.shared.logIn(appleUID: uid, email: email)
     }
 
     func logOut() {
-        UserDefaults.standard.set(false, forKey: "isLoggedIn")
-        UserDefaults.standard.removeObject(forKey: "userEmail")
-        isLoggedIn = false
-        email = "알 수 없음"
+        UserSession.shared.logOut()
     }
 }
