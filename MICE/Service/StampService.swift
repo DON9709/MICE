@@ -13,16 +13,16 @@ struct Stamp: Codable, Identifiable {
     var id: String { contentid }
     let contentid: String
     let addr: String
-    let createdtime: String
-    let image: String
-    let mapx: String
-    let mapy: String
-    let tel: String
-    let title: String
-    let homepage: String
-    let overview: String
-    let stampno: Int
-    let stampimg: String
+    let createdtime: String?
+    let image: String?
+    let mapx: String?
+    let mapy: String?
+    let tel: String?
+    let title: String?
+    let homepage: String?
+    let overview: String?
+    let stampno: Int?
+    let stampimg: String?
 }
 
 // MARK: - MyStamp 구조체 (mystamp 테이블)
