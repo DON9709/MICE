@@ -44,14 +44,15 @@ final class MypageViewController: UIViewController {
             emailLabel.widthAnchor.constraint(equalToConstant: 350).isActive = true
             emailLabel.heightAnchor.constraint(equalToConstant: 50).isActive = true
 
-            let settingsLabel = UILabel()
-            settingsLabel.translatesAutoresizingMaskIntoConstraints = false
-            settingsLabel.text = "설정"
-            settingsLabel.font = UIFont.systemFont(ofSize: 16, weight: .regular)
-            settingsLabel.textColor = .darkGray
-            settingsLabel.textAlignment = .left
+            let settingsButton = UIButton(type: .system)
+            settingsButton.translatesAutoresizingMaskIntoConstraints = false
+            settingsButton.setTitle("설정", for: .normal)
+            settingsButton.setTitleColor(.darkGray, for: .normal)
+            settingsButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+            settingsButton.contentHorizontalAlignment = .center
+            settingsButton.addTarget(self, action: #selector(handleSettingsTapped), for: .touchUpInside)
 
-            let stackView = UIStackView(arrangedSubviews: [titleLabel, profileImageView, emailLabel, settingsLabel])
+            let stackView = UIStackView(arrangedSubviews: [titleLabel, profileImageView, emailLabel, settingsButton])
             stackView.translatesAutoresizingMaskIntoConstraints = false
             stackView.axis = .vertical
             stackView.spacing = 16
@@ -130,5 +131,15 @@ final class MypageViewController: UIViewController {
         let loginVC = LogInViewController()
         loginVC.modalPresentationStyle = .fullScreen
         present(loginVC, animated: true, completion: nil)
+    }
+}
+
+// Ensure SettingView exists and is a UIViewController subclass
+// If not, add a stub here or in its own file.
+
+extension MypageViewController {
+    @objc private func handleSettingsTapped() {
+        let settingsVC = SettingViewController()
+        navigationController?.pushViewController(settingsVC, animated: true)
     }
 }
