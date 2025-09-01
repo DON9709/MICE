@@ -15,6 +15,9 @@ class StampViewController: UIViewController {
     //ViewModel
     private let viewModel = StampViewModel()
     private var cancellables = Set<AnyCancellable>()
+    
+    // DataSource
+    private var stamps: [Stamp] = []
 
     //HeaderRecnetlyStamps
     let firstHeaderStampView = UIView()
@@ -90,9 +93,20 @@ class StampViewController: UIViewController {
         setupLayout()
         setupMenu()
         setupActions()
-        Task {
-            let stamps = try? await StampService.shared.getAllStamps()
-            print(stamps)
+        let downloader = KingfisherManager.shared.downloader
+        downloader.downloadTimeout = 15
+        downloader.sessionConfiguration.waitsForConnectivity = true
+        // downloader.sessionConfiguration.httpMaximumConnectionsPerHost = 4
+        Task { [weak self] in
+            do {
+                let result = try await StampService.shared.getAllStamps()
+                await MainActor.run {
+                    self?.stamps = result
+                    self?.stampCollectionView.reloadData()
+                }
+            } catch {
+                print("[StampViewController] fetch error: \(error)")
+            }
         }
 //        viewModel.$selectedCategory
 //            .receive(on: RunLoop.main)
@@ -269,11 +283,15 @@ class StampViewController: UIViewController {
 // MARK: - DataSource & Delegate
 extension StampViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        32
+        return stamps.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: StampColletionCell.identifier, for: indexPath) as? StampColletionCell else { return UICollectionViewCell() }
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: StampColletionCell.identifier, for: indexPath) as? StampColletionCell else {
+            return UICollectionViewCell()
+        }
+        let stamp = stamps[indexPath.item]
+        cell.configure(with: stamp.stampimg ?? "")
         return cell
     }
     
@@ -293,12 +311,41 @@ final class StampColletionCell: UICollectionViewCell {
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 36
+        imageView.layer.borderWidth = 0.0
+        imageView.layer.borderColor = UIColor.clear.cgColor
         imageView.layer.shouldRasterize = true
         imageView.backgroundColor = .systemGray6
         imageView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
     }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageView.kf.cancelDownloadTask()
+        imageView.image = nil
+    }
+    
+    func configure(with urlString: String) {
+        guard let url = URL(string: urlString) else {
+            imageView.image = nil
+            return
+        }
+        let processor = DownsamplingImageProcessor(size: bounds.size)
+        imageView.kf.setImage(
+            with: url,
+            placeholder: nil,
+            options: [
+                .processor(processor),
+                .scaleFactor(UIScreen.main.scale),
+                .cacheOriginalImage,
+                .transition(.fade(0.2)),
+                .backgroundDecode,
+                .retryStrategy(DelayRetryStrategy(maxRetryCount: 2, retryInterval: .seconds(2)))
+            ]
+        )
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
