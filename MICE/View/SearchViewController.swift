@@ -236,7 +236,7 @@ class CategoryButton: UIButton {
         iconImageView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(14)
             make.centerX.equalToSuperview()
-            make.width.height.equalTo(30)
+            make.width.height.equalTo(60)
         }
         
         // [수정] 변경된 이름으로 제약조건을 설정합니다.
