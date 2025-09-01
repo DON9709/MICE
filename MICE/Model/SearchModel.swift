@@ -11,6 +11,7 @@ import Foundation
 struct SearchResult {
     let imageName: String
     let placeName: String
+    let category: String 
     let closedInfo: String // 휴업일
     let hoursInfo: String // 영업시간
     let missionInfo: String // 스탬프 미션
