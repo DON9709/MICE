@@ -17,6 +17,11 @@ final class MypageViewModel {
         return UserDefaults.standard.bool(forKey: "isLoggedIn")
     }
 
+    /// 사용자의 이메일을 반환하는 프로퍼티
+    var email: String {
+        return UserDefaults.standard.string(forKey: "userEmail") ?? "알 수 없음"
+    }
+
     // MARK: - 메소드
 
     func logIn() {
