@@ -165,12 +165,10 @@ class StampDetailViewController: UIViewController {
         view.addSubview(scrollView)
         scrollView.addSubview(contentStack)
         view.addSubview(getStampButton)
-        
+        view.addSubview(stampImageView)
     }
     
     private func setupLayout() {
-
-        view.addSubview(stampImageView)
         
         backButton.snp.makeConstraints { make in
             make.left.equalToSuperview().offset(16)
@@ -294,6 +292,6 @@ private extension StampDetailViewController {
         }
     }
 }
-//#Preview {
-//    StampDetailViewController()
-//}
+#Preview {
+    StampDetailViewController()
+}
