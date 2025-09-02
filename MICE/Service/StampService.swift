@@ -13,14 +13,16 @@ struct Stamp: Codable, Identifiable {
     var id: String { contentid }
     let contentid: String
     let addr: String
-    let createdtime: String
-    let image: String
-    let mapx: String
-    let mapy: String
-    let tel: String
-    let title: String
-    let homepage: String
-    let overview: String
+    let createdtime: String?
+    let image: String?
+    let mapx: String?
+    let mapy: String?
+    let tel: String?
+    let title: String?
+    let homepage: String?
+    let overview: String?
+    let stampno: Int?
+    let stampimg: String?
 }
 
 // MARK: - MyStamp 구조체 (mystamp 테이블)
@@ -32,7 +34,12 @@ struct MyStamp: Codable, Identifiable {
 }
 
 class StampService {
+    static let shared = StampService()
     private let client = SupabaseManager.shared.supabase
+    
+    private init() {
+        
+    }
     
     // MARK: - 전체 스탬프 목록 조회 (stamp 테이블)
     func getAllStamps() async throws -> [Stamp] {

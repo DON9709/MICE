@@ -15,6 +15,46 @@ class StampViewController: UIViewController {
     //ViewModel
     private let viewModel = StampViewModel()
     private var cancellables = Set<AnyCancellable>()
+    
+    // DataSource
+    private var stamps: [Stamp] = []
+    
+    //데이터 호출 카테코리 분류
+    private enum StampCategory {
+        case museum      // 박물관 1~79
+        case gallery     // 미술관 80~128
+        case memorial    // 기념관 129~153
+        case exhibition  // 전시관 154~177
+
+        var title: String {
+            switch self {
+            case .museum: return "박물관"
+            case .gallery: return "미술관"
+            case .memorial: return "기념관"
+            case .exhibition: return "전시관"
+            }
+        }
+
+        var oneBasedRange: ClosedRange<Int> {
+            switch self {
+            case .museum: return 1...79
+            case .gallery: return 80...128
+            case .memorial: return 129...153
+            case .exhibition: return 154...177
+            }
+        }
+    }
+
+    private var selectedCategory: StampCategory = .museum
+
+    private var displayedStamps: [Stamp] {
+        guard !stamps.isEmpty else { return [] }
+        let r = selectedCategory.oneBasedRange
+        let start = max(r.lowerBound - 1, 0)
+        let end = min(r.upperBound - 1, max(stamps.count - 1, 0))
+        if start > end { return [] }
+        return Array(stamps[start...end])
+    }
 
     //HeaderRecnetlyStamps
     let firstHeaderStampView = UIView()
@@ -41,32 +81,27 @@ class StampViewController: UIViewController {
     
     //StampFilterButton items
        var items: [UIAction] {
-           let museum = UIAction(
-               title: "박물관",
-               handler: { [unowned self] _ in
-                   self.stampFilterLabel.text = "박물관"
-               })
-           
-           let gallery = UIAction(
-               title: "미술관",
-               handler: { [unowned self] _ in
-                   self.stampFilterLabel.text = "미술관"
-               })
-           
-           let exhibition = UIAction(
-               title: "전시관",
-               handler: { [unowned self] _ in
-                   self.stampFilterLabel.text = "전시관"
-               })
-           
-           let memorial = UIAction(
-               title: "기념관",
-               handler: { [unowned self] _ in
-                   self.stampFilterLabel.text = "기념관"
-               })
-           
-           return ([museum, gallery, exhibition, memorial])
-           
+           let museum = UIAction(title: "박물관") { [unowned self] _ in
+               self.selectedCategory = .museum
+               self.stampFilterLabel.text = StampCategory.museum.title
+               self.reloadCategory()
+           }
+           let gallery = UIAction(title: "미술관") { [unowned self] _ in
+               self.selectedCategory = .gallery
+               self.stampFilterLabel.text = StampCategory.gallery.title
+               self.reloadCategory()
+           }
+           let exhibition = UIAction(title: "전시관") { [unowned self] _ in
+               self.selectedCategory = .exhibition
+               self.stampFilterLabel.text = StampCategory.exhibition.title
+               self.reloadCategory()
+           }
+           let memorial = UIAction(title: "기념관") { [unowned self] _ in
+               self.selectedCategory = .memorial
+               self.stampFilterLabel.text = StampCategory.memorial.title
+               self.reloadCategory()
+           }
+           return [museum, gallery, exhibition, memorial]
        }
        
     
@@ -90,7 +125,21 @@ class StampViewController: UIViewController {
         setupLayout()
         setupMenu()
         setupActions()
-        
+        let downloader = KingfisherManager.shared.downloader
+        downloader.downloadTimeout = 15
+        downloader.sessionConfiguration.waitsForConnectivity = true
+        downloader.sessionConfiguration.httpMaximumConnectionsPerHost = 4
+        Task { [weak self] in
+            do {
+                let result = try await StampService.shared.getAllStamps()
+                await MainActor.run {
+                    self?.stamps = result
+                    self?.reloadCategory()
+                }
+            } catch {
+                print("[StampViewController] fetch error: \(error)")
+            }
+        }
 //        viewModel.$selectedCategory
 //            .receive(on: RunLoop.main)
 //            .sink { [weak self] category in
@@ -262,22 +311,37 @@ class StampViewController: UIViewController {
         
     }
     
+    private func reloadCategory() {
+        stampCollectionView.setContentOffset(.zero, animated: false)
+        stampCollectionView.reloadData()
+    }
+    
 }
 // MARK: - DataSource & Delegate
 extension StampViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        32
+        return displayedStamps.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: StampColletionCell.identifier, for: indexPath) as? StampColletionCell else { return UICollectionViewCell() }
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: StampColletionCell.identifier, for: indexPath) as? StampColletionCell else {
+            return UICollectionViewCell()
+        }
+        let stamp = displayedStamps[indexPath.item]
+        cell.configure(with: stamp.stampimg ?? "")
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        //StampDetailViewController push/present
+        let selected = displayedStamps[indexPath.item]
         let detailVC = StampDetailViewController()
-            navigationController?.pushViewController(detailVC, animated: true)
+        if let nav = self.navigationController {
+            nav.pushViewController(detailVC, animated: true)
+        } else {
+            let nav = UINavigationController(rootViewController: detailVC)
+            nav.modalPresentationStyle = .fullScreen
+            self.present(nav, animated: true)
+        }
     }
 }
 
@@ -290,12 +354,41 @@ final class StampColletionCell: UICollectionViewCell {
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 36
+        imageView.layer.borderWidth = 0.0
+        imageView.layer.borderColor = UIColor.clear.cgColor
         imageView.layer.shouldRasterize = true
         imageView.backgroundColor = .systemGray6
         imageView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
     }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageView.kf.cancelDownloadTask()
+        imageView.image = nil
+    }
+    
+    func configure(with urlString: String) {
+        guard let url = URL(string: urlString) else {
+            imageView.image = nil
+            return
+        }
+        let processor = DownsamplingImageProcessor(size: bounds.size)
+        imageView.kf.setImage(
+            with: url,
+            placeholder: nil,
+            options: [
+                .processor(processor),
+                .scaleFactor(UIScreen.main.scale),
+                .cacheOriginalImage,
+                .transition(.fade(0.2)),
+                .backgroundDecode,
+                .retryStrategy(DelayRetryStrategy(maxRetryCount: 2, retryInterval: .seconds(2)))
+            ]
+        )
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
