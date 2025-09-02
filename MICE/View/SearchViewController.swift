@@ -33,7 +33,8 @@ class SearchViewController: UIViewController {
         sb.placeholder = "카테고리를 먼저 선택해주세요."
         sb.searchBarStyle = .minimal
         sb.isUserInteractionEnabled = false
-        sb.showsCancelButton = true
+        // [수정] 'Cancel' 버튼 표시 라인을 삭제하여 버튼을 제거합니다.
+        // sb.showsCancelButton = true
         return sb
     }()
     
@@ -109,7 +110,6 @@ class SearchViewController: UIViewController {
                 }
             } catch {
                 print("Error fetching stamps: \(error)")
-                // 사용자에게 데이터 로딩 실패 알림 (예: UIAlertController)
             }
         }
     }
@@ -185,9 +185,34 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
+    // [수정] 셀을 탭했을 때의 동작을 구현합니다.
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        // TODO: 셀 선택 시 상세 화면으로 이동하는 로직 구현
+        
+        let isSearchBarEmpty = searchBar.text?.isEmpty ?? true
+        
+        // 최근 검색어 목록 상태일 때 (검색창이 비어있을 때) 탭한 경우
+        if isSearchBarEmpty {
+            // 1. 선택된 최근 검색어를 가져옵니다.
+            let selectedTerm = viewModel.recentSearches[indexPath.row]
+            
+            // 2. 검색창에 텍스트를 설정합니다.
+            searchBar.text = selectedTerm
+            
+            // 3. 해당 검색어로 검색을 수행합니다.
+            viewModel.performSearch(with: selectedTerm)
+            
+            // 4. UI를 검색 결과 화면으로 업데이트합니다.
+            updateViewForSearchBarState()
+            
+            // 5. 탭한 검색어를 다시 최근 검색어 맨 위로 올립니다.
+            viewModel.addRecentSearch(term: selectedTerm)
+            searchBar.resignFirstResponder()
+        } else {
+            // 검색 결과 셀을 탭했을 때의 동작 (예: 상세 화면으로 이동)
+            // let selectedStamp = viewModel.filteredStamps[indexPath.row]
+            // print("\(selectedStamp.title ?? "") 선택됨")
+        }
     }
 }
 
