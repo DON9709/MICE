@@ -59,9 +59,12 @@ class RecentSearchCell: UITableViewCell {
             make.width.height.equalTo(20)
         }
         
+        // [수정] queryLabel의 제약조건을 수정하여 셀의 높이를 명확하게 합니다.
         queryLabel.snp.makeConstraints { make in
             make.leading.equalTo(searchIconImageView.snp.trailing).offset(12)
-            make.centerY.equalToSuperview()
+            // centerY 대신 top과 bottom 제약조건을 추가합니다.
+            make.top.equalToSuperview().offset(12)
+            make.bottom.equalToSuperview().offset(-12)
         }
         
         deleteButton.snp.makeConstraints { make in
