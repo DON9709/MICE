@@ -108,8 +108,6 @@ class StampDetailViewController: UIViewController {
         //HeaderCard
         headerCardView.backgroundColor = .white
         headerCardView.layer.borderWidth = 1
-        headerCardView.layer.borderColor = UIColor.systemGray4.cgColor
-        headerCardView.layer.cornerRadius = 8
         headerCardView.layer.masksToBounds = true
         
         //즐겨찾기버튼
@@ -124,6 +122,7 @@ class StampDetailViewController: UIViewController {
         
         //스탬프 타이틀
         stampTitleLabel.font = .systemFont(ofSize: 18, weight: .bold)
+        stampTitleLabel.text = "불국사"
         
         //스탬프 주소
         addressLabel.font = .systemFont(ofSize: 15)
@@ -138,7 +137,7 @@ class StampDetailViewController: UIViewController {
         achievedDateLabel.font = .systemFont(ofSize: 15)
         
         //개요(라벨)
-        overviewLabel.font = .systemFont(ofSize: 16, weight: .semibold)
+        overviewLabel.font = .systemFont(ofSize: 16, weight: .bold)
         overviewLabel.text = "개요"
         
         //개요(내용)
@@ -175,7 +174,7 @@ class StampDetailViewController: UIViewController {
         backButton.snp.remakeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(8)
             make.leading.equalToSuperview().offset(16)
-            make.size.equalTo(28)
+            make.size.equalTo(20)
         }
 
         achievedStampLabel.snp.makeConstraints { make in
@@ -200,13 +199,14 @@ class StampDetailViewController: UIViewController {
         // HeaderCard Layout
         // Url로 이미지 추가
         headerCardView.snp.remakeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.height.greaterThanOrEqualTo(160)
+            make.height.equalTo(190)//191 수정
+            make.width.equalTo(375)
+            make.top.equalTo(backButton.snp.bottom).offset(18)
         }
         
         stampImageView.snp.makeConstraints { make in
-            make.trailing.equalTo(headerCardView.snp.trailing).inset(13)
-            make.size.equalTo(84)
+            make.trailing.equalTo(headerCardView.snp.trailing).inset(16)
+            make.size.equalTo(106)
             make.bottom.equalTo(headerCardView.snp.bottom).offset(42)
         }
         
@@ -217,17 +217,17 @@ class StampDetailViewController: UIViewController {
         headerCardView.addSubview(stampTitleLabel)
         headerCardView.addSubview(favoriteButton)
         headerCardView.addSubview(infoStack)
-        headerCardView.backgroundColor = .green
+        headerCardView.backgroundColor = .white
         
         stampTitleLabel.snp.makeConstraints { make in
-            make.top.leading.equalToSuperview().offset(16)
-            make.trailing.equalTo(stampImageView.snp.leading).offset(-12)
+            make.top.equalTo(headerCardView.snp.bottom).offset(10)
+            make.leading.equalToSuperview().offset(16)
         }
 
         favoriteButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(12)
-            make.size.equalTo(30)
-            make.top.equalTo(headerCardView.snp.top).inset(12)
+            make.trailing.equalToSuperview().inset(16)
+            make.size.equalTo(40)
+            make.top.equalTo(headerCardView.snp.top).inset(8)
         }
         
         infoStack.snp.makeConstraints { make in
@@ -242,7 +242,12 @@ class StampDetailViewController: UIViewController {
         overviewBox.layer.borderWidth = 0
         overviewBox.layer.masksToBounds = true
         
-        contentStack.insertArrangedSubview(overviewBox, at: contentStack.arrangedSubviews.firstIndex(of: overviewContentLabel) ?? 0)
+        if let index = contentStack.arrangedSubviews.firstIndex(of: achievedDateLabel) {
+            contentStack.insertArrangedSubview(overviewBox, at: index + 1)
+        } else {
+            contentStack.addArrangedSubview(overviewBox)
+        }
+        
         overviewContentLabel.removeFromSuperview()
         overviewBox.addSubview(overviewContentLabel)
         overviewContentLabel.snp.makeConstraints { make in
