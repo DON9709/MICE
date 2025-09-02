@@ -16,9 +16,6 @@ class StampDetailViewController: UIViewController {
     //Navigation
     let backButton = UIButton(type: .system)//뒤로가기버튼 -> 이전화면으로 이동
     
-    private let scrollView = UIScrollView()
-    private let contentStack = UIStackView()
-    
     //달성한스탬프표시(획득시)
     let achievedStampLabel = UILabel()
     
@@ -37,11 +34,20 @@ class StampDetailViewController: UIViewController {
     //스탬프 주소
     let addressLabel = UILabel()
     
+    //스탬프 주소 이미지
+    let addressImageView = UIImageView()
+    
     //스탬프 전화번호
     let phoneNumberLabel = UILabel()
     
+    //스탬프 전화번호 이미지
+    let phoneNumberImageView = UIImageView()
+    
     //스탬프 홈페이지
     let homePageLabel = UILabel()
+    
+    //스탬프 홈페이지 이미지
+    let heomePageImageView = UIImageView()
     
     //회득날짜(미획득시-> 미획득 스탬프)
     let achievedDateLabel = UILabel()
@@ -51,15 +57,6 @@ class StampDetailViewController: UIViewController {
     
     //개요(내용)
     let overviewContentLabel = UILabel()
-    
-    //이용안내
-    let guideLabel = UILabel()
-    
-    //주최자 정보
-    let organizerLabel = UILabel()
-    
-    //주최자 연락처
-    let contactLabel = UILabel()
     
     //스탬프획득하기(버튼)
     let getStampButton = UIButton(type: .system)
@@ -84,13 +81,12 @@ class StampDetailViewController: UIViewController {
     
     private func setupViews() {
         view.backgroundColor = .white
+
+        // Create infoStack inside headerCardView
+        headerCardView.addSubview(favoriteButton)
+        headerCardView.addSubview(achievedStampLabel)
+        headerCardView.backgroundColor = .white
         
-        contentStack.axis = .vertical
-        contentStack.spacing = 12
-        
-        [headerCardView, stampTitleLabel, addressLabel, phoneNumberLabel, homePageLabel, achievedDateLabel, overviewLabel, overviewContentLabel, guideLabel, organizerLabel, contactLabel, getStampButton].forEach {
-            contentStack.addArrangedSubview($0)
-        }
         
         //Navigation
         backButton.setImage(UIImage(systemName: "chevron.left"), for: .normal)
@@ -114,6 +110,7 @@ class StampDetailViewController: UIViewController {
         favoriteButton.setImage(UIImage(systemName: "bookmark"), for: .normal)
         favoriteButton.setImage(UIImage(systemName: "bookmark.fill"), for: .selected)
         favoriteButton.tintColor = .systemBlue
+        favoriteButton.backgroundColor = .white
         
         //스탬프이미지(획득시 컬러)
         stampImageView.contentMode = .scaleAspectFit
@@ -122,19 +119,29 @@ class StampDetailViewController: UIViewController {
         
         //스탬프 타이틀
         stampTitleLabel.font = .systemFont(ofSize: 18, weight: .bold)
-        stampTitleLabel.text = "불국사"
+        stampTitleLabel.text = "아침고요수목원"
         
         //스탬프 주소
         addressLabel.font = .systemFont(ofSize: 15)
+        addressLabel.text = "경기도 가평군 상면 수목원로 123-456789 아침고요수목원"
+        
+        //스탬프 주소, 전화번호, 홈페이지 이미지
+        addressImageView.image = UIImage(systemName: "location.fill")
+        phoneNumberImageView.image = UIImage(systemName: "phone.fill")
+        heomePageImageView.image = UIImage(systemName: "location.fill")
         
         //스탬프 전화번호
         phoneNumberLabel.font = .systemFont(ofSize: 15)
+        phoneNumberLabel.text = "1544-6703"
         
         //스탬프 홈페이지
         homePageLabel.font = .systemFont(ofSize: 15)
+        homePageLabel.text = "https://www.morningcalm.co.kr/html/main.php"
         
         //회득날짜(미획득시-> 미획득 스탬프)
         achievedDateLabel.font = .systemFont(ofSize: 15)
+        achievedDateLabel.text = "미획득 스탬프"
+        achievedDateLabel.textColor = .red
         
         //개요(라벨)
         overviewLabel.font = .systemFont(ofSize: 16, weight: .bold)
@@ -142,18 +149,7 @@ class StampDetailViewController: UIViewController {
         
         //개요(내용)
         overviewContentLabel.font = .systemFont(ofSize: 15)
-        
-        //이용안내
-        guideLabel.font = .systemFont(ofSize: 16, weight: .semibold)
-        guideLabel.text = "이용안내"
-        
-        //주최자 정보
-        organizerLabel.font = .systemFont(ofSize: 15)
-        organizerLabel.text = "주최자 정보"
-        
-        //주최자 연락처
-        contactLabel.font = .systemFont(ofSize: 15)
-        contactLabel.text = "주최자 연락처"
+        overviewContentLabel.text = "개요를 작성하세요."
         
         //스탬프획득하기(버튼)
         getStampButton.setTitle("스탬프획득하기", for: .normal)
@@ -161,12 +157,23 @@ class StampDetailViewController: UIViewController {
         getStampButton.setTitleColor(.white, for: .normal)
         getStampButton.layer.cornerRadius = 8
         
-        view.addSubview(scrollView)
-        scrollView.addSubview(contentStack)
+        view.addSubview(headerCardView)
+        view.addSubview(stampTitleLabel)
+        view.addSubview(addressLabel)
+        view.addSubview(phoneNumberLabel)
+        view.addSubview(homePageLabel)
+        view.addSubview(achievedDateLabel)
+        view.addSubview(overviewLabel)
+        view.addSubview(overviewContentLabel)
+        view.addSubview(addressLabel)
         view.addSubview(getStampButton)
         view.addSubview(achievedStampLabel)
         view.addSubview(stampImageView)
         view.addSubview(backButton)
+        view.addSubview(addressImageView)
+        view.addSubview(phoneNumberImageView)
+        view.addSubview(heomePageImageView)
+        
     }
     
     private func setupLayout() {
@@ -178,29 +185,16 @@ class StampDetailViewController: UIViewController {
         }
 
         achievedStampLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(12)
+            make.top.equalTo(headerCardView)
             make.centerX.equalToSuperview()
-            make.height.equalTo(26)
-            make.leading.greaterThanOrEqualToSuperview().offset(16)
-            make.trailing.lessThanOrEqualToSuperview().inset(16)
-        }
-        
-        scrollView.snp.makeConstraints { make in
-            make.top.equalTo(achievedStampLabel.snp.bottom).offset(12)
-            make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(getStampButton.snp.top).offset(-12)
-        }
-        
-        contentStack.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-            make.width.equalTo(scrollView.snp.width)
+            make.height.equalTo(32)
+            make.width.equalTo(141)
         }
         
         // HeaderCard Layout
-        // Url로 이미지 추가
         headerCardView.snp.remakeConstraints { make in
             make.height.equalTo(190)//191 수정
-            make.width.equalTo(375)
+            make.width.equalToSuperview()
             make.top.equalTo(backButton.snp.bottom).offset(18)
         }
         
@@ -209,20 +203,6 @@ class StampDetailViewController: UIViewController {
             make.size.equalTo(106)
             make.bottom.equalTo(headerCardView.snp.bottom).offset(42)
         }
-        
-        // Create infoStack inside headerCardView
-        let infoStack = UIStackView(arrangedSubviews: [addressLabel, phoneNumberLabel, achievedDateLabel, homePageLabel])
-        infoStack.axis = .vertical
-        infoStack.spacing = 4
-        headerCardView.addSubview(stampTitleLabel)
-        headerCardView.addSubview(favoriteButton)
-        headerCardView.addSubview(infoStack)
-        headerCardView.backgroundColor = .white
-        
-        stampTitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(headerCardView.snp.bottom).offset(10)
-            make.leading.equalToSuperview().offset(16)
-        }
 
         favoriteButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(16)
@@ -230,51 +210,58 @@ class StampDetailViewController: UIViewController {
             make.top.equalTo(headerCardView.snp.top).inset(8)
         }
         
-        infoStack.snp.makeConstraints { make in
-            make.top.equalTo(stampTitleLabel.snp.bottom).offset(12)
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.bottom.equalToSuperview().inset(16)
+        stampTitleLabel.snp.makeConstraints { make in
+            make.top.equalTo(headerCardView.snp.bottom).offset(10)
+            make.leading.equalToSuperview().offset(16)
         }
         
-        // overviewBox container
-        let overviewBox = UIView()
-        overviewBox.layer.cornerRadius = 8
-        overviewBox.layer.borderWidth = 0
-        overviewBox.layer.masksToBounds = true
-        
-        if let index = contentStack.arrangedSubviews.firstIndex(of: achievedDateLabel) {
-            contentStack.insertArrangedSubview(overviewBox, at: index + 1)
-        } else {
-            contentStack.addArrangedSubview(overviewBox)
+        //스탬프 주소, 전화번호, 홈페이지 이미지
+        addressImageView.snp.makeConstraints { make in
+            make.top.equalTo(stampTitleLabel.snp.bottom).offset(16)
+            make.leading.equalToSuperview().offset(16)
+            make.centerY.equalTo(addressLabel)
         }
         
-        overviewContentLabel.removeFromSuperview()
-        overviewBox.addSubview(overviewContentLabel)
+        addressLabel.snp.makeConstraints { make in
+            make.top.equalTo(stampTitleLabel.snp.bottom).offset(16)
+            make.leading.equalToSuperview().offset(42)
+        }
+        
+        phoneNumberImageView.snp.makeConstraints { make in
+            make.top.equalTo(addressImageView.snp.bottom).offset(12)
+            make.leading.equalToSuperview().offset(16)
+            make.centerY.equalTo(phoneNumberLabel)
+        }
+        
+        phoneNumberLabel.snp.makeConstraints { make in
+            make.top.equalTo(addressLabel.snp.bottom).offset(12)
+            make.leading.equalToSuperview().offset(42)
+        }
+        
+        heomePageImageView.snp.makeConstraints { make in
+            make.top.equalTo(phoneNumberImageView.snp.bottom).offset(12)
+            make.leading.equalToSuperview().offset(16)
+            make.centerY.equalTo(homePageLabel)
+        }
+        
+        homePageLabel.snp.makeConstraints { make in
+            make.top.equalTo(phoneNumberLabel.snp.bottom).offset(12)
+            make.leading.equalToSuperview().offset(42)
+        }
+        
+        achievedDateLabel.snp.makeConstraints { make in
+            make.top.equalTo(homePageLabel.snp.bottom).offset(12)
+            make.leading.equalToSuperview().offset(42)
+        }
+        
+        overviewLabel.snp.makeConstraints { make in
+            make.top.equalTo(achievedDateLabel.snp.bottom).offset(38)
+            make.leading.equalToSuperview().offset(16)
+        }
+        
         overviewContentLabel.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(12)
-        }
-        
-        // guideBox container
-        let guideBox = UIView()
-        guideBox.layer.cornerRadius = 8
-        guideBox.layer.borderWidth = 0
-        guideBox.layer.masksToBounds = true
-        
-        contentStack.insertArrangedSubview(guideBox, at: contentStack.arrangedSubviews.firstIndex(of: organizerLabel) ?? 0)
-        organizerLabel.removeFromSuperview()
-        contactLabel.removeFromSuperview()
-        
-        let guideStack = UIStackView(arrangedSubviews: [organizerLabel, contactLabel])
-        guideStack.axis = .vertical
-        guideStack.spacing = 8
-        
-        guideBox.addSubview(guideStack)
-        guideStack.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(12)
-        }
-        
-        guideBox.snp.makeConstraints { make in
-            make.width.equalToSuperview()
+            make.top.equalTo(overviewLabel.snp.bottom).offset(15)
+            make.leading.equalToSuperview().offset(16)
         }
         
         getStampButton.snp.remakeConstraints { make in
