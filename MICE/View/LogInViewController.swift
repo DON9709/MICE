@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 import Combine
+import AuthenticationServices
 
 // MARK: - 뷰모델 프로토콜
 protocol LogInViewModelType {
@@ -34,20 +35,17 @@ final class LogInViewController: UIViewController {
         let button = UIButton(type: .system)
         button.setTitle("비회원 둘러보기", for: .normal)
         button.setTitleColor(.black, for: .normal)
+        button.backgroundColor = .white
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         button.layer.borderColor = UIColor.lightGray.cgColor
         button.layer.borderWidth = 1
-        button.layer.cornerRadius = 8
+        button.layer.cornerRadius = 12
         return button
     }()
 
-    private let appleLoginButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("애플 로그인", for: .normal)
-        button.setTitleColor(.darkGray, for: .normal)
-        button.backgroundColor = .lightGray
-        button.layer.cornerRadius = 8
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+    private let appleLoginButton: ASAuthorizationAppleIDButton = {
+        let button = ASAuthorizationAppleIDButton(type: .signIn, style: .black)
+        button.cornerRadius = 12
         return button
     }()
 
@@ -64,7 +62,7 @@ final class LogInViewController: UIViewController {
     // MARK: - 라이프사이클
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(red: 114/255, green: 76/255, blue: 249/255, alpha: 1.0)
         setupUI()
         bindViewModel()
     }
@@ -109,16 +107,16 @@ final class LogInViewController: UIViewController {
         }
 
         guestButton.snp.makeConstraints {
-            $0.top.equalTo(logoLabel.snp.bottom).offset(60)
+            $0.top.equalTo(logoLabel.snp.bottom).offset(320)
             $0.centerX.equalToSuperview()
             $0.leading.trailing.equalToSuperview().inset(40)
-            $0.height.equalTo(44)
+            $0.height.equalTo(48)
         }
 
         appleLoginButton.snp.makeConstraints {
-            $0.top.equalTo(guestButton.snp.bottom).offset(12)
+            $0.top.equalTo(guestButton.snp.bottom).offset(20)
             $0.leading.trailing.equalTo(guestButton)
-            $0.height.equalTo(44)
+            $0.height.equalTo(48)
         }
     }
 }
