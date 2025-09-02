@@ -10,6 +10,8 @@ import SnapKit
 
 class StampDetailViewController: UIViewController {
     
+    var stamp: Stamp?
+    
     //ViewModel
     private let viewModel = StampDetailViewModel()
     
@@ -62,6 +64,12 @@ class StampDetailViewController: UIViewController {
     let getStampButton = UIButton(type: .system)
     
     override func viewDidLoad() {
+        if let selectedStamp = stamp {
+                   print("selectedStamp.contentid = \(selectedStamp.contentid)")
+               } else {
+                   print("선택된 스탬프가 없습니다.")
+               }
+        
         super.viewDidLoad()
         view.backgroundColor = .white
         setupViews()
