@@ -30,7 +30,6 @@ class SearchResultCell: UITableViewCell {
         iv.backgroundColor = .systemGray6
         iv.contentMode = .scaleAspectFill
         iv.layer.cornerRadius = 12
-        // [수정] 상단 두 모서리만 둥글게 처리
         iv.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         iv.clipsToBounds = true
         return iv
@@ -42,17 +41,24 @@ class SearchResultCell: UITableViewCell {
         return label
     }()
     
-    private let closedInfoLabel: UILabel = UILabel.createSubLabel() // 주소
-    private let hoursInfoLabel = UILabel.createSubLabel() // 전화번호
-    private let missionInfoLabel = UILabel.createSubLabel() // 스탬프 번호
+    // [추가] 획득 가능한 스탬프 레이블
+    private let stampCountLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 14, weight: .semibold)
+        label.textColor = .systemRed // 빨간색 글씨
+        return label
+    }()
     
-    // 이미지 로딩 중 셀 재사용 문제를 해결하기 위한 프로퍼티
+    private let addressLabel: UILabel = UILabel.createSubLabel() // 주소
+    private let phoneLabel = UILabel.createSubLabel() // 전화번호
+    private let stampNumberLabel = UILabel.createSubLabel() // 스탬프 번호
+    
     private var currentImageURL: URL?
     
     // MARK: - Life Cycle
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.backgroundColor = .clear // contentView의 색상이 보이도록
+        self.backgroundColor = .clear
         self.contentView.backgroundColor = .clear
         self.selectionStyle = .none
         setupUI()
@@ -62,12 +68,12 @@ class SearchResultCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - UI Setup (기존 레이아웃으로 복원)
+    // MARK: - UI Setup
     private func setupUI() {
         contentView.addSubview(containerView)
         
-        // 텍스트 레이블들을 StackView로 묶어 관리 (기존 방식)
-        let textStackView = UIStackView(arrangedSubviews: [placeNameLabel, closedInfoLabel, hoursInfoLabel, missionInfoLabel])
+        // [수정] 텍스트 레이블들을 StackView에 추가 (순서 변경)
+        let textStackView = UIStackView(arrangedSubviews: [placeNameLabel, stampCountLabel, addressLabel, phoneLabel, stampNumberLabel])
         textStackView.axis = .vertical
         textStackView.spacing = 6
         textStackView.alignment = .leading
@@ -81,7 +87,7 @@ class SearchResultCell: UITableViewCell {
         
         thumbnailImageView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            make.height.equalTo(150) // 이미지 높이
+            make.height.equalTo(150)
         }
         
         textStackView.snp.makeConstraints { make in
@@ -101,14 +107,12 @@ class SearchResultCell: UITableViewCell {
     // MARK: - Configuration
     func configure(with stamp: Stamp) {
         placeNameLabel.text = stamp.title ?? "이름 없음"
-        closedInfoLabel.text = "주소: \(stamp.addr)"
-        hoursInfoLabel.text = "전화번호: \(stamp.tel?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false ? stamp.tel! : "정보 없음")"
-        if let stampNo = stamp.stampno {
-            missionInfoLabel.text = "스탬프 번호: \(stampNo)번"
-        } else {
-            missionInfoLabel.text = "스탬프 정보 없음"
-        }
-
+        
+        //하드코딩된 텍스트 설정
+        stampCountLabel.text = "획득가능한 스탬프: 1개"
+        
+        addressLabel.text = "주소: \(stamp.addr)"
+        
         // 이미지 로딩 로직
         thumbnailImageView.image = nil
         if let imageURLString = stamp.image, let url = URL(string: imageURLString) {
@@ -124,7 +128,7 @@ class SearchResultCell: UITableViewCell {
                 } else {
                     DispatchQueue.main.async {
                         self.thumbnailImageView.image = UIImage(systemName: "photo")
-                        self.thumbnailImageView.contentMode = .scaleAspectFit // 아이콘이 잘 보이도록
+                        self.thumbnailImageView.contentMode = .scaleAspectFit
                     }
                 }
             }.resume()
