@@ -48,7 +48,6 @@ class SearchViewController: UIViewController {
         let tv = UITableView()
         tv.backgroundColor = .clear
         tv.separatorStyle = .none
-        // [추가] 키보드가 나타날 때 스크롤하면 키보드가 내려가도록 설정
         tv.keyboardDismissMode = .onDrag
         return tv
     }()
@@ -137,9 +136,7 @@ class SearchViewController: UIViewController {
     
     private func updateViewForSearchBarState() {
         let isSearchBarEmpty = searchBar.text?.isEmpty ?? true
-        // 검색바가 비어있으면 '최근 검색어' 타이틀을 보여주고, 아니면 숨김
         recentSearchesTitleLabel.isHidden = !isSearchBarEmpty
-        // 테이블뷰를 리로드하여 검색 결과 또는 최근 검색어 목록을 표시
         tableView.reloadData()
     }
 }
