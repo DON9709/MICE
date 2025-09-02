@@ -88,7 +88,7 @@ class StampDetailViewController: UIViewController {
         contentStack.axis = .vertical
         contentStack.spacing = 12
         
-        [achievedStampLabel, headerCardView, stampImageView, stampTitleLabel, addressLabel, phoneNumberLabel, homePageLabel, achievedDateLabel, overviewLabel, overviewContentLabel, guideLabel, organizerLabel, contactLabel, getStampButton].forEach {
+        [headerCardView, stampTitleLabel, addressLabel, phoneNumberLabel, homePageLabel, achievedDateLabel, overviewLabel, overviewContentLabel, guideLabel, organizerLabel, contactLabel, getStampButton].forEach {
             contentStack.addArrangedSubview($0)
         }
         
@@ -165,14 +165,16 @@ class StampDetailViewController: UIViewController {
         view.addSubview(scrollView)
         scrollView.addSubview(contentStack)
         view.addSubview(getStampButton)
+        view.addSubview(achievedStampLabel)
         view.addSubview(stampImageView)
+        view.addSubview(backButton)
     }
     
     private func setupLayout() {
         
-        backButton.snp.makeConstraints { make in
-            make.left.equalToSuperview().offset(16)
-            make.centerY.equalToSuperview()
+        backButton.snp.remakeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(8)
+            make.leading.equalToSuperview().offset(16)
             make.size.equalTo(28)
         }
 
@@ -180,13 +182,13 @@ class StampDetailViewController: UIViewController {
             make.top.equalToSuperview().offset(12)
             make.centerX.equalToSuperview()
             make.height.equalTo(26)
-            make.left.greaterThanOrEqualToSuperview().offset(16)
-            make.right.lessThanOrEqualToSuperview().inset(16)
+            make.leading.greaterThanOrEqualToSuperview().offset(16)
+            make.trailing.lessThanOrEqualToSuperview().inset(16)
         }
         
         scrollView.snp.makeConstraints { make in
             make.top.equalTo(achievedStampLabel.snp.bottom).offset(12)
-            make.left.right.equalToSuperview()
+            make.leading.trailing.equalToSuperview()
             make.bottom.equalTo(getStampButton.snp.top).offset(-12)
         }
         
@@ -198,12 +200,12 @@ class StampDetailViewController: UIViewController {
         // HeaderCard Layout
         // Url로 이미지 추가
         headerCardView.snp.remakeConstraints { make in
-            make.left.right.equalToSuperview().inset(16)
+            make.leading.trailing.equalToSuperview().inset(16)
             make.height.greaterThanOrEqualTo(160)
         }
         
         stampImageView.snp.makeConstraints { make in
-            make.right.equalTo(headerCardView.snp.right).inset(13)
+            make.trailing.equalTo(headerCardView.snp.trailing).inset(13)
             make.size.equalTo(84)
             make.bottom.equalTo(headerCardView.snp.bottom).offset(42)
         }
@@ -218,8 +220,8 @@ class StampDetailViewController: UIViewController {
         headerCardView.backgroundColor = .green
         
         stampTitleLabel.snp.makeConstraints { make in
-            make.top.left.equalToSuperview().offset(16)
-            make.right.equalTo(stampImageView.snp.left).offset(-12)
+            make.top.leading.equalToSuperview().offset(16)
+            make.trailing.equalTo(stampImageView.snp.leading).offset(-12)
         }
 
         favoriteButton.snp.makeConstraints { make in
@@ -230,7 +232,7 @@ class StampDetailViewController: UIViewController {
         
         infoStack.snp.makeConstraints { make in
             make.top.equalTo(stampTitleLabel.snp.bottom).offset(12)
-            make.left.right.equalToSuperview().inset(16)
+            make.leading.trailing.equalToSuperview().inset(16)
             make.bottom.equalToSuperview().inset(16)
         }
         
@@ -271,7 +273,7 @@ class StampDetailViewController: UIViewController {
         }
         
         getStampButton.snp.remakeConstraints { make in
-            make.left.right.equalToSuperview().inset(16)
+            make.leading.trailing.equalToSuperview().inset(16)
             make.height.equalTo(52)
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-10)
         }
@@ -279,7 +281,6 @@ class StampDetailViewController: UIViewController {
     
     private func setupActions() {
         backButton.addTarget(self, action: #selector(tapBack), for: .touchUpInside)
-        
     }
 }
 
@@ -292,6 +293,6 @@ private extension StampDetailViewController {
         }
     }
 }
-#Preview {
-    StampDetailViewController()
-}
+//#Preview {
+//    StampDetailViewController()
+//}
