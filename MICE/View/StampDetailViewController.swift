@@ -81,11 +81,12 @@ class StampDetailViewController: UIViewController {
     
     private func setupViews() {
         view.backgroundColor = .white
-
-        // Create infoStack inside headerCardView
+        
+        //HeaderCard
+        headerCardView.backgroundColor = .lightGray
         headerCardView.addSubview(favoriteButton)
         headerCardView.addSubview(achievedStampLabel)
-        headerCardView.backgroundColor = .white
+        headerCardView.bringSubviewToFront(favoriteButton)
         
         
         //Navigation
@@ -101,16 +102,17 @@ class StampDetailViewController: UIViewController {
         achievedStampLabel.layoutMargins = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
         achievedStampLabel.isUserInteractionEnabled = false
         
-        //HeaderCard
-        headerCardView.backgroundColor = .white
-        headerCardView.layer.borderWidth = 1
-        headerCardView.layer.masksToBounds = true
-        
         //즐겨찾기버튼
         favoriteButton.setImage(UIImage(systemName: "bookmark"), for: .normal)
         favoriteButton.setImage(UIImage(systemName: "bookmark.fill"), for: .selected)
-        favoriteButton.tintColor = .systemBlue
+        favoriteButton.tintColor = .systemPurple
         favoriteButton.backgroundColor = .white
+        favoriteButton.layer.cornerRadius = 20
+        favoriteButton.layer.masksToBounds = false
+        favoriteButton.layer.shadowColor = UIColor.black.cgColor
+        favoriteButton.layer.shadowOpacity = 0.15
+        favoriteButton.layer.shadowOffset = CGSize(width: 0, height: 2)
+        favoriteButton.layer.shadowRadius = 4
         
         //스탬프이미지(획득시 컬러)
         stampImageView.contentMode = .scaleAspectFit
@@ -273,6 +275,7 @@ class StampDetailViewController: UIViewController {
     
     private func setupActions() {
         backButton.addTarget(self, action: #selector(tapBack), for: .touchUpInside)
+        favoriteButton.addTarget(self, action: #selector(toggleFavorite), for: .touchUpInside)
     }
 }
 
@@ -282,6 +285,17 @@ private extension StampDetailViewController {
             nav.popViewController(animated: true)
         } else {
             dismiss(animated: true)
+        }
+    }
+    
+    @objc private func toggleFavorite() {
+        favoriteButton.isSelected.toggle()
+        if favoriteButton.isSelected {
+            favoriteButton.backgroundColor = .systemPurple
+            favoriteButton.tintColor = .white
+        } else {
+            favoriteButton.backgroundColor = .white
+            favoriteButton.tintColor = .systemPurple
         }
     }
 }
