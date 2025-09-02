@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 
+// MARK: - SearchViewController
 class SearchViewController: UIViewController {
 
     private let viewModel = SearchViewModel()
@@ -24,7 +25,6 @@ class SearchViewController: UIViewController {
             button.addTarget(self, action: #selector(categoryButtonTapped), for: .touchUpInside)
             stackView.addArrangedSubview(button)
         }
-        
         return stackView
     }()
     
@@ -33,7 +33,6 @@ class SearchViewController: UIViewController {
         sb.placeholder = "카테고리를 먼저 선택해주세요."
         sb.searchBarStyle = .minimal
         sb.isUserInteractionEnabled = false
-        // [추가] 검색어 취소(X) 버튼이 항상 보이도록 설정
         sb.showsCancelButton = true
         return sb
     }()
@@ -49,7 +48,6 @@ class SearchViewController: UIViewController {
         let tv = UITableView()
         tv.backgroundColor = .clear
         tv.separatorStyle = .none
-        // [추가] 키보드가 나타날 때 스크롤하면 키보드가 내려가도록 설정
         tv.keyboardDismissMode = .onDrag
         return tv
     }()
@@ -58,14 +56,13 @@ class SearchViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        
         setupDelegates()
         setupUI()
-        
-        if let firstButton = categoryStackView.arrangedSubviews.first as? CategoryButton {
-            selectCategoryButton(firstButton)
-        }
+        fetchAllData()
     }
     
+    // MARK: - Setup & Data Fetching
     private func setupDelegates() {
         searchBar.delegate = self
         tableView.dataSource = self
@@ -102,33 +99,44 @@ class SearchViewController: UIViewController {
         }
     }
     
+    private func fetchAllData() {
+        Task {
+            do {
+                try await viewModel.fetchAllStamps()
+                // 데이터 로딩 성공 후, 첫 번째 카테고리를 자동으로 선택
+                if let firstButton = categoryStackView.arrangedSubviews.first as? CategoryButton {
+                    selectCategoryButton(firstButton)
+                }
+            } catch {
+                print("Error fetching stamps: \(error)")
+                // 사용자에게 데이터 로딩 실패 알림 (예: UIAlertController)
+            }
+        }
+    }
+    
     // MARK: - Actions & Logics
     @objc private func categoryButtonTapped(_ sender: CategoryButton) {
         selectCategoryButton(sender)
     }
     
     private func selectCategoryButton(_ button: CategoryButton) {
+        // 모든 버튼을 비선택 상태로 초기화
         categoryStackView.arrangedSubviews.forEach { ($0 as? CategoryButton)?.isSelected = false }
+        // 선택된 버튼만 선택 상태로 변경
         button.isSelected = true
         
         if let category = button.category {
             viewModel.selectCategory(category)
             searchBar.isUserInteractionEnabled = true
             searchBar.placeholder = "\(category.title)에서 검색"
-            // [추가] 카테고리 변경 시 검색바 초기화 및 뷰 업데이트
-            searchBar.text = ""
+            searchBar.text = "" // 카테고리 변경 시 검색어 초기화
             updateViewForSearchBarState()
         }
     }
     
-    // [변경] isSearching 파라미터 대신, 검색바의 현재 상태를 보고 UI를 업데이트하는 함수
     private func updateViewForSearchBarState() {
         let isSearchBarEmpty = searchBar.text?.isEmpty ?? true
-        
-        // 검색바가 비어있으면 '최근 검색어' 타이틀을 보여주고, 아니면 숨김
         recentSearchesTitleLabel.isHidden = !isSearchBarEmpty
-        
-        // 테이블뷰를 리로드하여 검색 결과 또는 최근 검색어 목록을 표시
         tableView.reloadData()
     }
 }
@@ -136,20 +144,16 @@ class SearchViewController: UIViewController {
 // MARK: - UISearchBarDelegate
 extension SearchViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        // [변경] 텍스트가 변경될 때마다 검색을 수행하고, UI를 즉시 업데이트
         viewModel.performSearch(with: searchText)
         updateViewForSearchBarState()
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        // [변경] 검색 버튼 클릭 시 최근 검색어에 추가하고 키보드만 내림
         guard let searchTerm = searchBar.text, !searchTerm.isEmpty else { return }
         viewModel.addRecentSearch(term: searchTerm)
         searchBar.resignFirstResponder()
-        // [제거] updateView 호출을 제거 -> UI 상태는 이미 textDidChange에서 결정됨
     }
     
-    // [추가] 검색바의 취소(X) 버튼을 눌렀을 때의 동작
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.text = ""
         viewModel.performSearch(with: "")
@@ -161,27 +165,29 @@ extension SearchViewController: UISearchBarDelegate {
 // MARK: - UITableViewDataSource, UITableViewDelegate
 extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // [변경] viewModel의 isSearching 상태 대신, 검색바의 텍스트 유무로 분기 처리
         let isSearchBarEmpty = searchBar.text?.isEmpty ?? true
-        return isSearchBarEmpty ? viewModel.recentSearches.count : viewModel.filteredResults.count
+        return isSearchBarEmpty ? viewModel.recentSearches.count : viewModel.filteredStamps.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        // [변경] viewModel의 isSearching 상태 대신, 검색바의 텍스트 유무로 분기 처리
         let isSearchBarEmpty = searchBar.text?.isEmpty ?? true
         
         if isSearchBarEmpty {
-            // 최근 검색어 셀 표시
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: RecentSearchCell.identifier, for: indexPath) as? RecentSearchCell else { return UITableViewCell() }
+            let cell = tableView.dequeueReusableCell(withIdentifier: RecentSearchCell.identifier, for: indexPath) as! RecentSearchCell
             cell.queryLabel.text = viewModel.recentSearches[indexPath.row]
             cell.delegate = self
             return cell
         } else {
-            // 검색 결과 셀 표시
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchResultCell.identifier, for: indexPath) as? SearchResultCell else { return UITableViewCell() }
-            cell.configure(with: viewModel.filteredResults[indexPath.row])
+            let cell = tableView.dequeueReusableCell(withIdentifier: SearchResultCell.identifier, for: indexPath) as! SearchResultCell
+            let stamp = viewModel.filteredStamps[indexPath.row]
+            cell.configure(with: stamp)
             return cell
         }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        // TODO: 셀 선택 시 상세 화면으로 이동하는 로직 구현
     }
 }
 
@@ -194,9 +200,7 @@ extension SearchViewController: RecentSearchCellDelegate {
     }
 }
 
-
-
-
+// MARK: - CategoryButton (SearchViewController 전용 컴포넌트)
 class CategoryButton: UIButton {
     
     var category: SearchCategory?
@@ -214,7 +218,6 @@ class CategoryButton: UIButton {
         self.category = category
         super.init(frame: .zero)
         
-        // [수정] 변경된 이름으로 속성을 설정합니다.
         self.categoryTitleLabel.text = category.title
         self.categoryTitleLabel.font = .systemFont(ofSize: 14)
         self.categoryTitleLabel.textColor = .darkGray
@@ -229,17 +232,14 @@ class CategoryButton: UIButton {
     
     private func setupUI() {
         addSubview(iconImageView)
-        
-        // [수정] 변경된 이름의 Label을 view에 추가합니다.
         addSubview(categoryTitleLabel)
         
         iconImageView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(14)
             make.centerX.equalToSuperview()
-            make.width.height.equalTo(60)
+            make.width.height.equalTo(58)
         }
         
-        // [수정] 변경된 이름으로 제약조건을 설정합니다.
         categoryTitleLabel.snp.makeConstraints { make in
             make.top.equalTo(iconImageView.snp.bottom).offset(6)
             make.centerX.equalToSuperview()
