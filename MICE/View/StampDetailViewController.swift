@@ -25,7 +25,7 @@ class StampDetailViewController: UIViewController {
     let headerCardView = UIImageView()
     
     //즐겨찾기버튼
-    let favoriteButton = UIButton(type: .system)
+    let favoriteButton = UIButton()
     
     //스탬프이미지(획득시 컬러)
     let stampImageView = UIImageView()
@@ -95,7 +95,7 @@ class StampDetailViewController: UIViewController {
         headerCardView.addSubview(favoriteButton)
         headerCardView.addSubview(achievedStampLabel)
         headerCardView.bringSubviewToFront(favoriteButton)
-        
+        headerCardView.isUserInteractionEnabled = true//UIView 안에서 버튼 동작하게하려면 작성해야함.
         
         //Navigation
         backButton.setImage(UIImage(systemName: "chevron.left"), for: .normal)
@@ -111,9 +111,7 @@ class StampDetailViewController: UIViewController {
         achievedStampLabel.isUserInteractionEnabled = false
         
         //즐겨찾기버튼
-        favoriteButton.setImage(UIImage(systemName: "bookmark"), for: .normal)
-        favoriteButton.setImage(UIImage(systemName: "bookmark.fill"), for: .selected)
-        favoriteButton.tintColor = .systemPurple
+        favoriteButton.setImage(UIImage(named: "BookMark"), for: .normal)
         favoriteButton.backgroundColor = .white
         favoriteButton.layer.cornerRadius = 20
         favoriteButton.layer.masksToBounds = false
@@ -298,12 +296,12 @@ private extension StampDetailViewController {
     
     @objc private func toggleFavorite() {
         favoriteButton.isSelected.toggle()
+        print("123")
+//        print("selectedStamp.contentid = \(stamp.contentid)")
         if favoriteButton.isSelected {
-            favoriteButton.backgroundColor = .systemPurple
-            favoriteButton.tintColor = .white
+            favoriteButton.setImage(UIImage(named: "BookMark.fill"), for: .normal)
         } else {
-            favoriteButton.backgroundColor = .white
-            favoriteButton.tintColor = .systemPurple
+            favoriteButton.setImage(UIImage(named: "BookMark"), for: .normal)
         }
     }
 }
