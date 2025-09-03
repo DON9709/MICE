@@ -10,6 +10,8 @@ import SnapKit
 
 class StampDetailViewController: UIViewController {
     
+    var isBookmarked = false
+    
     var stamp: Stamp?
     
     //ViewModel
@@ -51,6 +53,10 @@ class StampDetailViewController: UIViewController {
     //스탬프 홈페이지 이미지
     let heomePageImageView = UIImageView()
     
+    // 섹션 구분선
+    private let separatorTop = UIView()
+    private let separatorBottom = UIView()
+    
     //회득날짜(미획득시-> 미획득 스탬프)
     let achievedDateLabel = UILabel()
     
@@ -69,6 +75,26 @@ class StampDetailViewController: UIViewController {
                } else {
                    print("선택된 스탬프가 없습니다.")
                }
+
+        if let selectedStamp = stamp {
+                   print("selectedStamp.title = \(selectedStamp.title)")
+               } else {
+                   print("선택된 스탬프가 없습니다.")
+               }
+        
+        //선택한 스탬프 장소이미지 연결
+        if let urlString = stamp?.image, let url = URL(string: urlString) {
+            headerCardView.kf.setImage(with: url)
+        } else {
+            headerCardView.image = nil
+        }
+        
+        //선택한 스탬프 스탬프이미지 연결
+        if let urlString = stamp?.stampimg, let url = URL(string: urlString) {
+            stampImageView.kf.setImage(with: url)
+        } else {
+            stampImageView.image = nil
+        }
         
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -121,9 +147,11 @@ class StampDetailViewController: UIViewController {
         favoriteButton.layer.shadowRadius = 4
         
         //스탬프이미지(획득시 컬러)
-        stampImageView.contentMode = .scaleAspectFit
-        stampImageView.tintColor = .label
-        stampImageView.image = UIImage(systemName: "target")
+        stampImageView.backgroundColor = .white
+        stampImageView.contentMode = .scaleAspectFill
+        stampImageView.frame = CGRect(x: 50, y: 50, width: 106, height: 106)
+        stampImageView.layer.cornerRadius = stampImageView.frame.width / 2
+        stampImageView.clipsToBounds = true
         
         //스탬프 타이틀
         stampTitleLabel.font = .systemFont(ofSize: 18, weight: .bold)
@@ -134,9 +162,9 @@ class StampDetailViewController: UIViewController {
         addressLabel.text = "경기도 가평군 상면 수목원로 123-456789 아침고요수목원"
         
         //스탬프 주소, 전화번호, 홈페이지 이미지
-        addressImageView.image = UIImage(systemName: "location.fill")
-        phoneNumberImageView.image = UIImage(systemName: "phone.fill")
-        heomePageImageView.image = UIImage(systemName: "location.fill")
+        addressImageView.image = UIImage(named: "Marker")
+        phoneNumberImageView.image = UIImage(named: "Phone")
+        heomePageImageView.image = UIImage(named: "Link")
         
         //스탬프 전화번호
         phoneNumberLabel.font = .systemFont(ofSize: 15)
@@ -182,6 +210,11 @@ class StampDetailViewController: UIViewController {
         view.addSubview(phoneNumberImageView)
         view.addSubview(heomePageImageView)
         
+        // 섹션 구분선 스타일
+        [separatorTop, separatorBottom].forEach { line in
+            line.backgroundColor = .systemGray4
+            view.addSubview(line)
+        }
     }
     
     private func setupLayout() {
@@ -262,6 +295,13 @@ class StampDetailViewController: UIViewController {
             make.leading.equalToSuperview().offset(42)
         }
         
+        // 연락처/정보 블록 하단 구분선
+        separatorTop.snp.makeConstraints { make in
+            make.top.equalTo(achievedDateLabel.snp.bottom).offset(16)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(2 / UIScreen.main.scale)
+        }
+        
         overviewLabel.snp.makeConstraints { make in
             make.top.equalTo(achievedDateLabel.snp.bottom).offset(38)
             make.leading.equalToSuperview().offset(16)
@@ -270,6 +310,13 @@ class StampDetailViewController: UIViewController {
         overviewContentLabel.snp.makeConstraints { make in
             make.top.equalTo(overviewLabel.snp.bottom).offset(15)
             make.leading.equalToSuperview().offset(16)
+        }
+        
+        // 본문(개요) 하단 구분선
+        separatorBottom.snp.makeConstraints { make in
+            make.top.equalTo(overviewContentLabel.snp.bottom).offset(24)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(2 / UIScreen.main.scale)
         }
         
         getStampButton.snp.remakeConstraints { make in
