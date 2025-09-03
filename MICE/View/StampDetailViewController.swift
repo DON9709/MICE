@@ -53,6 +53,10 @@ class StampDetailViewController: UIViewController {
     //스탬프 홈페이지 이미지
     let heomePageImageView = UIImageView()
     
+    // 섹션 구분선
+    private let separatorTop = UIView()
+    private let separatorBottom = UIView()
+    
     //회득날짜(미획득시-> 미획득 스탬프)
     let achievedDateLabel = UILabel()
     
@@ -200,6 +204,11 @@ class StampDetailViewController: UIViewController {
         view.addSubview(phoneNumberImageView)
         view.addSubview(heomePageImageView)
         
+        // 섹션 구분선 스타일
+        [separatorTop, separatorBottom].forEach { line in
+            line.backgroundColor = .systemGray4
+            view.addSubview(line)
+        }
     }
     
     private func setupLayout() {
@@ -280,6 +289,13 @@ class StampDetailViewController: UIViewController {
             make.leading.equalToSuperview().offset(42)
         }
         
+        // 연락처/정보 블록 하단 구분선
+        separatorTop.snp.makeConstraints { make in
+            make.top.equalTo(achievedDateLabel.snp.bottom).offset(16)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(2 / UIScreen.main.scale)
+        }
+        
         overviewLabel.snp.makeConstraints { make in
             make.top.equalTo(achievedDateLabel.snp.bottom).offset(38)
             make.leading.equalToSuperview().offset(16)
@@ -288,6 +304,13 @@ class StampDetailViewController: UIViewController {
         overviewContentLabel.snp.makeConstraints { make in
             make.top.equalTo(overviewLabel.snp.bottom).offset(15)
             make.leading.equalToSuperview().offset(16)
+        }
+        
+        // 본문(개요) 하단 구분선
+        separatorBottom.snp.makeConstraints { make in
+            make.top.equalTo(overviewContentLabel.snp.bottom).offset(24)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(2 / UIScreen.main.scale)
         }
         
         getStampButton.snp.remakeConstraints { make in
