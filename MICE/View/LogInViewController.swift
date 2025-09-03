@@ -9,26 +9,30 @@ import UIKit
 import SnapKit
 import Combine
 import AuthenticationServices
+import CoreLocation
 
+// MARK: - 뷰모델 프로토콜
 // MARK: - 뷰모델 프로토콜
 protocol LogInViewModelType {
     // Define input/output properties here later
 }
 
-final class LogInViewController: UIViewController {
+final class LogInViewController: UIViewController, CLLocationManagerDelegate {
+
+    // MARK: - Location
+    private let locationManager = CLLocationManager()
+    private var hasShownLocationAlert = false
 
     // MARK: - 뷰모델
     private let viewModel: LoginViewModel
     private var cancellables = Set<AnyCancellable>()
 
     // MARK: - UI 구성요소
-    private let logoLabel: UILabel = {
-        let label = UILabel()
-        label.text = "프로젝트로고"
-        label.font = UIFont.boldSystemFont(ofSize: 24)
-        label.textAlignment = .center
-        label.numberOfLines = 2
-        return label
+    private let logoImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "logo") // 실제 이름
+        imageView.contentMode = .scaleAspectFit     // 비율 유지하며 크기 조정
+        return imageView
     }()
 
     private let guestButton: UIButton = {
@@ -65,6 +69,8 @@ final class LogInViewController: UIViewController {
         view.backgroundColor = UIColor(red: 114/255, green: 76/255, blue: 249/255, alpha: 1.0)
         setupUI()
         bindViewModel()
+        locationManager.delegate = self
+        checkLocationPermissionIfNeeded()
     }
 
     // MARK: - Bind ViewModel
@@ -97,17 +103,18 @@ final class LogInViewController: UIViewController {
 
     // MARK: - UI 셋업
     private func setupUI() {
-        view.addSubview(logoLabel)
+        view.addSubview(logoImageView)
         view.addSubview(guestButton)
         view.addSubview(appleLoginButton)
 
-        logoLabel.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.centerY.equalToSuperview().offset(-80)
-        }
+        logoImageView.snp.makeConstraints {
+                $0.centerX.equalToSuperview()
+                $0.centerY.equalToSuperview().offset(-80)
+                $0.width.height.equalTo(160) // 적당한 크기 (1200x1200 → 160x160 등)
+            }
 
         guestButton.snp.makeConstraints {
-            $0.top.equalTo(logoLabel.snp.bottom).offset(320)
+            $0.top.equalTo(logoImageView.snp.bottom).offset(265)
             $0.centerX.equalToSuperview()
             $0.leading.trailing.equalToSuperview().inset(40)
             $0.height.equalTo(48)
@@ -117,6 +124,40 @@ final class LogInViewController: UIViewController {
             $0.top.equalTo(guestButton.snp.bottom).offset(20)
             $0.leading.trailing.equalTo(guestButton)
             $0.height.equalTo(48)
+        }
+    }
+
+    // MARK: - 위치 권한 체크 및 알림
+    private func checkLocationPermissionIfNeeded() {
+        let status = CLLocationManager.authorizationStatus()
+        if status == .notDetermined && !hasShownLocationAlert {
+            hasShownLocationAlert = true
+            showLocationAlert()
+        }
+    }
+
+    private func showLocationAlert() {
+        let alert = UIAlertController(
+            title: "위치정보 사용 안내",
+            message: "MICE 앱은 위치 기반 추천 및 서비스를 위해 위치정보를 사용합니다. 위치 권한을 허용해 주세요.",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "허용", style: .default, handler: { _ in
+            self.locationManager.requestWhenInUseAuthorization()
+        }))
+        alert.addAction(UIAlertAction(title: "나중에", style: .cancel))
+        present(alert, animated: true)
+    }
+
+    // MARK: - CLLocationManagerDelegate
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        switch status {
+        case .authorizedWhenInUse, .authorizedAlways:
+            print("위치 접근 허용됨")
+        case .denied, .restricted:
+            print("위치 접근 거부됨")
+        default:
+            break
         }
     }
 }
