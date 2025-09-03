@@ -51,23 +51,17 @@ class SearchResultCell: UITableViewCell {
     
     private let addressLabel: UILabel = UILabel.createSubLabel()
     
-    // [수정] 찜 버튼 - SF Symbols 사용, 배경/테두리 없음, tintColor로 색상 제어
     private lazy var bookmarkButton: UIButton = {
-        let button = UIButton(type: .system) // 다시 .system 타입으로 변경
-        // 비선택 시: 테두리만 있는 북마크 (Image 1과 유사)
-        button.setImage(UIImage(systemName: "bookmark"), for: .normal)
-        // 선택 시: 채워진 북마크 (Image 2와 유사)
-        button.setImage(UIImage(systemName: "bookmark.fill"), for: .selected)
-        
-        // 버튼 배경색은 항상 투명
-        button.backgroundColor = .clear
-        
-        // 초기 아이콘 색상은 회색
-        button.tintColor = .systemGray3
-        
-        button.addTarget(self, action: #selector(bookmarkButtonTapped), for: .touchUpInside)
-        return button
-    }()
+            let button = UIButton(type: .custom)
+
+            button.setImage(UIImage(named: "Bookmark"), for: .normal)
+            button.setImage(UIImage(named: "BookmarkActive"), for: .selected)
+            
+            button.contentEdgeInsets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
+            
+            button.addTarget(self, action: #selector(bookmarkButtonTapped), for: .touchUpInside)
+            return button
+        }()
     
     private var currentImageURL: URL?
     
@@ -95,7 +89,7 @@ class SearchResultCell: UITableViewCell {
         
         containerView.addSubview(thumbnailImageView)
         containerView.addSubview(textStackView)
-        containerView.addSubview(bookmarkButton) // 찜 버튼 추가
+        containerView.addSubview(bookmarkButton)
         
         containerView.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(UIEdgeInsets(top: 8, left: 20, bottom: 8, right: 20))
@@ -107,18 +101,18 @@ class SearchResultCell: UITableViewCell {
         }
         
         bookmarkButton.snp.makeConstraints { make in
-            make.top.equalTo(thumbnailImageView.snp.bottom).offset(16) // 이미지 하단에서 16pt 아래
-            make.trailing.equalToSuperview().inset(16)
-            make.width.height.equalTo(30)
-        }
+                    make.top.equalTo(thumbnailImageView.snp.bottom).offset(10)
+                    make.trailing.equalToSuperview().inset(16)
+                    make.width.height.equalTo(40)
+                }
         
         textStackView.snp.makeConstraints { make in
-            make.top.equalTo(thumbnailImageView.snp.bottom).offset(16)
-            make.leading.equalToSuperview().inset(16)
-            make.trailing.lessThanOrEqualTo(bookmarkButton.snp.leading).offset(-8)
-            make.bottom.equalToSuperview().inset(16)
-        }
-    }
+                    make.top.equalTo(thumbnailImageView.snp.bottom).offset(16)
+                    make.leading.equalToSuperview().inset(16)
+                    make.trailing.lessThanOrEqualTo(bookmarkButton.snp.leading).offset(-8)
+                    make.bottom.equalToSuperview().inset(16)
+                }
+            }
     
     // MARK: - Reuse Preparation
     override func prepareForReuse() {
@@ -126,19 +120,17 @@ class SearchResultCell: UITableViewCell {
         thumbnailImageView.image = nil
         currentImageURL = nil
         bookmarkButton.isSelected = false
-        updateBookmarkButtonColor() // 버튼 색상 초기화 적용
     }
     
     // MARK: - Configuration
     func configure(with stamp: Stamp) {
         placeNameLabel.text = stamp.title ?? "이름 없음"
-        //하드코딩된 텍스트 설정
         stampCountLabel.text = "획득가능한 스탬프: 1개"
         addressLabel.text = "주소: \(stamp.addr)"
-        bookmarkButton.isSelected = false
-        updateBookmarkButtonColor()
         
-       
+        bookmarkButton.isSelected = false // (나중에 실제 데이터와 연동 필요)
+        
+        // 이미지 로딩 로직
         thumbnailImageView.image = nil
         if let imageURLString = stamp.image, let url = URL(string: imageURLString) {
             currentImageURL = url
@@ -162,17 +154,6 @@ class SearchResultCell: UITableViewCell {
     // MARK: - Actions
     @objc private func bookmarkButtonTapped() {
         bookmarkButton.isSelected.toggle()
-        updateBookmarkButtonColor() // 탭할 때마다 색상 업데이트
-    }
-    
-    private func updateBookmarkButtonColor() {
-        let purpleColor = UIColor(red: 114/255.0, green: 76/255.0, blue: 249/255.0, alpha: 1)
-        
-        if bookmarkButton.isSelected {
-            bookmarkButton.tintColor = purpleColor // 선택 시: 보라색 아이콘
-        } else {
-            bookmarkButton.tintColor = .systemGray3 // 비선택 시: 회색 아이콘
-        }
     }
 }
 
