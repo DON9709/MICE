@@ -136,9 +136,9 @@ class StampDetailViewController: UIViewController {
         addressLabel.text = "경기도 가평군 상면 수목원로 123-456789 아침고요수목원"
         
         //스탬프 주소, 전화번호, 홈페이지 이미지
-        addressImageView.image = UIImage(systemName: "location.fill")
-        phoneNumberImageView.image = UIImage(systemName: "phone.fill")
-        heomePageImageView.image = UIImage(systemName: "location.fill")
+        addressImageView.image = UIImage(named: "Marker")
+        phoneNumberImageView.image = UIImage(named: "Phone")
+        heomePageImageView.image = UIImage(named: "Link")
         
         //스탬프 전화번호
         phoneNumberLabel.font = .systemFont(ofSize: 15)
