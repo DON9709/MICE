@@ -10,6 +10,8 @@ import SnapKit
 
 class StampDetailViewController: UIViewController {
     
+    var isBookmarked = false
+    
     var stamp: Stamp?
     
     //ViewModel
