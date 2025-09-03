@@ -42,8 +42,15 @@ final class LoginViewModel {
             let controller = ASAuthorizationController(authorizationRequests: [request])
             controller.delegate = AppleSignInDelegate.shared
             controller.presentationContextProvider = AppleSignInDelegate.shared
-            AppleSignInDelegate.shared.onLoginSuccess = { [weak self] in
-                self?.outputSubject.send(.navigateToMain)
+            AppleSignInDelegate.shared.onLoginSuccess = { [weak self] appleUID in
+                Task {
+                    if let email = await SupabaseManager.shared.fetchEmail(for: appleUID) {
+                        UserSession.shared.logIn(appleUID: appleUID, email: email)
+                        self?.outputSubject.send(.navigateToMain)
+                    } else {
+                        print("로그인 실패: 이메일 조회 실패")
+                    }
+                }
             }
             controller.performRequests()
         case .didTapGuest:

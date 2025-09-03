@@ -6,6 +6,8 @@
 	<string>$(SUPABASE_KEY)</string>
 	<key>SUPABASE_URL</key>
 	<string>$(SUPABASE_URL)</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>위치 기반 추천 및 서비스를 위해 위치정보를 사용합니다.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -25,5 +27,22 @@
 			</array>
 		</dict>
 	</dict>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>tong.visitkorea.or.kr</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
+		</dict>
+	</dict>
+	<key>CFBundleIdentifier</key>
+	<string></string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>위치 기반 추천 및 서비스를 위해 위치정보를 사용합니다.</string>
 </dict>
 </plist>
