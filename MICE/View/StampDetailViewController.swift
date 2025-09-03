@@ -17,6 +17,10 @@ class StampDetailViewController: UIViewController {
     //ViewModel
     private let viewModel = StampDetailViewModel()
     
+    
+    //전체 스크롤뷰
+    let scrollView = UIScrollView()
+    
     //Navigation
     let backButton = UIButton(type: .system)//뒤로가기버튼 -> 이전화면으로 이동
     
@@ -72,12 +76,6 @@ class StampDetailViewController: UIViewController {
     override func viewDidLoad() {
         if let selectedStamp = stamp {
                    print("selectedStamp.contentid = \(selectedStamp.contentid)")
-               } else {
-                   print("선택된 스탬프가 없습니다.")
-               }
-
-        if let selectedStamp = stamp {
-                   print("selectedStamp.title = \(selectedStamp.title)")
                } else {
                    print("선택된 스탬프가 없습니다.")
                }
@@ -145,6 +143,7 @@ class StampDetailViewController: UIViewController {
         favoriteButton.layer.shadowOpacity = 0.15
         favoriteButton.layer.shadowOffset = CGSize(width: 0, height: 2)
         favoriteButton.layer.shadowRadius = 4
+        favoriteButton.isSelected = stamp?.isAcquired ?? false
         
         //스탬프이미지(획득시 컬러)
         stampImageView.backgroundColor = .white
@@ -155,11 +154,21 @@ class StampDetailViewController: UIViewController {
         
         //스탬프 타이틀
         stampTitleLabel.font = .systemFont(ofSize: 18, weight: .bold)
-        stampTitleLabel.text = "아침고요수목원"
+        //타이틀 언래핑
+        if let stamp = stamp {
+            stampTitleLabel.text = stamp.title
+        }else{
+            print("타이틀 없음")
+        }
         
         //스탬프 주소
         addressLabel.font = .systemFont(ofSize: 15)
-        addressLabel.text = "경기도 가평군 상면 수목원로 123-456789 아침고요수목원"
+        //주소 언래핑
+        if let stamp = stamp {
+            addressLabel.text = stamp.addr
+        }else{
+            print("주소 없음")
+        }
         
         //스탬프 주소, 전화번호, 홈페이지 이미지
         addressImageView.image = UIImage(named: "Marker")
@@ -168,11 +177,21 @@ class StampDetailViewController: UIViewController {
         
         //스탬프 전화번호
         phoneNumberLabel.font = .systemFont(ofSize: 15)
-        phoneNumberLabel.text = "1544-6703"
+        //전화번호 언래핑
+        if let stamp = stamp {
+            phoneNumberLabel.text = stamp.tel
+        }else{
+            phoneNumberLabel.text = "전화번호 없음"
+        }
         
         //스탬프 홈페이지
         homePageLabel.font = .systemFont(ofSize: 15)
-        homePageLabel.text = "https://www.morningcalm.co.kr/html/main.php"
+        //홈페이지 언래핑
+        if let stamp = stamp {
+            homePageLabel.text = stamp.homepage
+        }else{
+            print("홈페이지 주소 없음")
+        }
         
         //회득날짜(미획득시-> 미획득 스탬프)
         achievedDateLabel.font = .systemFont(ofSize: 15)
@@ -185,7 +204,13 @@ class StampDetailViewController: UIViewController {
         
         //개요(내용)
         overviewContentLabel.font = .systemFont(ofSize: 15)
-        overviewContentLabel.text = "개요를 작성하세요."
+        //개요 언래핑
+        if let stamp = stamp {
+            overviewContentLabel.text = stamp.overview
+        }else{
+            overviewContentLabel.text = "내용 없음"
+        }
+        overviewContentLabel.numberOfLines = 0
         
         //스탬프획득하기(버튼)
         getStampButton.setTitle("스탬프획득하기", for: .normal)
@@ -310,6 +335,7 @@ class StampDetailViewController: UIViewController {
         overviewContentLabel.snp.makeConstraints { make in
             make.top.equalTo(overviewLabel.snp.bottom).offset(15)
             make.leading.equalToSuperview().offset(16)
+            make.trailing.equalToSuperview().inset(16)
         }
         
         // 본문(개요) 하단 구분선
