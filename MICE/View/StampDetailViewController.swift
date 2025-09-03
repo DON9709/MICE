@@ -18,8 +18,9 @@ class StampDetailViewController: UIViewController {
     private let viewModel = StampDetailViewModel()
     
     
-    //전체 스크롤뷰
+    //전체 스크롤뷰 + 콘텐츠뷰
     let scrollView = UIScrollView()
+    private let contentView = UIView()
     
     //Navigation
     let backButton = UIButton(type: .system)//뒤로가기버튼 -> 이전화면으로 이동
@@ -96,6 +97,8 @@ class StampDetailViewController: UIViewController {
         
         super.viewDidLoad()
         view.backgroundColor = .white
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
         setupViews()
         setupLayout()
         setupActions()
@@ -218,34 +221,47 @@ class StampDetailViewController: UIViewController {
         getStampButton.setTitleColor(.white, for: .normal)
         getStampButton.layer.cornerRadius = 8
         
-        view.addSubview(headerCardView)
-        view.addSubview(stampTitleLabel)
-        view.addSubview(addressLabel)
-        view.addSubview(phoneNumberLabel)
-        view.addSubview(homePageLabel)
-        view.addSubview(achievedDateLabel)
-        view.addSubview(overviewLabel)
-        view.addSubview(overviewContentLabel)
-        view.addSubview(addressLabel)
-        view.addSubview(getStampButton)
-        view.addSubview(achievedStampLabel)
-        view.addSubview(stampImageView)
         view.addSubview(backButton)
-        view.addSubview(addressImageView)
-        view.addSubview(phoneNumberImageView)
-        view.addSubview(heomePageImageView)
+        
+        contentView.addSubview(headerCardView)
+        contentView.addSubview(stampTitleLabel)
+        contentView.addSubview(addressLabel)
+        contentView.addSubview(phoneNumberLabel)
+        contentView.addSubview(homePageLabel)
+        contentView.addSubview(achievedDateLabel)
+        contentView.addSubview(overviewLabel)
+        contentView.addSubview(overviewContentLabel)
+        contentView.addSubview(addressLabel)
+        contentView.addSubview(achievedStampLabel)
+        contentView.addSubview(stampImageView)
+        contentView.addSubview(addressImageView)
+        contentView.addSubview(phoneNumberImageView)
+        contentView.addSubview(heomePageImageView)
+        
         
         // 섹션 구분선 스타일
         [separatorTop, separatorBottom].forEach { line in
             line.backgroundColor = .systemGray4
-            view.addSubview(line)
+            contentView.addSubview(line)
         }
+        
+        view.addSubview(getStampButton)
     }
     
     private func setupLayout() {
         
+        scrollView.snp.makeConstraints { make in
+            make.trailing.leading.equalTo(view.safeAreaLayoutGuide)
+            make.top.equalTo(backButton.snp.bottom).offset(18)
+            make.bottom.equalTo(getStampButton.snp.top).offset(-12)
+        }
+        contentView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+            make.width.equalToSuperview()
+        }
+        
         backButton.snp.remakeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(8)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(8)
             make.leading.equalToSuperview().offset(16)
             make.size.equalTo(20)
         }
@@ -261,7 +277,7 @@ class StampDetailViewController: UIViewController {
         headerCardView.snp.remakeConstraints { make in
             make.height.equalTo(190)//191 수정
             make.width.equalToSuperview()
-            make.top.equalTo(backButton.snp.bottom).offset(18)
+            make.top.equalToSuperview().offset(18)
         }
         
         stampImageView.snp.makeConstraints { make in
@@ -336,6 +352,7 @@ class StampDetailViewController: UIViewController {
             make.top.equalTo(overviewLabel.snp.bottom).offset(15)
             make.leading.equalToSuperview().offset(16)
             make.trailing.equalToSuperview().inset(16)
+            make.bottom.equalToSuperview().inset(16)
         }
         
         // 본문(개요) 하단 구분선
