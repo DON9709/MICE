@@ -75,6 +75,12 @@ class StampDetailViewController: UIViewController {
                } else {
                    print("선택된 스탬프가 없습니다.")
                }
+
+        if let selectedStamp = stamp {
+                   print("selectedStamp.title = \(selectedStamp.title)")
+               } else {
+                   print("선택된 스탬프가 없습니다.")
+               }
         
         //선택한 스탬프 장소이미지 연결
         if let urlString = stamp?.image, let url = URL(string: urlString) {
