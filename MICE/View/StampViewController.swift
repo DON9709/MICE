@@ -328,13 +328,19 @@ extension StampViewController: UICollectionViewDataSource, UICollectionViewDeleg
             return UICollectionViewCell()
         }
         let stamp = displayedStamps[indexPath.item]
-        cell.configure(with: stamp.stampimg ?? "")
+        if let urlString = stamp.stampimg, let url = URL(string: urlString) {
+            cell.imageView.kf.setImage(with: url)
+        } else {
+            cell.imageView.image = nil
+        }
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selected = displayedStamps[indexPath.item]
+        print("\(selected.contentid)")
         let detailVC = StampDetailViewController()
+        detailVC.stamp = selected
         if let nav = self.navigationController {
             nav.pushViewController(detailVC, animated: true)
         } else {
@@ -347,7 +353,7 @@ extension StampViewController: UICollectionViewDataSource, UICollectionViewDeleg
 
 final class StampColletionCell: UICollectionViewCell {
     static let identifier = "StampCell"
-    private let imageView = UIImageView()
+    let imageView = UIImageView()
     override init(frame: CGRect) {
         super.init(frame: frame)
         contentView.addSubview(imageView)
@@ -367,26 +373,6 @@ final class StampColletionCell: UICollectionViewCell {
         super.prepareForReuse()
         imageView.kf.cancelDownloadTask()
         imageView.image = nil
-    }
-    
-    func configure(with urlString: String) {
-        guard let url = URL(string: urlString) else {
-            imageView.image = nil
-            return
-        }
-        let processor = DownsamplingImageProcessor(size: bounds.size)
-        imageView.kf.setImage(
-            with: url,
-            placeholder: nil,
-            options: [
-                .processor(processor),
-                .scaleFactor(UIScreen.main.scale),
-                .cacheOriginalImage,
-                .transition(.fade(0.2)),
-                .backgroundDecode,
-                .retryStrategy(DelayRetryStrategy(maxRetryCount: 2, retryInterval: .seconds(2)))
-            ]
-        )
     }
     
     required init?(coder: NSCoder) {
