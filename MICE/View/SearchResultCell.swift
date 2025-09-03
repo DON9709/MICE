@@ -42,7 +42,7 @@ class SearchResultCell: UITableViewCell {
         return label
     }()
     
-    private let stampCountLabel: UILabel = {
+    private let acquisitionStatusLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14, weight: .semibold)
         label.textColor = UIColor(red: 114/255.0, green: 76/255.0, blue: 249/255.0, alpha: 1)
@@ -57,13 +57,19 @@ class SearchResultCell: UITableViewCell {
             button.setImage(UIImage(named: "Bookmark"), for: .normal)
             button.setImage(UIImage(named: "BookmarkActive"), for: .selected)
             
-            button.contentEdgeInsets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
+            
             
             button.addTarget(self, action: #selector(bookmarkButtonTapped), for: .touchUpInside)
             return button
         }()
     
     private var currentImageURL: URL?
+    
+    private let dateFormatter: DateFormatter = {
+           let formatter = DateFormatter()
+           formatter.dateFormat = "yyyy.MM.dd 획득"
+           return formatter
+       }()
     
     // MARK: - Life Cycle
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -82,7 +88,7 @@ class SearchResultCell: UITableViewCell {
     private func setupUI() {
         contentView.addSubview(containerView)
         
-        let textStackView = UIStackView(arrangedSubviews: [placeNameLabel, stampCountLabel, addressLabel])
+        let textStackView = UIStackView(arrangedSubviews: [placeNameLabel, acquisitionStatusLabel, addressLabel])
         textStackView.axis = .vertical
         textStackView.spacing = 6
         textStackView.alignment = .leading
@@ -125,10 +131,24 @@ class SearchResultCell: UITableViewCell {
     // MARK: - Configuration
     func configure(with stamp: Stamp) {
         placeNameLabel.text = stamp.title ?? "이름 없음"
-        stampCountLabel.text = "획득가능한 스탬프: 1개"
+        print(stamp.acquiredAt, stamp.title, stamp.isAcquired)
+        // 1. isAcquired 상태에 따라 획득 날짜 또는 "미획득 스탬프". 표시
+        if stamp.isAcquired {
+            if let date = stamp.acquiredAt {
+                        acquisitionStatusLabel.text = dateFormatter.string(from: date)
+              
+                    } else {
+                        acquisitionStatusLabel.text = "획득" // 날짜 정보가 없을 경우
+                    }
+                    // 획득 시 보라색으로 설정
+                    acquisitionStatusLabel.textColor = UIColor(red: 114/255.0, green: 76/255.0, blue: 249/255.0, alpha: 1)
+                } else {
+                    acquisitionStatusLabel.text = "미획득 스탬프"
+                   
+                }
         addressLabel.text = "주소: \(stamp.addr)"
         
-        bookmarkButton.isSelected = false // (나중에 실제 데이터와 연동 필요)
+        bookmarkButton.isSelected = stamp.isBookmarked
         
         // 이미지 로딩 로직
         thumbnailImageView.image = nil
