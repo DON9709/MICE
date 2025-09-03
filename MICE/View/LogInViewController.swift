@@ -11,7 +11,7 @@ import Combine
 import AuthenticationServices
 import CoreLocation
 
-// MARK: - 뷰모델 프로토콜
+
 // MARK: - 뷰모델 프로토콜
 protocol LogInViewModelType {
     // Define input/output properties here later
@@ -26,6 +26,7 @@ final class LogInViewController: UIViewController, CLLocationManagerDelegate {
     // MARK: - 뷰모델
     private let viewModel: LoginViewModel
     private var cancellables = Set<AnyCancellable>()
+    private let launchSource: LaunchSource
     
     // MARK: - UI 구성요소
     private let logoImageView: UIImageView = {
@@ -54,8 +55,9 @@ final class LogInViewController: UIViewController, CLLocationManagerDelegate {
     }()
     
     // MARK: - Init
-    init(viewModel: LoginViewModel = LoginViewModel()) {
+    init(viewModel: LoginViewModel = LoginViewModel(), launchSource: LaunchSource) {
         self.viewModel = viewModel
+        self.launchSource = launchSource
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -81,9 +83,10 @@ final class LogInViewController: UIViewController, CLLocationManagerDelegate {
             .sink { [weak self] output in
                 switch output {
                 case .navigateToMain:
-                    let myPageVC = MypageViewController()
-                    myPageVC.modalPresentationStyle = .fullScreen
-                    self?.present(myPageVC, animated: true, completion: nil)
+                    let tabBarController = MainTabBarController()
+                    tabBarController.selectedIndex = (self?.launchSource == .firstInstall) ? 0 : 4
+                    tabBarController.modalPresentationStyle = .fullScreen
+                    self?.present(tabBarController, animated: true, completion: nil)
                 case .showAppleLogin:
                     // Handle showAppleLogin if needed
                     break
@@ -93,7 +96,10 @@ final class LogInViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     @objc private func guestButtonTapped() {
-        dismiss(animated: true, completion: nil)
+        let tabBarController = MainTabBarController()
+        tabBarController.selectedIndex = (launchSource == .firstInstall) ? 0 : 4
+        tabBarController.modalPresentationStyle = .fullScreen
+        self.present(tabBarController, animated: true, completion: nil)
     }
     
     @objc private func appleLoginButtonTapped() {
