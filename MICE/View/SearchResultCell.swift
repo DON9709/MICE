@@ -7,12 +7,17 @@
 
 import UIKit
 import SnapKit
+import Kingfisher
 
 class SearchResultCell: UITableViewCell {
 
     static let identifier = "SearchResultCell"
     
-    // MARK: - UI Components
+    // ▼▼▼▼▼ 콜백과 contentId 저장을 위한 프로퍼티 추가 ▼▼▼▼▼
+    var onBookmarkTapped: ((_ contentId: String, _ isBookmarked: Bool) -> Void)?
+    private var contentId: String?
+    
+    // ... (UI Components 및 나머지 코드는 이전과 동일) ...
     private let containerView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
@@ -45,7 +50,6 @@ class SearchResultCell: UITableViewCell {
     private let acquisitionStatusLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14, weight: .semibold)
-        label.textColor = UIColor(red: 114/255.0, green: 76/255.0, blue: 249/255.0, alpha: 1)
         return label
     }()
     
@@ -53,12 +57,8 @@ class SearchResultCell: UITableViewCell {
     
     private lazy var bookmarkButton: UIButton = {
             let button = UIButton(type: .custom)
-
             button.setImage(UIImage(named: "Bookmark"), for: .normal)
-            button.setImage(UIImage(named: "BookmarkActive"), for: .selected)
-            
-            
-            
+            button.setImage(UIImage(named: "BookMark.fil"), for: .selected)
             button.addTarget(self, action: #selector(bookmarkButtonTapped), for: .touchUpInside)
             return button
         }()
@@ -66,12 +66,11 @@ class SearchResultCell: UITableViewCell {
     private var currentImageURL: URL?
     
     private let dateFormatter: DateFormatter = {
-           let formatter = DateFormatter()
-           formatter.dateFormat = "yyyy.MM.dd 획득"
-           return formatter
-       }()
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy.MM.dd 획득"
+        return formatter
+    }()
     
-    // MARK: - Life Cycle
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.backgroundColor = .clear
@@ -84,7 +83,6 @@ class SearchResultCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - UI Setup
     private func setupUI() {
         contentView.addSubview(containerView)
         
@@ -120,59 +118,48 @@ class SearchResultCell: UITableViewCell {
                 }
             }
     
-    // MARK: - Reuse Preparation
     override func prepareForReuse() {
         super.prepareForReuse()
         thumbnailImageView.image = nil
         currentImageURL = nil
         bookmarkButton.isSelected = false
     }
-    
-    // MARK: - Configuration
+
     func configure(with stamp: Stamp) {
+        // ▼▼▼▼▼ contentId를 셀 내부에 저장 ▼▼▼▼▼
+        self.contentId = stamp.contentid
+        
         placeNameLabel.text = stamp.title ?? "이름 없음"
-        // 1. isAcquired 상태에 따라 획득 날짜 또는 "미획득 스탬프". 표시
+        addressLabel.text = "주소: \(stamp.addr)"
+        
         if stamp.isAcquired {
             if let date = stamp.acquiredAt {
-                        acquisitionStatusLabel.text = dateFormatter.string(from: date)
-              
-                    } else {
-                        acquisitionStatusLabel.text = "획득" // 날짜 정보가 없을 경우
-                    }
-                    // 획득 시 보라색으로 설정
-                    acquisitionStatusLabel.textColor = UIColor(red: 114/255.0, green: 76/255.0, blue: 249/255.0, alpha: 1)
-                } else {
-                    acquisitionStatusLabel.text = "미획득 스탬프"
-                   
-                }
-        addressLabel.text = "주소: \(stamp.addr)"
+                acquisitionStatusLabel.text = dateFormatter.string(from: date)
+            } else {
+                acquisitionStatusLabel.text = "획득"
+            }
+            acquisitionStatusLabel.textColor = UIColor(red: 114/255.0, green: 76/25_5.0, blue: 249/255.0, alpha: 1)
+        } else {
+            acquisitionStatusLabel.text = "미획득 스탬프"
+            acquisitionStatusLabel.textColor = .gray
+        }
         
         bookmarkButton.isSelected = stamp.isBookmarked
         
-        // 이미지 로딩 로직
-        thumbnailImageView.image = nil
         if let imageURLString = stamp.image, let url = URL(string: imageURLString) {
-            currentImageURL = url
-            URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
-                guard let self = self, self.currentImageURL == url else { return }
-                if let data = data, let image = UIImage(data: data) {
-                    DispatchQueue.main.async { self.thumbnailImageView.image = image }
-                } else {
-                    DispatchQueue.main.async {
-                        self.thumbnailImageView.image = UIImage(systemName: "photo")
-                        self.thumbnailImageView.contentMode = .scaleAspectFit
-                    }
-                }
-            }.resume()
+            thumbnailImageView.kf.setImage(with: url, placeholder: UIImage(systemName: "photo"))
         } else {
             thumbnailImageView.image = UIImage(systemName: "photo")
             thumbnailImageView.contentMode = .scaleAspectFit
         }
     }
     
-    // MARK: - Actions
     @objc private func bookmarkButtonTapped() {
+        // ▼▼▼▼▼ 버튼 상태를 바꾸고 콜백으로 이벤트 전달 ▼▼▼▼▼
         bookmarkButton.isSelected.toggle()
+        if let id = contentId {
+            onBookmarkTapped?(id, bookmarkButton.isSelected)
+        }
     }
 }
 
