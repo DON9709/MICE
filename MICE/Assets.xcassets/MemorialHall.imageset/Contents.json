@@ -1,10 +1,12 @@
 {
   "images" : [
     {
+      "filename" : "MemorialHall 2.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "MemorialHall 1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },

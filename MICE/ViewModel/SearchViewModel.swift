@@ -95,4 +95,17 @@ class SearchViewModel {
     func removeRecentSearch(at index: Int) {
         recentSearches.remove(at: index)
     }
+    
+    // ▼▼▼▼▼ 오류 해결을 위해 이 함수를 추가합니다 ▼▼▼▼▼
+    // 로컬 데이터를 동기화하는 함수
+    func updateBookmarkStatus(contentId: String, isBookmarked: Bool) {
+        // 전체 데이터에서 해당 스탬프를 찾아 상태를 업데이트
+        if let index = allStamps.firstIndex(where: { $0.contentid == contentId }) {
+            allStamps[index].isBookmarked = isBookmarked
+        }
+        // 현재 필터링된 데이터에도 똑같이 업데이트
+        if let filteredIndex = filteredStamps.firstIndex(where: { $0.contentid == contentId }) {
+            filteredStamps[filteredIndex].isBookmarked = isBookmarked
+        }
+    }
 }
