@@ -72,6 +72,14 @@ class StampDetailViewController: UIViewController {
                    print("선택된 스탬프가 없습니다.")
                }
         
+        //선택한 스탬프 장소이미지 연결
+        if let urlString = stamp?.image, let url = URL(string: urlString) {
+            headerCardView.kf.setImage(with: url)
+        } else {
+            headerCardView.image = nil
+        }
+        
+        //선택한 스탬프 스탬프이미지 연결
         if let urlString = stamp?.stampimg, let url = URL(string: urlString) {
             stampImageView.kf.setImage(with: url)
         } else {
