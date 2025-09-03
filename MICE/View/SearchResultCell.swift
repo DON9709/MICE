@@ -38,20 +38,30 @@ class SearchResultCell: UITableViewCell {
     private let placeNameLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 18, weight: .bold)
+        label.numberOfLines = 1
         return label
     }()
     
-    // [추가] 획득 가능한 스탬프 레이블
     private let stampCountLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14, weight: .semibold)
-        label.textColor = .systemRed // 빨간색 글씨
+        label.textColor = UIColor(red: 114/255.0, green: 76/255.0, blue: 249/255.0, alpha: 1)
         return label
     }()
     
-    private let addressLabel: UILabel = UILabel.createSubLabel() // 주소
-    private let phoneLabel = UILabel.createSubLabel() // 전화번호
-    private let stampNumberLabel = UILabel.createSubLabel() // 스탬프 번호
+    private let addressLabel: UILabel = UILabel.createSubLabel()
+    
+    private lazy var bookmarkButton: UIButton = {
+            let button = UIButton(type: .custom)
+
+            button.setImage(UIImage(named: "Bookmark"), for: .normal)
+            button.setImage(UIImage(named: "BookmarkActive"), for: .selected)
+            
+            button.contentEdgeInsets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
+            
+            button.addTarget(self, action: #selector(bookmarkButtonTapped), for: .touchUpInside)
+            return button
+        }()
     
     private var currentImageURL: URL?
     
@@ -72,14 +82,14 @@ class SearchResultCell: UITableViewCell {
     private func setupUI() {
         contentView.addSubview(containerView)
         
-        // [수정] 텍스트 레이블들을 StackView에 추가 (순서 변경)
-        let textStackView = UIStackView(arrangedSubviews: [placeNameLabel, stampCountLabel, addressLabel, phoneLabel, stampNumberLabel])
+        let textStackView = UIStackView(arrangedSubviews: [placeNameLabel, stampCountLabel, addressLabel])
         textStackView.axis = .vertical
         textStackView.spacing = 6
         textStackView.alignment = .leading
         
         containerView.addSubview(thumbnailImageView)
         containerView.addSubview(textStackView)
+        containerView.addSubview(bookmarkButton)
         
         containerView.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(UIEdgeInsets(top: 8, left: 20, bottom: 8, right: 20))
@@ -90,41 +100,44 @@ class SearchResultCell: UITableViewCell {
             make.height.equalTo(150)
         }
         
+        bookmarkButton.snp.makeConstraints { make in
+                    make.top.equalTo(thumbnailImageView.snp.bottom).offset(10)
+                    make.trailing.equalToSuperview().inset(16)
+                    make.width.height.equalTo(40)
+                }
+        
         textStackView.snp.makeConstraints { make in
-            make.top.equalTo(thumbnailImageView.snp.bottom).offset(16)
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.bottom.equalToSuperview().inset(16)
-        }
-    }
+                    make.top.equalTo(thumbnailImageView.snp.bottom).offset(16)
+                    make.leading.equalToSuperview().inset(16)
+                    make.trailing.lessThanOrEqualTo(bookmarkButton.snp.leading).offset(-8)
+                    make.bottom.equalToSuperview().inset(16)
+                }
+            }
     
     // MARK: - Reuse Preparation
     override func prepareForReuse() {
         super.prepareForReuse()
         thumbnailImageView.image = nil
         currentImageURL = nil
+        bookmarkButton.isSelected = false
     }
     
     // MARK: - Configuration
     func configure(with stamp: Stamp) {
         placeNameLabel.text = stamp.title ?? "이름 없음"
-        
-        //하드코딩된 텍스트 설정
         stampCountLabel.text = "획득가능한 스탬프: 1개"
-        
         addressLabel.text = "주소: \(stamp.addr)"
+        
+        bookmarkButton.isSelected = false // (나중에 실제 데이터와 연동 필요)
         
         // 이미지 로딩 로직
         thumbnailImageView.image = nil
         if let imageURLString = stamp.image, let url = URL(string: imageURLString) {
             currentImageURL = url
-            
             URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
                 guard let self = self, self.currentImageURL == url else { return }
-                
                 if let data = data, let image = UIImage(data: data) {
-                    DispatchQueue.main.async {
-                        self.thumbnailImageView.image = image
-                    }
+                    DispatchQueue.main.async { self.thumbnailImageView.image = image }
                 } else {
                     DispatchQueue.main.async {
                         self.thumbnailImageView.image = UIImage(systemName: "photo")
@@ -136,6 +149,11 @@ class SearchResultCell: UITableViewCell {
             thumbnailImageView.image = UIImage(systemName: "photo")
             thumbnailImageView.contentMode = .scaleAspectFit
         }
+    }
+    
+    // MARK: - Actions
+    @objc private func bookmarkButtonTapped() {
+        bookmarkButton.isSelected.toggle()
     }
 }
 
