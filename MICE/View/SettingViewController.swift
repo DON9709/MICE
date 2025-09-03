@@ -8,6 +8,7 @@
 import UIKit
 
 class SettingViewController: UIViewController {
+    var launchSource: LaunchSource?
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
