@@ -54,6 +54,7 @@ class BookmarkViewController: UIViewController {
     }()
     
     // MARK: - Life Cycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemGray6
@@ -62,7 +63,17 @@ class BookmarkViewController: UIViewController {
         segmentedControl.addTarget(self, action: #selector(segmentedControlDidChange), for: .valueChanged)
         
         setupUI()
+        
     }
+    override func viewWillAppear(_ animated: Bool) {
+            super.viewWillAppear(animated)
+            navigationController?.setNavigationBarHidden(true, animated: false)
+        }
+        
+        override func viewWillDisappear(_ animated: Bool) {
+            super.viewWillDisappear(animated)
+            navigationController?.setNavigationBarHidden(false, animated: false)
+        }
     
     // MARK: - Setup
     private func setupUI() {

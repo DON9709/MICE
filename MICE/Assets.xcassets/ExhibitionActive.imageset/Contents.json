@@ -1,17 +1,15 @@
 {
   "images" : [
     {
-      "filename" : " ExhibitionActive.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : " ExhibitionActive 1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : " ExhibitionActive 2.png",
+      "filename" : "ExhibitionActive.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

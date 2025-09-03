@@ -1,17 +1,15 @@
 {
   "images" : [
     {
-      "filename" : " ArtGalleryAtive.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : " ArtGalleryAtive 1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : " ArtGalleryAtive 2.png",
+      "filename" : "ArtGalleryActive.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

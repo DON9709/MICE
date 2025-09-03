@@ -1,17 +1,15 @@
 {
   "images" : [
     {
-      "filename" : "MemorialHallActive .png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "MemorialHallActive  1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "MemorialHallActive  2.png",
+      "filename" : "MemorialHallActive.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
