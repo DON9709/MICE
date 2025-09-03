@@ -140,15 +140,16 @@ extension BookmarkViewController: UITableViewDataSource, UITableViewDelegate {
             return UITableViewCell()
         }
         
-        // 세그먼트 컨트롤의 선택에 따라 사용할 데이터를 결정
-        let stampData: SearchResult
+        // ▼▼▼▼▼ 여기가 핵심 수정 부분입니다 ▼▼▼▼▼
+        // 데이터 타입을 SearchResult에서 Stamp로 변경하여 에러를 해결합니다.
+        let stamp: Stamp
         if segmentedControl.selectedSegmentIndex == 0 {
-            stampData = viewModel.savedStamps[indexPath.row]
+            stamp = viewModel.savedStamps[indexPath.row]
         } else {
-            stampData = viewModel.visitedStamps[indexPath.row]
+            stamp = viewModel.visitedStamps[indexPath.row]
         }
         
-        cell.configure(with: stampData)
+        cell.configure(with: stamp) // 이제 'configure(with: Stamp)' 함수가 정상적으로 호출됩니다.
         return cell
     }
 }

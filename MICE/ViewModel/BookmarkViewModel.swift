@@ -7,19 +7,15 @@
 
 import Foundation
 
+// 임시 데이터를 위한 ViewModel
 class BookmarkViewModel {
-    
-    // 저장한 스탬프 목록 (하드코딩된 데이터 3개)
-    let savedStamps: [SearchResult] = [
-        SearchResult(imageName: "exhibition.dummy", placeName: "아침고요수목원 국화전시회", closedInfo: "매주 월요일 휴업", hoursInfo: "09:00 ~ 22:00", missionInfo: "진행중인 스탬프 미션: 1개"),
-        SearchResult(imageName: "exhibition.dummy", placeName: "경주 박물관", closedInfo: "매주 월요일 휴업", hoursInfo: "09:00 ~ 22:00", missionInfo: "진행중인 스탬프 미션: 1개"),
-        SearchResult(imageName: "exhibition.dummy", placeName: "부산 시립미술관", closedInfo: "매주 월요일 휴업", hoursInfo: "10:00 - 18:00", missionInfo: "진행중인 스탬프 미션: 1개")
+    // 임시 '저장한 스탬프' 데이터 (Stamp 타입)
+    let savedStamps: [Stamp] = [
+        Stamp(contentid: "saved_1", addr: "서울시 종로구", createdtime: nil, image: nil, mapx: nil, mapy: nil, tel: nil, title: "저장한 국립고궁박물관", homepage: nil, overview: nil, stampno: 8, stampimg: nil, isAcquired: true, acquiredAt: nil, isBookmarked: false),
+        Stamp(contentid: "saved_2", addr: "서울시 용산구", createdtime: nil, image: nil, mapx: nil, mapy: nil, tel: nil, title: "저장한 국립중앙박물관", homepage: nil, overview: nil, stampno: 11, stampimg: nil, isAcquired: true, acquiredAt: nil, isBookmarked: false)
     ]
-    
-    // 다녀온 스탬프 목록 (하드코딩된 데이터 3개)
-    let visitedStamps: [SearchResult] = [
-        SearchResult(imageName: "exhibition.dummy", placeName: "국립중앙박물관", closedInfo: "매주 월요일 휴업", hoursInfo: "10:00 - 18:00", missionInfo: "스탬프 미션 완료"),
-        SearchResult(imageName: "exhibition.dummy", placeName: "대림미술관", closedInfo: "매주 월요일 휴업", hoursInfo: "11:00 - 19:00", missionInfo: "스탬프 미션 완료"),
-        SearchResult(imageName: "exhibition.dummy", placeName: "지스타 2025", closedInfo: "행사 종료", hoursInfo: "10:00 - 18:00", missionInfo: "스탬프 미션 완료")
+    // 임시 '다녀온 스탬프' 데이터 (Stamp 타입)
+    let visitedStamps: [Stamp] = [
+        Stamp(contentid: "visited_1", addr: "경기도 과천시", createdtime: nil, image: nil, mapx: nil, mapy: nil, tel: nil, title: "다녀온 국립현대미술관", homepage: nil, overview: nil, stampno: 86, stampimg: nil, isAcquired: true, acquiredAt: nil, isBookmarked: false)
     ]
 }
