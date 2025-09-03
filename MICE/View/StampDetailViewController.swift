@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import Kingfisher
 
 class StampDetailViewController: UIViewController {
     
@@ -74,12 +75,74 @@ class StampDetailViewController: UIViewController {
     //스탬프획득하기(버튼)
     let getStampButton = UIButton(type: .system)
     
+    //획득 날짜 표시
+    private let dataFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "획득 날짜 : yyyy.MM.dd"
+        return formatter
+    }()
+    
+    // MARK TODO
+    //getStampButton
+    // 1. 이미 획득한 스탬프 = 버튼미활성화/회색/흰색
+    // 2. 획득 가능한 스탬프 = 버튼활성화/보라색/흰색텍스트
+    // 3. 미획득 스탬프 = 버튼활성화/보라색/흰색텍스트/획득장소로 가야지 획득가능하다는 alert처리
+    
+    //achievedDateLabel
+    // 1. 이미 획득한 스탬프 = 획득날짜(getStampButton클릭한 날짜) 표기 + 보라색 색상표기
+    // 2. 획득 가능한 스탬프 = 활성화된 getStampButton 클릭시 클릭된 날짜 표기
+    // 3. 미획득 스탬프 = 미획득 스탬프 표기 + 보라색 색상표기
+    
+    //stampView
+    // 1. 이미 획득한 스탬프 = 카테고리별 색상으로 컬러표시
+    // 2. 획득 가능한 스탬프 = 회색 -> 활성화된 getStampButton 클릭시 카테고리별 색상 표시
+    // 3. 미획득 스탬프 = 회색
+    
+    //achievedStampLabel
+    // 1. 이미 획득한 스탬프("획득한 스탬프") = 회색 + 흰색텍스트 이미지 위에 표기 -> 디자인 색상도 어플 컬러코드와 일치하면 좋을 것 같음. ("회색"="획득"과 좀 안어울리는 것 같음.)
+    // 2. 획득 가능한 스탬프 = 별도 표기 없음.
+    // 3. 미획득 스탬프 = 나타나지않게끔
+    
     override func viewDidLoad() {
-        if let selectedStamp = stamp {
-                   print("selectedStamp.contentid = \(selectedStamp.contentid)")
-               } else {
-                   print("선택된 스탬프가 없습니다.")
-               }
+
+        //획득한 스탬프 연결
+        if stamp?.isAcquired == true {
+            achievedStampLabel.isHidden = false
+            if let date = stamp?.acquiredAt {
+                achievedDateLabel.text = dataFormatter.string(from: date)
+            } else {
+                achievedDateLabel.text = "미획득 스탬프"
+            }
+            
+            getStampButton.setTitleColor(UIColor(red: 117/255, green: 117/255, blue: 117/255, alpha: 1), for: .normal)
+            getStampButton.backgroundColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1)
+            getStampButton.isEnabled = false
+            
+            //stampno에 따라 획득한 스탬프 색상 다르게 처리
+            if let stampno = stamp?.stampno {
+                switch stampno {
+                case 1...79:
+                    stampImageView.tintColor = UIColor(red: 11/255, green: 160/255, blue: 172/255, alpha: 1)//박물관
+                case 80...128:
+                    stampImageView.tintColor = UIColor(red: 247/255, green: 106/255, blue: 1/255, alpha: 1)//미술관
+                case 129...153:
+                    stampImageView.tintColor = UIColor(red: 101/255, green: 0/255, blue: 0/255, alpha: 1)//기념관
+                case 154...177:
+                    stampImageView.tintColor = UIColor(red: 0/255, green: 2/255, blue: 105/255, alpha: 1)//전시관
+                default:
+                    stampImageView.tintColor = UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1)//그 외
+                }
+            } else {
+                print("스탬프가 없습니다.")
+            }
+            
+        } else {
+            achievedStampLabel.isHidden = true
+            stampImageView.tintColor = UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1)
+            achievedDateLabel.text = "미획득 스탬프"
+            getStampButton.setTitleColor(UIColor(red: 250/255, green: 250/255, blue: 250/255, alpha: 1), for: .normal)
+            getStampButton.backgroundColor = UIColor(red: 114/255, green: 76/255, blue: 249/255, alpha: 1)
+        }
         
         //선택한 스탬프 장소이미지 연결
         if let urlString = stamp?.image, let url = URL(string: urlString) {
@@ -90,7 +153,11 @@ class StampDetailViewController: UIViewController {
         
         //선택한 스탬프 스탬프이미지 연결
         if let urlString = stamp?.stampimg, let url = URL(string: urlString) {
-            stampImageView.kf.setImage(with: url)
+            stampImageView.kf.setImage(with: url, options: [
+                .imageModifier(AnyImageModifier { image in
+                    image.withRenderingMode(.alwaysTemplate)
+                })
+            ])
         } else {
             stampImageView.image = nil
         }
@@ -108,7 +175,7 @@ class StampDetailViewController: UIViewController {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
-
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
@@ -129,10 +196,15 @@ class StampDetailViewController: UIViewController {
         backButton.tintColor = .label
         
         //달성한스탬프표시(획득시)
-        achievedStampLabel.text = "달성한 스탬프"
-        achievedStampLabel.backgroundColor = .systemGray6
+        achievedStampLabel.text = "획득한 스탬프"
+        achievedStampLabel.textColor = UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 1)
+        achievedStampLabel.backgroundColor = UIColor(red: 114/255, green: 76/255, blue: 249/255, alpha: 1)
         achievedStampLabel.layer.cornerRadius = 13
         achievedStampLabel.layer.masksToBounds = true
+        achievedStampLabel.layer.maskedCorners = [
+            .layerMinXMaxYCorner,
+            .layerMaxXMaxYCorner
+        ]
         achievedStampLabel.textAlignment = .center
         achievedStampLabel.layoutMargins = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
         achievedStampLabel.isUserInteractionEnabled = false
@@ -198,9 +270,8 @@ class StampDetailViewController: UIViewController {
         
         //회득날짜(미획득시-> 미획득 스탬프)
         achievedDateLabel.font = .systemFont(ofSize: 15)
-        achievedDateLabel.text = "미획득 스탬프"
-        achievedDateLabel.textColor = .red
-        
+        achievedDateLabel.textColor = UIColor(red: 114/255, green: 76/255, blue: 249/255, alpha: 1)
+
         //개요(라벨)
         overviewLabel.font = .systemFont(ofSize: 16, weight: .bold)
         overviewLabel.text = "개요"
@@ -216,10 +287,9 @@ class StampDetailViewController: UIViewController {
         overviewContentLabel.numberOfLines = 0
         
         //스탬프획득하기(버튼)
-        getStampButton.setTitle("스탬프획득하기", for: .normal)
-        getStampButton.backgroundColor = .black
-        getStampButton.setTitleColor(.white, for: .normal)
+        getStampButton.setTitle("스탬프 획득하기", for: .normal)
         getStampButton.layer.cornerRadius = 8
+        //텍스트 크기 조절 방법?
         
         view.addSubview(backButton)
         
@@ -255,6 +325,7 @@ class StampDetailViewController: UIViewController {
             make.top.equalTo(backButton.snp.bottom).offset(18)
             make.bottom.equalTo(getStampButton.snp.top).offset(-12)
         }
+        
         contentView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
             make.width.equalToSuperview()
@@ -265,7 +336,7 @@ class StampDetailViewController: UIViewController {
             make.leading.equalToSuperview().offset(16)
             make.size.equalTo(20)
         }
-
+        
         achievedStampLabel.snp.makeConstraints { make in
             make.top.equalTo(headerCardView)
             make.centerX.equalToSuperview()
@@ -277,7 +348,7 @@ class StampDetailViewController: UIViewController {
         headerCardView.snp.remakeConstraints { make in
             make.height.equalTo(190)//191 수정
             make.width.equalToSuperview()
-            make.top.equalToSuperview().offset(18)
+            make.top.equalToSuperview()
         }
         
         stampImageView.snp.makeConstraints { make in
@@ -285,7 +356,7 @@ class StampDetailViewController: UIViewController {
             make.size.equalTo(106)
             make.bottom.equalTo(headerCardView.snp.bottom).offset(42)
         }
-
+        
         favoriteButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(16)
             make.size.equalTo(40)
@@ -333,7 +404,7 @@ class StampDetailViewController: UIViewController {
         
         achievedDateLabel.snp.makeConstraints { make in
             make.top.equalTo(homePageLabel.snp.bottom).offset(12)
-            make.leading.equalToSuperview().offset(42)
+            make.leading.equalToSuperview().offset(16)
         }
         
         // 연락처/정보 블록 하단 구분선
@@ -372,6 +443,7 @@ class StampDetailViewController: UIViewController {
     private func setupActions() {
         backButton.addTarget(self, action: #selector(tapBack), for: .touchUpInside)
         favoriteButton.addTarget(self, action: #selector(toggleFavorite), for: .touchUpInside)
+        getStampButton.addTarget(self, action: #selector(tapBack), for: .touchUpInside)
     }
 }
 
@@ -387,7 +459,7 @@ private extension StampDetailViewController {
     @objc private func toggleFavorite() {
         favoriteButton.isSelected.toggle()
         print("123")
-//        print("selectedStamp.contentid = \(stamp.contentid)")
+//        print("selectedStamp.contentid = \(stamp?.contentid)")
         if favoriteButton.isSelected {
             favoriteButton.setImage(UIImage(named: "BookMark.fill"), for: .normal)
         } else {
