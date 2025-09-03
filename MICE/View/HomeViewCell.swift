@@ -91,7 +91,6 @@ class ExhibitionCell: UICollectionViewCell {
         titleLabel.text = exhibition.title
         dateLabel.text = exhibition.date
         
-        let bookmarkImageName = exhibition.isBookmarked ? "bookmark.fill" : "bookmark"
-        bookmarkButton.setImage(UIImage(systemName: bookmarkImageName), for: .normal)
+        
     }
 }
