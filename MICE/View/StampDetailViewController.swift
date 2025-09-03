@@ -211,6 +211,7 @@ class StampDetailViewController: UIViewController {
         
         //즐겨찾기버튼
         favoriteButton.setImage(UIImage(named: "BookMark"), for: .normal)
+        favoriteButton.setImage(UIImage(named: "BookMark.fill"), for: .selected)
         favoriteButton.backgroundColor = .white
         favoriteButton.layer.cornerRadius = 20
         favoriteButton.layer.masksToBounds = false
@@ -458,13 +459,6 @@ private extension StampDetailViewController {
     
     @objc private func toggleFavorite() {
         favoriteButton.isSelected.toggle()
-        print("123")
-//        print("selectedStamp.contentid = \(stamp?.contentid)")
-        if favoriteButton.isSelected {
-            favoriteButton.setImage(UIImage(named: "BookMark.fill"), for: .normal)
-        } else {
-            favoriteButton.setImage(UIImage(named: "BookMark"), for: .normal)
-        }
     }
 }
 //#Preview {
