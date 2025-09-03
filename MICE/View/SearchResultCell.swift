@@ -131,7 +131,6 @@ class SearchResultCell: UITableViewCell {
     // MARK: - Configuration
     func configure(with stamp: Stamp) {
         placeNameLabel.text = stamp.title ?? "이름 없음"
-        print(stamp.acquiredAt, stamp.title, stamp.isAcquired)
         // 1. isAcquired 상태에 따라 획득 날짜 또는 "미획득 스탬프". 표시
         if stamp.isAcquired {
             if let date = stamp.acquiredAt {
