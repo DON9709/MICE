@@ -72,6 +72,12 @@ class StampDetailViewController: UIViewController {
                    print("선택된 스탬프가 없습니다.")
                }
         
+        if let urlString = stamp?.stampimg, let url = URL(string: urlString) {
+            stampImageView.kf.setImage(with: url)
+        } else {
+            stampImageView.image = nil
+        }
+        
         super.viewDidLoad()
         view.backgroundColor = .white
         setupViews()
@@ -123,9 +129,11 @@ class StampDetailViewController: UIViewController {
         favoriteButton.layer.shadowRadius = 4
         
         //스탬프이미지(획득시 컬러)
-        stampImageView.contentMode = .scaleAspectFit
-        stampImageView.tintColor = .label
-        stampImageView.image = UIImage(systemName: "target")
+        stampImageView.backgroundColor = .white
+        stampImageView.contentMode = .scaleAspectFill
+        stampImageView.frame = CGRect(x: 50, y: 50, width: 106, height: 106)
+        stampImageView.layer.cornerRadius = stampImageView.frame.width / 2
+        stampImageView.clipsToBounds = true
         
         //스탬프 타이틀
         stampTitleLabel.font = .systemFont(ofSize: 18, weight: .bold)
