@@ -420,7 +420,14 @@ class StampViewController: UIViewController {
     }
     
     private func setupActions() {
-        
+        firstHeaderStampView.isUserInteractionEnabled = true
+        firstHeaderStampView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapFirstHeaderStamp)))
+
+        secondHeaderStampView.isUserInteractionEnabled = true
+        secondHeaderStampView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapSecondHeaderStamp)))
+
+        thirdHeaderStampView.isUserInteractionEnabled = true
+        thirdHeaderStampView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapThirdHeaderStamp)))
     }
     
     private func reloadCategory() {
@@ -450,7 +457,6 @@ extension StampViewController: UICollectionViewDataSource, UICollectionViewDeleg
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selected = displayedStamps[indexPath.item]
-        //        print("\(selected.contentid)")
         let detailVC = StampDetailViewController()
         detailVC.stamp = selected
         if let nav = self.navigationController {
@@ -514,6 +520,57 @@ private extension StampViewController {
             nav.popViewController(animated: true)
         } else {
             self.dismiss(animated: true)
+        }
+    }
+    
+    @objc private func didTapFirstHeaderStamp() {
+        let ordered = stamps
+            .filter { $0.isAcquired == true }
+            .sorted { ($0.acquiredAt ?? .distantPast) > ($1.acquiredAt ?? .distantPast) }
+        guard ordered.indices.contains(0) else { return }
+        let selected = ordered[0]
+        let detailVC = StampDetailViewController()
+        detailVC.stamp = selected
+        if let nav = self.navigationController {
+            nav.pushViewController(detailVC, animated: true)
+        } else {
+            let nav = UINavigationController(rootViewController: detailVC)
+            nav.modalPresentationStyle = .fullScreen
+            self.present(nav, animated: true)
+        }
+    }
+    
+    @objc private func didTapSecondHeaderStamp() {
+        let ordered = stamps
+            .filter { $0.isAcquired == true }
+            .sorted { ($0.acquiredAt ?? .distantPast) > ($1.acquiredAt ?? .distantPast) }
+        guard ordered.indices.contains(0) else { return }
+        let selected = ordered[0]
+        let detailVC = StampDetailViewController()
+        detailVC.stamp = selected
+        if let nav = self.navigationController {
+            nav.pushViewController(detailVC, animated: true)
+        } else {
+            let nav = UINavigationController(rootViewController: detailVC)
+            nav.modalPresentationStyle = .fullScreen
+            self.present(nav, animated: true)
+        }
+    }
+    
+    @objc private func didTapThirdHeaderStamp()  {
+        let ordered = stamps
+            .filter { $0.isAcquired == true }
+            .sorted { ($0.acquiredAt ?? .distantPast) > ($1.acquiredAt ?? .distantPast) }
+        guard ordered.indices.contains(0) else { return }
+        let selected = ordered[0]
+        let detailVC = StampDetailViewController()
+        detailVC.stamp = selected
+        if let nav = self.navigationController {
+            nav.pushViewController(detailVC, animated: true)
+        } else {
+            let nav = UINavigationController(rootViewController: detailVC)
+            nav.modalPresentationStyle = .fullScreen
+            self.present(nav, animated: true)
         }
     }
 }
