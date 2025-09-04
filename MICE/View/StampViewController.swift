@@ -55,7 +55,10 @@ class StampViewController: UIViewController {
         let start = max(r.lowerBound - 1, 0)
         let end = min(r.upperBound - 1, max(stamps.count - 1, 0))
         if start > end { return [] }
-        return Array(stamps[start...end])
+        let array = Array(stamps[start...end]).sorted { leftStamp, rightStamp in
+            leftStamp.acquiredAt ?? Date() < rightStamp.acquiredAt ?? Date()
+        }
+        return array
     }
     
     //HeaderRecnetlyStamps
@@ -469,6 +472,8 @@ extension StampViewController: UICollectionViewDataSource, UICollectionViewDeleg
     }
 }
 
+
+
 final class StampColletionCell: UICollectionViewCell {
     static let identifier = "StampCell"
     let imageView = UIImageView()
@@ -486,7 +491,6 @@ final class StampColletionCell: UICollectionViewCell {
             make.edges.equalToSuperview()
         }
     }
-    
     override func prepareForReuse() {
         super.prepareForReuse()
         imageView.kf.cancelDownloadTask()
