@@ -169,18 +169,21 @@ class StampViewController: UIViewController {
         firstHeaderStampLabel.font = .systemFont(ofSize: 18, weight: .semibold)
         firstHeaderStampLabel.textColor = .black
         firstHeaderStampLabel.textAlignment = .center
+        //획득한 스탬프 중에서 획득날짜 기준으로 최신순으로 정리
         
         //헤더 스탬프2 라벨
         secondHeaderStampLabel.text = "헤더스탬프 2"
         secondHeaderStampLabel.font = .systemFont(ofSize: 14, weight: .regular)
         secondHeaderStampLabel.textColor = .black
         secondHeaderStampLabel.textAlignment = .center
+        //획득한 스탬프 중에서 획득날짜 기준으로 최신순으로 정리
         
         //헤더 스탬프3 라벨
         thirdHeaderStampLabel.text = "헤더스탬프 3"
         thirdHeaderStampLabel.font = .systemFont(ofSize: 14, weight: .regular)
         thirdHeaderStampLabel.textColor = .black
         thirdHeaderStampLabel.textAlignment = .center
+        //획득한 스탬프 중에서 획득날짜 기준으로 최신순으로 정리
         
         //필터버튼
         stampFilterButton.backgroundColor = .clear
