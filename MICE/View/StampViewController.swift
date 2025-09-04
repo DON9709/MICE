@@ -441,7 +441,7 @@ extension StampViewController: UICollectionViewDataSource, UICollectionViewDeleg
         }
         let stamp = displayedStamps[indexPath.item]
         if let urlString = stamp.stampimg, let url = URL(string: urlString) {
-            cell.imageView.kf.setImage(with: url)
+            cell.configure(with: url)
         } else {
             cell.imageView.image = nil
         }
@@ -485,6 +485,22 @@ final class StampColletionCell: UICollectionViewCell {
         super.prepareForReuse()
         imageView.kf.cancelDownloadTask()
         imageView.image = nil
+    }
+    
+    func configure(with url: URL) {
+        let processor = DownsamplingImageProcessor(size: bounds.size)
+        imageView.kf.setImage(
+            with: url,
+            placeholder: nil,
+            options: [
+                .processor(processor),
+                .scaleFactor(UIScreen.main.scale),
+                .cacheOriginalImage,
+                .transition(.fade(0.2)),
+                .backgroundDecode,
+                .retryStrategy(DelayRetryStrategy(maxRetryCount: 2, retryInterval: .seconds(2)))
+            ]
+        )
     }
     
     required init?(coder: NSCoder) {
