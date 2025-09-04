@@ -187,7 +187,6 @@ class StampDetailViewController: UIViewController {
         //HeaderCard
         headerCardView.backgroundColor = .lightGray
         headerCardView.addSubview(favoriteButton)
-        headerCardView.addSubview(achievedStampLabel)
         headerCardView.bringSubviewToFront(favoriteButton)
         headerCardView.isUserInteractionEnabled = true//UIView 안에서 버튼 동작하게하려면 작성해야함.
         
@@ -196,7 +195,7 @@ class StampDetailViewController: UIViewController {
         backButton.tintColor = .label
         
         //달성한스탬프표시(획득시)
-        achievedStampLabel.text = "획득한 스탬프"
+        achievedStampLabel.text = "방문 완료"
         achievedStampLabel.textColor = UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 1)
         achievedStampLabel.backgroundColor = UIColor(red: 114/255, green: 76/255, blue: 249/255, alpha: 1)
         achievedStampLabel.layer.cornerRadius = 13
@@ -339,10 +338,10 @@ class StampDetailViewController: UIViewController {
         }
         
         achievedStampLabel.snp.makeConstraints { make in
-            make.top.equalTo(headerCardView)
-            make.centerX.equalToSuperview()
-            make.height.equalTo(32)
-            make.width.equalTo(141)
+            make.height.equalTo(36)
+            make.width.equalTo(120)
+            make.top.equalTo(favoriteButton.snp.bottom).offset(54)
+            make.trailing.equalToSuperview().inset(10)
         }
         
         // HeaderCard Layout
