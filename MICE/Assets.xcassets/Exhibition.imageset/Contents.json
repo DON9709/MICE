@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "Exhibition.png",
+      "filename" : "Exhibition 2.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
@@ -11,7 +11,7 @@
       "scale" : "2x"
     },
     {
-      "filename" : "Exhibition 2.png",
+      "filename" : "Exhibition.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

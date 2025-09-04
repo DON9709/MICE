@@ -199,7 +199,7 @@ final class MypageViewController: UIViewController {
     
     // MARK: - 액션
     @objc private func handleLoginTapped() {
-        let loginVC = LogInViewController()
+        let loginVC = LogInViewController(launchSource: .mypage)
         loginVC.modalPresentationStyle = .fullScreen
         present(loginVC, animated: true, completion: nil)
     }
@@ -211,6 +211,7 @@ final class MypageViewController: UIViewController {
 extension MypageViewController {
     @objc private func handleSettingsTapped() {
         let settingsVC = SettingViewController()
+        settingsVC.launchSource = .mypage
         navigationController?.pushViewController(settingsVC, animated: true)
     }
 }

@@ -1,17 +1,15 @@
 {
   "images" : [
     {
-      "filename" : "Museum.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "Museum 1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "Museum 2.png",
+      "filename" : "Museum.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

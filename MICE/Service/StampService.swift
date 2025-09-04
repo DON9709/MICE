@@ -23,7 +23,7 @@ struct Stamp: Codable, Identifiable {
     let stampimg: String?
     let isAcquired: Bool
     let acquiredAt: Date?
-    let isBookmarked: Bool
+    var isBookmarked: Bool
 }
 struct MyStampRow: Decodable {
     let user_id: UUID
