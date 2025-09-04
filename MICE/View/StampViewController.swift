@@ -26,7 +26,7 @@ class StampViewController: UIViewController {
         case museum      // 박물관 1~79
         case gallery     // 미술관 80~128
         case memorial    // 기념관 129~153
-        case exhibition  // 전시관 154~177
+        case exhibition  // 전시관 154~176
         
         var title: String {
             switch self {
@@ -42,7 +42,7 @@ class StampViewController: UIViewController {
             case .museum: return 1...79
             case .gallery: return 80...128
             case .memorial: return 129...153
-            case .exhibition: return 154...177
+            case .exhibition: return 154...176
             }
         }
     }
@@ -349,7 +349,7 @@ class StampViewController: UIViewController {
                     firstHeaderStampView.tintColor = UIColor(red: 247/255, green: 106/255, blue: 1/255, alpha: 1)//미술관
                 case 129...153:
                     firstHeaderStampView.tintColor = UIColor(red: 101/255, green: 0/255, blue: 0/255, alpha: 1)//기념관
-                case 154...177:
+                case 154...176:
                     firstHeaderStampView.tintColor = UIColor(red: 0/255, green: 2/255, blue: 105/255, alpha: 1)//전시관
                 default:
                     firstHeaderStampView.tintColor = UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1)//그 외
@@ -377,7 +377,7 @@ class StampViewController: UIViewController {
                         secondHeaderStampView.tintColor = UIColor(red: 247/255, green: 106/255, blue: 1/255, alpha: 1)//미술관
                     case 129...153:
                         secondHeaderStampView.tintColor = UIColor(red: 101/255, green: 0/255, blue: 0/255, alpha: 1)//기념관
-                    case 154...177:
+                    case 154...176:
                         secondHeaderStampView.tintColor = UIColor(red: 0/255, green: 2/255, blue: 105/255, alpha: 1)//전시관
                     default:
                         secondHeaderStampView.tintColor = UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1)//그 외
@@ -406,7 +406,7 @@ class StampViewController: UIViewController {
                         thirdHeaderStampView.tintColor = UIColor(red: 247/255, green: 106/255, blue: 1/255, alpha: 1)//미술관
                     case 129...153:
                         thirdHeaderStampView.tintColor = UIColor(red: 101/255, green: 0/255, blue: 0/255, alpha: 1)//기념관
-                    case 154...177:
+                    case 154...176:
                         thirdHeaderStampView.tintColor = UIColor(red: 0/255, green: 2/255, blue: 105/255, alpha: 1)//전시관
                     default:
                         thirdHeaderStampView.tintColor = UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1)//그 외

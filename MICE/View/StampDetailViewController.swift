@@ -127,7 +127,7 @@ class StampDetailViewController: UIViewController {
                     stampImageView.tintColor = UIColor(red: 247/255, green: 106/255, blue: 1/255, alpha: 1)//미술관
                 case 129...153:
                     stampImageView.tintColor = UIColor(red: 101/255, green: 0/255, blue: 0/255, alpha: 1)//기념관
-                case 154...177:
+                case 154...176:
                     stampImageView.tintColor = UIColor(red: 0/255, green: 2/255, blue: 105/255, alpha: 1)//전시관
                 default:
                     stampImageView.tintColor = UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1)//그 외
