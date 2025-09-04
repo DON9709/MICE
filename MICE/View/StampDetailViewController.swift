@@ -187,7 +187,6 @@ class StampDetailViewController: UIViewController {
         //HeaderCard
         headerCardView.backgroundColor = .lightGray
         headerCardView.addSubview(favoriteButton)
-        headerCardView.addSubview(achievedStampLabel)
         headerCardView.bringSubviewToFront(favoriteButton)
         headerCardView.isUserInteractionEnabled = true//UIView 안에서 버튼 동작하게하려면 작성해야함.
         
