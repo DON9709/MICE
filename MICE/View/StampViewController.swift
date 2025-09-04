@@ -19,7 +19,7 @@ class StampViewController: UIViewController {
     // DataSource
     private var stamps: [Stamp] = []
     
-    //데이터 호출 카테코리 분류
+    //데이터 호출 카테고리 분류
     private enum StampCategory {
         case museum      // 박물관 1~79
         case gallery     // 미술관 80~128
@@ -338,7 +338,7 @@ extension StampViewController: UICollectionViewDataSource, UICollectionViewDeleg
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selected = displayedStamps[indexPath.item]
-        print("\(selected.contentid)")
+//        print("\(selected.contentid)")
         let detailVC = StampDetailViewController()
         detailVC.stamp = selected
         if let nav = self.navigationController {
