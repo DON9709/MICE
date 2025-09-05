@@ -16,7 +16,7 @@ enum StampCategoryType {
         case .museum: return 1...79
         case .artGallery: return 80...128
         case .memorial: return 129...153
-        case .exhibition: return 154...177
+        case .exhibition: return 154...176
         }
     }
 }

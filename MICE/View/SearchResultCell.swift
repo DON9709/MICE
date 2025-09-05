@@ -57,8 +57,8 @@ class SearchResultCell: UITableViewCell {
     
     private lazy var bookmarkButton: UIButton = {
             let button = UIButton(type: .custom)
-            button.setImage(UIImage(named: "Bookmark"), for: .normal)
-            button.setImage(UIImage(named: "BookMark.fil"), for: .selected)
+            button.setImage(UIImage(named: "BookMark"), for: .normal)
+            button.setImage(UIImage(named: "BookMark.fill"), for: .selected)
             button.addTarget(self, action: #selector(bookmarkButtonTapped), for: .touchUpInside)
             return button
         }()
