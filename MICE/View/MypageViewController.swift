@@ -53,7 +53,7 @@ final class MypageViewController: UIViewController {
 
             let emailLabel = UILabel()
             emailLabel.translatesAutoresizingMaskIntoConstraints = false
-            emailLabel.text = "abc1234@gmail.com"
+            emailLabel.text = viewModel.email ?? "  "
             emailLabel.textColor = .darkGray
             emailLabel.font = UIFont.systemFont(ofSize: 16)
             emailLabel.textAlignment = .left

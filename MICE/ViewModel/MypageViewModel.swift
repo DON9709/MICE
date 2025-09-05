@@ -11,12 +11,16 @@ import Combine
 final class MypageViewModel: ObservableObject {
     // MARK: - 프로퍼티
     @Published var isLoggedIn: Bool = false
+    @Published var email: String? = nil
 
     init() {
         Task {
             let loggedIn = await SupabaseManager.shared.isLoggedIn()
             await MainActor.run {
                 self.isLoggedIn = loggedIn
+                if loggedIn {
+                    self.email = SupabaseManager.shared.supabase.auth.currentUser?.email
+                }
             }
         }
     }
@@ -28,6 +32,7 @@ final class MypageViewModel: ObservableObject {
             let loggedIn = await SupabaseManager.shared.isLoggedIn()
             await MainActor.run {
                 self.isLoggedIn = loggedIn
+                self.email = SupabaseManager.shared.supabase.auth.currentUser?.email
             }
         }
     }
