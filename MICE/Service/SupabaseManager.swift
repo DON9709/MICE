@@ -15,6 +15,7 @@ struct User: Encodable {
     let email: String
     let provider: String
     let created_at: String
+}
 
 class SupabaseManager {
     static let shared = SupabaseManager()
@@ -127,6 +128,8 @@ class SupabaseManager {
     
     // 로그인상태 확인 로직
     func isLoggedIn() -> Bool {
+        print("DEBUG currentSession:", supabase.auth.currentSession as Any)
+        print("DEBUG currentUser:", supabase.auth.currentUser as Any)
         return supabase.auth.currentSession != nil && supabase.auth.currentUser != nil
     }
 
@@ -139,8 +142,6 @@ class SupabaseManager {
         }
     }
 }
-}
-
 
 extension Bundle {
 

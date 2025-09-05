@@ -18,7 +18,6 @@ final class MypageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        setupView()
         bindViewModel()
     }
 
@@ -99,6 +98,7 @@ final class MypageViewController: UIViewController {
             logoutButton.setTitle("로그아웃", for: .normal)
             logoutButton.setTitleColor(.black, for: .normal)
             logoutButton.contentHorizontalAlignment = .leading
+            logoutButton.addTarget(self, action: #selector(handleLogoutTapped), for: .touchUpInside)
 
             let buttonStackView = UIStackView(arrangedSubviews: [favoritesButton, logoutButton])
             buttonStackView.translatesAutoresizingMaskIntoConstraints = false
@@ -213,5 +213,11 @@ extension MypageViewController {
         let settingsVC = SettingViewController()
         settingsVC.launchSource = .mypage
         navigationController?.pushViewController(settingsVC, animated: true)
+    }
+}
+
+extension MypageViewController {
+    @objc private func handleLogoutTapped() {
+        viewModel.logOut()
     }
 }
