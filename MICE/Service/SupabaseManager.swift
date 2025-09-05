@@ -125,8 +125,36 @@ class SupabaseManager {
             return nil
         }
     }
-}
+    
+    // 애플 로그인으로 세션 생성
+    func signInWithApple(idToken: String, nonce: String?) async throws -> Auth.Session {
+        do {
+            let session = try await supabase.auth.signInWithIdToken(
+                credentials: .init(provider: .apple, idToken: idToken, nonce: nonce)
+            )
+            return session
+        } catch {
+            print("Apple 로그인 실패: \(error)")
+            throw error
+        }
+    }
+    
+    // 로그인상태 확인 로직
+    func isLoggedIn() -> Bool {
+        print("DEBUG currentSession:", supabase.auth.currentSession as Any)
+        print("DEBUG currentUser:", supabase.auth.currentUser as Any)
+        return supabase.auth.currentSession != nil && supabase.auth.currentUser != nil
+    }
 
+    // 로그아웃 로직
+    func signOut() async {
+        do {
+            try await supabase.auth.signOut()
+        } catch {
+            print("Supabase signOut error: \(error)")
+        }
+    }
+}
 
 extension Bundle {
 
