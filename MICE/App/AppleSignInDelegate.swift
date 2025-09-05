@@ -11,7 +11,7 @@ import AuthenticationServices
 class AppleSignInDelegate: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
     static let shared = AppleSignInDelegate()
     
-    var onLoginSuccess: ((String) -> Void)?
+    var onLoginSuccess: ((Data, String) -> Void)?
     var userName: String?
     var userEmail: String?
     var userID: String?
@@ -73,7 +73,7 @@ class AppleSignInDelegate: NSObject, ASAuthorizationControllerDelegate, ASAuthor
                 }
             }
 
-            onLoginSuccess?(credential.user)
+            onLoginSuccess?(identityTokenData, credential.user)
         }
     }
 
