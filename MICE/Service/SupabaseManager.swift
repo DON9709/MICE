@@ -15,7 +15,6 @@ struct User: Encodable {
     let email: String
     let provider: String
     let created_at: String
-}
 
 class SupabaseManager {
     static let shared = SupabaseManager()
@@ -125,6 +124,21 @@ class SupabaseManager {
             return nil
         }
     }
+    
+    // 로그인상태 확인 로직
+    func isLoggedIn() -> Bool {
+        return supabase.auth.currentSession != nil && supabase.auth.currentUser != nil
+    }
+
+    // 로그아웃 로직
+    func signOut() async {
+        do {
+            try await supabase.auth.signOut()
+        } catch {
+            print("Supabase signOut error: \(error)")
+        }
+    }
+}
 }
 
 
