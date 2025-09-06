@@ -83,10 +83,12 @@ final class LogInViewController: UIViewController, CLLocationManagerDelegate {
             .sink { [weak self] output in
                 switch output {
                 case .navigateToMain:
-                    let tabBarController = MainTabBarController()
-                    tabBarController.selectedIndex = (self?.launchSource == .firstInstall) ? 0 : 4
-                    tabBarController.modalPresentationStyle = .fullScreen
-                    self?.present(tabBarController, animated: true, completion: nil)
+                    DispatchQueue.main.async {
+                        let tabBarController = MainTabBarController()
+                        tabBarController.selectedIndex = (self?.launchSource == .firstInstall) ? 0 : 4
+                        tabBarController.modalPresentationStyle = .fullScreen
+                        self?.present(tabBarController, animated: true, completion: nil)
+                    }
                 case .showAppleLogin:
                     // Handle showAppleLogin if needed
                     break
