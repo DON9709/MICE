@@ -24,6 +24,7 @@ class HomeViewController: UIViewController {
         let label = UILabel()
         label.text = viewModel.mainTitle
         label.font = .systemFont(ofSize: 24, weight: .bold)
+        label.textColor = UIColor(red: 114/255.0, green: 76/25_5.0, blue: 249/255.0, alpha: 1)
         return label
     }()
 
