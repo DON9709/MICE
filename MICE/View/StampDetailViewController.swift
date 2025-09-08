@@ -27,7 +27,6 @@ class StampDetailViewController: UIViewController {
     let backButton = UIButton(type: .system)//뒤로가기버튼 -> 이전화면으로 이동
     
     //달성한스탬프표시(획득시)
-//    let achievedStampLabel = UILabel()
     let achievedStampImageView = UIImageView()
     
     //HeaderCard
@@ -198,20 +197,7 @@ class StampDetailViewController: UIViewController {
         //달성한스탬프표시(획득시)
         achievedStampImageView.contentMode = . scaleAspectFill
         achievedStampImageView.image = UIImage(named: "Achieved")
-//
-//        achievedStampLabel.text = "방문 완료"
-//        achievedStampLabel.textColor = UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 1)
-//        achievedStampLabel.backgroundColor = UIColor(red: 114/255, green: 76/255, blue: 249/255, alpha: 1)
-//        achievedStampLabel.layer.cornerRadius = 13
-//        achievedStampLabel.layer.masksToBounds = true
-//        achievedStampLabel.layer.maskedCorners = [
-//            .layerMinXMaxYCorner,
-//            .layerMaxXMaxYCorner
-//        ]
-//        achievedStampLabel.textAlignment = .center
-//        achievedStampLabel.layoutMargins = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
-//        achievedStampLabel.isUserInteractionEnabled = false
-        
+
         //즐겨찾기버튼
         favoriteButton.setImage(UIImage(named: "BookMark"), for: .normal)
         favoriteButton.setImage(UIImage(named: "BookMark.fill"), for: .selected)
@@ -306,7 +292,6 @@ class StampDetailViewController: UIViewController {
         contentView.addSubview(overviewLabel)
         contentView.addSubview(overviewContentLabel)
         contentView.addSubview(addressLabel)
-//        contentView.addSubview(achievedStampLabel)
         contentView.addSubview(achievedStampImageView)
         contentView.addSubview(stampImageView)
         contentView.addSubview(addressImageView)
@@ -341,13 +326,6 @@ class StampDetailViewController: UIViewController {
             make.leading.equalToSuperview().offset(16)
             make.size.equalTo(20)
         }
-        
-//        achievedStampLabel.snp.makeConstraints { make in
-//            make.height.equalTo(36)
-//            make.width.equalTo(120)
-//            make.top.equalTo(favoriteButton.snp.bottom).offset(54)
-//            make.trailing.equalToSuperview().inset(10)
-//        }
         
         achievedStampImageView.snp.makeConstraints { make in
             make.height.equalTo(36)
