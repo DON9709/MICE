@@ -27,7 +27,8 @@ class StampDetailViewController: UIViewController {
     let backButton = UIButton(type: .system)//뒤로가기버튼 -> 이전화면으로 이동
     
     //달성한스탬프표시(획득시)
-    let achievedStampLabel = UILabel()
+//    let achievedStampLabel = UILabel()
+    let achievedStampImageView = UIImageView()
     
     //HeaderCard
     let headerCardView = UIImageView()
@@ -107,7 +108,7 @@ class StampDetailViewController: UIViewController {
 
         //획득한 스탬프 연결
         if stamp?.isAcquired == true {
-            achievedStampLabel.isHidden = false
+            achievedStampImageView.isHidden = false
             if let date = stamp?.acquiredAt {
                 achievedDateLabel.text = dataFormatter.string(from: date)
             } else {
@@ -137,7 +138,7 @@ class StampDetailViewController: UIViewController {
             }
             
         } else {
-            achievedStampLabel.isHidden = true
+            achievedStampImageView.isHidden = true
             stampImageView.tintColor = UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1)
             achievedDateLabel.text = "미획득 스탬프"
             getStampButton.setTitleColor(UIColor(red: 250/255, green: 250/255, blue: 250/255, alpha: 1), for: .normal)
@@ -195,18 +196,21 @@ class StampDetailViewController: UIViewController {
         backButton.tintColor = .label
         
         //달성한스탬프표시(획득시)
-        achievedStampLabel.text = "방문 완료"
-        achievedStampLabel.textColor = UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 1)
-        achievedStampLabel.backgroundColor = UIColor(red: 114/255, green: 76/255, blue: 249/255, alpha: 1)
-        achievedStampLabel.layer.cornerRadius = 13
-        achievedStampLabel.layer.masksToBounds = true
-        achievedStampLabel.layer.maskedCorners = [
-            .layerMinXMaxYCorner,
-            .layerMaxXMaxYCorner
-        ]
-        achievedStampLabel.textAlignment = .center
-        achievedStampLabel.layoutMargins = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
-        achievedStampLabel.isUserInteractionEnabled = false
+        achievedStampImageView.contentMode = . scaleAspectFill
+        achievedStampImageView.image = UIImage(named: "Achieved")
+//
+//        achievedStampLabel.text = "방문 완료"
+//        achievedStampLabel.textColor = UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 1)
+//        achievedStampLabel.backgroundColor = UIColor(red: 114/255, green: 76/255, blue: 249/255, alpha: 1)
+//        achievedStampLabel.layer.cornerRadius = 13
+//        achievedStampLabel.layer.masksToBounds = true
+//        achievedStampLabel.layer.maskedCorners = [
+//            .layerMinXMaxYCorner,
+//            .layerMaxXMaxYCorner
+//        ]
+//        achievedStampLabel.textAlignment = .center
+//        achievedStampLabel.layoutMargins = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
+//        achievedStampLabel.isUserInteractionEnabled = false
         
         //즐겨찾기버튼
         favoriteButton.setImage(UIImage(named: "BookMark"), for: .normal)
@@ -302,7 +306,8 @@ class StampDetailViewController: UIViewController {
         contentView.addSubview(overviewLabel)
         contentView.addSubview(overviewContentLabel)
         contentView.addSubview(addressLabel)
-        contentView.addSubview(achievedStampLabel)
+//        contentView.addSubview(achievedStampLabel)
+        contentView.addSubview(achievedStampImageView)
         contentView.addSubview(stampImageView)
         contentView.addSubview(addressImageView)
         contentView.addSubview(phoneNumberImageView)
@@ -337,7 +342,14 @@ class StampDetailViewController: UIViewController {
             make.size.equalTo(20)
         }
         
-        achievedStampLabel.snp.makeConstraints { make in
+//        achievedStampLabel.snp.makeConstraints { make in
+//            make.height.equalTo(36)
+//            make.width.equalTo(120)
+//            make.top.equalTo(favoriteButton.snp.bottom).offset(54)
+//            make.trailing.equalToSuperview().inset(10)
+//        }
+        
+        achievedStampImageView.snp.makeConstraints { make in
             make.height.equalTo(36)
             make.width.equalTo(120)
             make.top.equalTo(favoriteButton.snp.bottom).offset(54)
