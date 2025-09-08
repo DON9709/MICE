@@ -92,13 +92,23 @@ final class MypageViewController: UIViewController {
             favoritesButton.setTitle("찜한 목록", for: .normal)
             favoritesButton.setTitleColor(.black, for: .normal)
             favoritesButton.contentHorizontalAlignment = .leading
+            favoritesButton.titleLabel?.font = UIFont.systemFont(ofSize: 18)
+            favoritesButton.addTarget(self, action: #selector(handleFavoritesTapped), for: .touchUpInside)
 
             let logoutButton = UIButton(type: .system)
             logoutButton.translatesAutoresizingMaskIntoConstraints = false
             logoutButton.setTitle("로그아웃", for: .normal)
             logoutButton.setTitleColor(.black, for: .normal)
             logoutButton.contentHorizontalAlignment = .leading
+            logoutButton.titleLabel?.font = UIFont.systemFont(ofSize: 18)
             logoutButton.addTarget(self, action: #selector(handleLogoutTapped), for: .touchUpInside)
+            
+            let deleteAccountButton = UIButton(type: .system)
+            deleteAccountButton.translatesAutoresizingMaskIntoConstraints = false
+            deleteAccountButton.setTitle("회원 탈퇴", for: .normal)
+            deleteAccountButton.setTitleColor(.black, for: .normal)
+            deleteAccountButton.titleLabel?.font = UIFont.systemFont(ofSize: 11)
+            deleteAccountButton.contentHorizontalAlignment = .center
 
             let buttonStackView = UIStackView(arrangedSubviews: [favoritesButton, logoutButton])
             buttonStackView.translatesAutoresizingMaskIntoConstraints = false
@@ -112,6 +122,13 @@ final class MypageViewController: UIViewController {
                 buttonStackView.topAnchor.constraint(equalTo: separatorView.bottomAnchor, constant: 16),
                 buttonStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
                 buttonStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24)
+            ])
+            
+            view.addSubview(deleteAccountButton)
+            NSLayoutConstraint.activate([
+                deleteAccountButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
+                deleteAccountButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
+                deleteAccountButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
             ])
         } else {
             showGuestView()
@@ -203,7 +220,13 @@ final class MypageViewController: UIViewController {
         loginVC.modalPresentationStyle = .fullScreen
         present(loginVC, animated: true, completion: nil)
     }
+    @objc private func handleFavoritesTapped() {
+        let bookmarkVC = BookmarkViewController()
+        navigationController?.pushViewController(bookmarkVC, animated: true)
+    }
 }
+
+
 
 // Ensure SettingView exists and is a UIViewController subclass
 // If not, add a stub here or in its own file.
