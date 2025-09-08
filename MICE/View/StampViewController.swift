@@ -451,9 +451,20 @@ extension StampViewController: UICollectionViewDataSource, UICollectionViewDeleg
         }
         let stamp = displayedStamps[indexPath.item]
         if let urlString = stamp.stampimg, let url = URL(string: urlString) {
-            cell.configure(with: url)
+            let tint: UIColor? = {
+                guard let no = stamp.stampno else { return nil }
+                switch no {
+                case 1...79:   return UIColor(red: 11/255, green: 160/255, blue: 172/255, alpha: 1) // 박물관
+                case 80...128: return UIColor(red: 247/255, green: 106/255, blue: 1/255,   alpha: 1) // 미술관
+                case 129...153:return UIColor(red: 101/255, green: 0/255,   blue: 0/255,   alpha: 1) // 기념관
+                case 154...176:return UIColor(red: 0/255,   green: 2/255,   blue: 105/255, alpha: 1) // 전시관
+                default:       return UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1) // 기타
+                }
+            }()
+            cell.configure(with: url, tintColor: tint)
         } else {
             cell.imageView.image = nil
+            cell.imageView.tintColor = nil
         }
         return cell
     }
@@ -501,19 +512,31 @@ final class StampColletionCell: UICollectionViewCell {
         imageView.image = nil
     }
     
-    func configure(with url: URL) {
+    func configure(with url: URL, tintColor: UIColor?) {
         let processor = DownsamplingImageProcessor(size: bounds.size)
+        var options: KingfisherOptionsInfo = [
+            .processor(processor),
+            .scaleFactor(UIScreen.main.scale),
+            .cacheOriginalImage,
+            .transition(.fade(0.2)),
+            .backgroundDecode,
+            .retryStrategy(DelayRetryStrategy(maxRetryCount: 2, retryInterval: .seconds(2)))
+        ]
+
+        if let tint = tintColor {
+            // Force template rendering so UIImageView's tintColor applies
+            options.append(.imageModifier(AnyImageModifier { image in
+                image.withRenderingMode(.alwaysTemplate)
+            }))
+            imageView.tintColor = tint
+        } else {
+            imageView.tintColor = nil
+        }
+
         imageView.kf.setImage(
             with: url,
             placeholder: nil,
-            options: [
-                .processor(processor),
-                .scaleFactor(UIScreen.main.scale),
-                .cacheOriginalImage,
-                .transition(.fade(0.2)),
-                .backgroundDecode,
-                .retryStrategy(DelayRetryStrategy(maxRetryCount: 2, retryInterval: .seconds(2)))
-            ]
+            options: options
         )
     }
     
