@@ -470,9 +470,13 @@ extension StampViewController: UICollectionViewDataSource, UICollectionViewDeleg
             self.present(nav, animated: true)
         }
     }
+    
+//    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+//        guard let stampCell = cell as? StampColletionCell else { return }
+//        stampCell.imageView.kf.cancelDownloadTask()
+//        stampCell.imageView.image = nil
+//    }
 }
-
-
 
 final class StampColletionCell: UICollectionViewCell {
     static let identifier = "StampCell"
@@ -548,7 +552,7 @@ private extension StampViewController {
         let ordered = stamps
             .filter { $0.isAcquired == true }
             .sorted { ($0.acquiredAt ?? .distantPast) > ($1.acquiredAt ?? .distantPast) }
-        guard ordered.indices.contains(0) else { return }
+        guard ordered.indices.contains(1) else { return }
         let selected = ordered[1]
         let detailVC = StampDetailViewController()
         detailVC.stamp = selected
@@ -565,7 +569,7 @@ private extension StampViewController {
         let ordered = stamps
             .filter { $0.isAcquired == true }
             .sorted { ($0.acquiredAt ?? .distantPast) > ($1.acquiredAt ?? .distantPast) }
-        guard ordered.indices.contains(0) else { return }
+        guard ordered.indices.contains(2) else { return }
         let selected = ordered[2]
         let detailVC = StampDetailViewController()
         detailVC.stamp = selected
