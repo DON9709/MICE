@@ -51,13 +51,15 @@ class MainTabBarController: UITabBarController {
         tabBar.backgroundColor = .white
     }
     @objc private func handleNavigationToMain(_ notification: Notification) {
-        if let userInfo = notification.userInfo,
-           let launchSource = userInfo["launchSource"] as? LaunchSource {
-            switch launchSource {
-            case .firstInstall:
-                self.selectedIndex = 0  // 홈
-            case .mypage:
-                self.selectedIndex = 3  // 마이페이지
+        DispatchQueue.main.async {
+            if let userInfo = notification.userInfo,
+               let launchSource = userInfo["launchSource"] as? LaunchSource {
+                switch launchSource {
+                case .firstInstall:
+                    self.selectedIndex = 0  // 홈
+                case .mypage:
+                    self.selectedIndex = 3  // 마이페이지
+                }
             }
         }
     }
