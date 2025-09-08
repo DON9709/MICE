@@ -42,13 +42,19 @@ final class LoginViewModel {
             let controller = ASAuthorizationController(authorizationRequests: [request])
             controller.delegate = AppleSignInDelegate.shared
             controller.presentationContextProvider = AppleSignInDelegate.shared
-            AppleSignInDelegate.shared.onLoginSuccess = { [weak self] appleUID in
+            AppleSignInDelegate.shared.onLoginSuccess = { [weak self] (idToken: Data, appleUID: String) in
                 Task {
-                    if let email = await SupabaseManager.shared.fetchEmail(for: appleUID) {
-                        UserSession.shared.logIn(appleUID: appleUID, email: email)
-                        self?.outputSubject.send(.navigateToMain)
-                    } else {
-                        print("로그인 실패: 이메일 조회 실패")
+                    do {
+                        guard let idTokenString = String(data: idToken, encoding: .utf8) else {
+                            print("idToken 변환 실패")
+                            return
+                        }
+                        _ = try await SupabaseManager.shared.signInWithApple(idToken: idTokenString, nonce: nil)
+                        if SupabaseManager.shared.isLoggedIn() {
+                            self?.outputSubject.send(.navigateToMain)
+                        }
+                    } catch {
+                        print("Apple 로그인 실패: \(error)")
                     }
                 }
             }
