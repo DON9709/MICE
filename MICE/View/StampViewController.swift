@@ -156,6 +156,8 @@ class StampViewController: UIViewController {
         //헤더 스탬프1
         firstHeaderStampView.layer.cornerRadius = 64
         firstHeaderStampView.clipsToBounds = false
+        firstHeaderStampView.image = UIImage(named: "Mystery")
+        firstHeaderStampLabel.text = ""
         
         //헤더 스탬프2//로그인된화면에서도 미스테리스탬프가 보이고 스탬프가 나오는 이슈 있음
         secondHeaderStampView.layer.cornerRadius = 48
