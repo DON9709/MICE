@@ -15,7 +15,6 @@ class HomeViewModel {
     // MARK: - Published Properties
     @Published var achievedStampCount: Int = 0
     @Published var unachievedStampCount: Int = 0
-    // ▼▼▼▼▼ 기존 StampExample 배열을 실제 [Stamp] 배열로 변경 ▼▼▼▼▼
     @Published var recentlyAcquiredStamps: [Stamp] = []
     @Published var nearbyStamps: [Stamp] = []
     @Published var hotStamps: [Stamp] = []
@@ -42,7 +41,7 @@ class HomeViewModel {
         }
     }
     
-    // ▼▼▼▼▼ 실제 획득한 스탬프를 처리하는 로직 ▼▼▼▼▼
+  
     private func processAcquiredStamps() {
         // 1. 전체 스탬프 중 isAcquired가 true인 것만 필터링
         let acquired = allStamps.filter { $0.isAcquired }
