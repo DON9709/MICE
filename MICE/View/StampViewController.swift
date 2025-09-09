@@ -156,7 +156,9 @@ class StampViewController: UIViewController {
         //헤더 스탬프1
         firstHeaderStampView.layer.cornerRadius = 64
         firstHeaderStampView.clipsToBounds = false
-        
+        firstHeaderStampView.image = UIImage(named: "Mystery")
+        firstHeaderStampLabel.text = ""
+
         //헤더 스탬프2//로그인된화면에서도 미스테리스탬프가 보이고 스탬프가 나오는 이슈 있음
         secondHeaderStampView.layer.cornerRadius = 48
         secondHeaderStampView.clipsToBounds = false
@@ -235,7 +237,9 @@ class StampViewController: UIViewController {
                 await MainActor.run {
                     self?.stamps = result.sorted { $0.stampno ?? 0 < $1.stampno ?? 0 }
                     self?.reloadCategory()
-                    self?.acquiredStampsLoad()
+                    Task {
+                        await self?.acquiredStampsLoad() }
+                    
                 }
             } catch {
                 print("[StampViewController] fetch error: \(error)")
@@ -337,87 +341,45 @@ class StampViewController: UIViewController {
     }
     
     //헤더 스탬프 획득한 일자 최신순 나타나게끔하는 로직 + 카테고리별 색상 분류 + 획득한 스탬프 레이블 표시
-    private func acquiredStampsLoad(){
-        let acquiredStamps = stamps.filter { $0.isAcquired == true }
-        let acquiredStampsOrdered = acquiredStamps.sorted { $0.acquiredAt ?? Date() > $1.acquiredAt ?? Date() }//Date() 기본값으로 현재시간을 넣음.
+    private func acquiredStampsLoad() async{
+        let firstStamp = await StampImageDataManager.shared.getAcquiredFirstStampImageUrl()
         //헤더스탬프 1
-        if let urlString = acquiredStampsOrdered.first?.stampimg, let url = URL(string: urlString) {
+        if let urlString = firstStamp?.stampimg, let url = URL(string: urlString) {
             firstHeaderStampView.kf.setImage(with: url, options: [
                 .imageModifier(AnyImageModifier { image in
                     image.withRenderingMode(.alwaysTemplate)
                 })
             ])
-            firstHeaderStampLabel.text = acquiredStampsOrdered.first?.title
-            if let stampno = acquiredStampsOrdered.first?.stampno {
-                switch stampno {
-                case 1...79:
-                    firstHeaderStampView.tintColor = UIColor(red: 11/255, green: 160/255, blue: 172/255, alpha: 1)//박물관
-                case 80...128:
-                    firstHeaderStampView.tintColor = UIColor(red: 247/255, green: 106/255, blue: 1/255, alpha: 1)//미술관
-                case 129...153:
-                    firstHeaderStampView.tintColor = UIColor(red: 101/255, green: 0/255, blue: 0/255, alpha: 1)//기념관
-                case 154...176:
-                    firstHeaderStampView.tintColor = UIColor(red: 0/255, green: 2/255, blue: 105/255, alpha: 1)//전시관
-                default:
-                    firstHeaderStampView.tintColor = UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1)//그 외
-                }
-            }
+            firstHeaderStampLabel.text = firstStamp?.title
+            firstHeaderStampView.tintColor = firstStamp?.getTint()
         } else {
             firstHeaderStampView.image = UIImage(named: "Mystery")
             firstHeaderStampLabel.text = ""
         }
-        
+
         //헤더스탬프 2
-        if acquiredStampsOrdered.count > 1 {
-            if let urlString = acquiredStampsOrdered[1].stampimg, let url = URL(string: urlString) {
+        let secondStamp = await StampImageDataManager.shared.getAcquiredSecondStampImageUrl()
+            if let urlString = secondStamp?.stampimg, let url = URL(string: urlString) {
                 secondHeaderStampView.kf.setImage(with: url, options: [
                     .imageModifier(AnyImageModifier { image in
                         image.withRenderingMode(.alwaysTemplate)
                     })
                 ])
-                secondHeaderStampLabel.text = acquiredStampsOrdered[1].title
-                if let stampno = acquiredStampsOrdered[1].stampno {
-                    switch stampno {
-                    case 1...79:
-                        secondHeaderStampView.tintColor = UIColor(red: 11/255, green: 160/255, blue: 172/255, alpha: 1)//박물관
-                    case 80...128:
-                        secondHeaderStampView.tintColor = UIColor(red: 247/255, green: 106/255, blue: 1/255, alpha: 1)//미술관
-                    case 129...153:
-                        secondHeaderStampView.tintColor = UIColor(red: 101/255, green: 0/255, blue: 0/255, alpha: 1)//기념관
-                    case 154...176:
-                        secondHeaderStampView.tintColor = UIColor(red: 0/255, green: 2/255, blue: 105/255, alpha: 1)//전시관
-                    default:
-                        secondHeaderStampView.tintColor = UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1)//그 외
-                    }
-                }
-            }
+                secondHeaderStampLabel.text = secondStamp?.title
+                secondHeaderStampView.tintColor = secondStamp?.getTint()
         }
         
         //헤더스탬프 3
-        if acquiredStampsOrdered.count > 2 {
-            if let urlString = acquiredStampsOrdered[2].stampimg, let url = URL(string: urlString) {
+        let thirdStamp = await StampImageDataManager.shared.getAcquiredThirdStampImageUrl()
+            if let urlString = thirdStamp?.stampimg, let url = URL(string: urlString) {
                 thirdHeaderStampView.kf.setImage(with: url, options: [
                     .imageModifier(AnyImageModifier { image in
                         image.withRenderingMode(.alwaysTemplate)
                     })
                 ])
-                thirdHeaderStampLabel.text = acquiredStampsOrdered[2].title
-                if let stampno = acquiredStampsOrdered[2].stampno {
-                    switch stampno {
-                    case 1...79:
-                        thirdHeaderStampView.tintColor = UIColor(red: 11/255, green: 160/255, blue: 172/255, alpha: 1)//박물관
-                    case 80...128:
-                        thirdHeaderStampView.tintColor = UIColor(red: 247/255, green: 106/255, blue: 1/255, alpha: 1)//미술관
-                    case 129...153:
-                        thirdHeaderStampView.tintColor = UIColor(red: 101/255, green: 0/255, blue: 0/255, alpha: 1)//기념관
-                    case 154...176:
-                        thirdHeaderStampView.tintColor = UIColor(red: 0/255, green: 2/255, blue: 105/255, alpha: 1)//전시관
-                    default:
-                        thirdHeaderStampView.tintColor = UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1)//그 외
-                    }
-                }
+                thirdHeaderStampLabel.text = thirdStamp?.title
+                thirdHeaderStampView.tintColor = thirdStamp?.getTint()
             }
-        }
     }
     
     private func setupActions() {
@@ -449,22 +411,7 @@ extension StampViewController: UICollectionViewDataSource, UICollectionViewDeleg
         }
         let stamp = displayedStamps[indexPath.item]
         if let urlString = stamp.stampimg, let url = URL(string: urlString) {
-            var tint: UIColor? = {
-                guard let no = stamp.stampno else { return nil }
-                switch no {
-                case 1...79:   return UIColor(red: 11/255, green: 160/255, blue: 172/255, alpha: 1) // 박물관
-                case 80...128: return UIColor(red: 247/255, green: 106/255, blue: 1/255,   alpha: 1) // 미술관
-                case 129...153:return UIColor(red: 101/255, green: 0/255,   blue: 0/255,   alpha: 1) // 기념관
-                case 154...176:return UIColor(red: 0/255,   green: 2/255,   blue: 105/255, alpha: 1) // 전시관
-                default:       return UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1) // 기타
-                }
-            }()
-            if stamp.isAcquired {
-                
-            } else {
-                tint = UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1)
-            }
-            cell.configure(with: url, tintColor: tint)
+            cell.configure(with: url, tintColor: stamp.getTint())
         } else {
             cell.imageView.image = nil
             cell.imageView.tintColor = nil
