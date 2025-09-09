@@ -469,6 +469,7 @@ private extension StampDetailViewController {
     }
 
     private func applyAcquiredUI(with date: Date, for stamp: Stamp) {
+        achievedStampImageView.isHidden = false
         achievedDateLabel.text = dataFormatter.string(from: date)
         getStampButton.setTitleColor(UIColor(red: 117/255, green: 117/255, blue: 117/255, alpha: 1), for: .normal)
         getStampButton.backgroundColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1)
