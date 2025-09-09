@@ -34,35 +34,57 @@ final class MypageViewController: UIViewController {
             
             //최근획득스탬프1
             let recentlyGetStamp1 = UIImageView()
+            recentlyGetStamp1.translatesAutoresizingMaskIntoConstraints = false
             recentlyGetStamp1.image = UIImage(named: "Mystery")
+            recentlyGetStamp1.contentMode = .scaleAspectFit
+            recentlyGetStamp1.layer.cornerRadius = 40
+            recentlyGetStamp1.clipsToBounds = true
+            recentlyGetStamp1.backgroundColor = .white
                 
             //최근획득스탬프2
             let recentlyGetStamp2 = UIImageView()
-            recentlyGetStamp1.image = UIImage(named: "Mystery")
+            recentlyGetStamp2.translatesAutoresizingMaskIntoConstraints = false
+            recentlyGetStamp2.image = UIImage(named: "Mystery")
+            recentlyGetStamp2.contentMode = .scaleAspectFit
+            recentlyGetStamp2.layer.cornerRadius = 40
+            recentlyGetStamp2.clipsToBounds = true
+            recentlyGetStamp2.backgroundColor = .white
             
             //최근획득스탬프3
             let recentlyGetStamp3 = UIImageView()
-            recentlyGetStamp1.image = UIImage(named: "Mystery")
+            recentlyGetStamp3.translatesAutoresizingMaskIntoConstraints = false
+            recentlyGetStamp3.image = UIImage(named: "Mystery")
+            recentlyGetStamp3.contentMode = .scaleAspectFit
+            recentlyGetStamp3.layer.cornerRadius = 40
+            recentlyGetStamp3.clipsToBounds = true
+            recentlyGetStamp3.backgroundColor = .white
             
-
-            let profileImageView = UIImageView()
-            profileImageView.translatesAutoresizingMaskIntoConstraints = false
-            profileImageView.image = UIImage(systemName: "person.crop.circle.fill") // 기본 아이콘
-            profileImageView.tintColor = .lightGray
-            profileImageView.contentMode = .scaleAspectFit
-
             let profileContainer = UIView()
             profileContainer.translatesAutoresizingMaskIntoConstraints = false
-            profileContainer.addSubview(profileImageView)
+            profileContainer.addSubview(recentlyGetStamp3)
+            profileContainer.addSubview(recentlyGetStamp2)
+            profileContainer.addSubview(recentlyGetStamp1)
 
             NSLayoutConstraint.activate([
-                profileImageView.leadingAnchor.constraint(equalTo: profileContainer.leadingAnchor),
-                profileImageView.topAnchor.constraint(equalTo: profileContainer.topAnchor),
-                profileImageView.bottomAnchor.constraint(equalTo: profileContainer.bottomAnchor),
-                profileImageView.widthAnchor.constraint(equalToConstant: 80),
-                profileImageView.heightAnchor.constraint(equalToConstant: 80),
+                recentlyGetStamp3.leadingAnchor.constraint(equalTo: recentlyGetStamp2.centerXAnchor),
+                recentlyGetStamp3.topAnchor.constraint(equalTo: profileContainer.topAnchor),
+                recentlyGetStamp3.bottomAnchor.constraint(equalTo: profileContainer.bottomAnchor),
+                recentlyGetStamp3.widthAnchor.constraint(equalToConstant: 80),
+                recentlyGetStamp3.heightAnchor.constraint(equalToConstant: 80),
+                recentlyGetStamp2.leadingAnchor.constraint(equalTo: recentlyGetStamp1.centerXAnchor),
+                recentlyGetStamp2.topAnchor.constraint(equalTo: profileContainer.topAnchor),
+                recentlyGetStamp2.bottomAnchor.constraint(equalTo: profileContainer.bottomAnchor),
+                recentlyGetStamp2.widthAnchor.constraint(equalToConstant: 80),
+                recentlyGetStamp2.heightAnchor.constraint(equalToConstant: 80),
+                recentlyGetStamp1.leadingAnchor.constraint(equalTo: profileContainer.leadingAnchor),
+                recentlyGetStamp1.topAnchor.constraint(equalTo: profileContainer.topAnchor),
+                recentlyGetStamp1.bottomAnchor.constraint(equalTo: profileContainer.bottomAnchor),
+                recentlyGetStamp1.widthAnchor.constraint(equalToConstant: 80),
+                recentlyGetStamp1.heightAnchor.constraint(equalToConstant: 80),
                 profileContainer.widthAnchor.constraint(equalToConstant: 350)
             ])
+            
+            view.addSubview(profileContainer)
 
             let emailLabel = UILabel()
             emailLabel.translatesAutoresizingMaskIntoConstraints = false
