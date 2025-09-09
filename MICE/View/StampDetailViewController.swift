@@ -161,6 +161,10 @@ class StampDetailViewController: UIViewController {
         } else {
             stampImageView.image = nil
         }
+
+        if let stamp = stamp {
+            viewModel.setStamp(stamp)
+        }
         
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -443,7 +447,7 @@ class StampDetailViewController: UIViewController {
     private func setupActions() {
         backButton.addTarget(self, action: #selector(tapBack), for: .touchUpInside)
         favoriteButton.addTarget(self, action: #selector(toggleFavorite), for: .touchUpInside)
-        getStampButton.addTarget(self, action: #selector(tapBack), for: .touchUpInside)
+        getStampButton.addTarget(self, action: #selector(tapGetStamp), for: .touchUpInside)
     }
 }
 
@@ -458,6 +462,50 @@ private extension StampDetailViewController {
     
     @objc private func toggleFavorite() {
         favoriteButton.isSelected.toggle()
+    }
+
+    @objc private func tapGetStamp() {
+        guard let stamp = self.stamp else { return }
+        Task { [weak self] in
+            guard let self = self else { return }
+            let result = await self.viewModel.tryUnlockStamp()
+            switch result {
+            case .success(let date):
+                self.applyAcquiredUI(with: date, for: stamp)
+            case .tooFar, .failed:
+                self.showAlert(title: "위치를 확인해주세요", message: "아직 전시공간 근처가 아니네요. 스탬프는 해당 장소에서 400m 이내일 때만 획득할 수 있습니다.")
+            }
+        }
+    }
+
+
+    private func applyAcquiredUI(with date: Date, for stamp: Stamp) {
+        achievedStampLabel.isHidden = false
+        achievedDateLabel.text = dataFormatter.string(from: date)
+        getStampButton.setTitleColor(UIColor(red: 117/255, green: 117/255, blue: 117/255, alpha: 1), for: .normal)
+        getStampButton.backgroundColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1)
+        getStampButton.isEnabled = false
+
+        if let stampno = stamp.stampno {
+            switch stampno {
+            case 1...79:
+                stampImageView.tintColor = UIColor(red: 11/255, green: 160/255, blue: 172/255, alpha: 1)//박물관
+            case 80...128:
+                stampImageView.tintColor = UIColor(red: 247/255, green: 106/255, blue: 1/255, alpha: 1)//미술관
+            case 129...153:
+                stampImageView.tintColor = UIColor(red: 101/255, green: 0/255, blue: 0/255, alpha: 1)//기념관
+            case 154...176:
+                stampImageView.tintColor = UIColor(red: 0/255, green: 2/255, blue: 105/255, alpha: 1)//전시관
+            default:
+                stampImageView.tintColor = UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1)//그 외
+            }
+        }
+    }
+
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        self.present(alert, animated: true)
     }
 }
 //#Preview {
