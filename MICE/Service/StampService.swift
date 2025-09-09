@@ -61,7 +61,7 @@ struct MyStamp: Codable, Identifiable {
     let acquired_at: String
     let user_id: String
 }
-// MARK: - Stamp 구조체 (stamp 테이블)
+// MARK: - Wishlist 구조체 (stamp 테이블)
 struct Wishlist: Codable, Identifiable {
     let id: String
     let contentid: String
@@ -113,7 +113,7 @@ class StampService {
         return response
     }
     //MARK: - 특정 사용자가 특정 버튼을 누르면 mystamp 테이블에 기록됨
-    func addMyStamp(appleUid: String, contentId: String) async throws {
+    func addMyStamp(contentId: String) async throws { //테스트 후 비작동시 appleUid: String도 포함할 것
         try await client
             .from("mystamp")
             .insert(["contentid": contentId])
@@ -144,12 +144,4 @@ class StampService {
             .execute()
     }
 }
-
-
-
-
-
-
-
-
 
