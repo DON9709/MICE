@@ -6,6 +6,8 @@
 //
 import Foundation
 import Supabase
+import UIKit
+
 // MARK: - Stamp 구조체 (stamp 테이블)
 struct Stamp: Codable, Identifiable {
     var id: String { contentid }
@@ -24,6 +26,11 @@ struct Stamp: Codable, Identifiable {
     let isAcquired: Bool
     let acquiredAt: Date?
     var isBookmarked: Bool
+    func getTint() -> UIColor {
+        
+        
+        return .clear
+    }
 }
 struct MyStampRow: Decodable {
     let user_id: UUID
