@@ -46,20 +46,7 @@ final class MypageViewController: UIViewController {
                             image.withRenderingMode(.alwaysTemplate)
                         })
                     ])
-                    if let stampno = firstStamp?.stampno {
-                        switch stampno {
-                        case 1...79:
-                            recentlyGetStamp1.tintColor = UIColor(red: 11/255, green: 160/255, blue: 172/255, alpha: 1)//박물관
-                        case 80...128:
-                            recentlyGetStamp1.tintColor = UIColor(red: 247/255, green: 106/255, blue: 1/255, alpha: 1)//미술관
-                        case 129...153:
-                            recentlyGetStamp1.tintColor = UIColor(red: 101/255, green: 0/255, blue: 0/255, alpha: 1)//기념관
-                        case 154...176:
-                            recentlyGetStamp1.tintColor = UIColor(red: 0/255, green: 2/255, blue: 105/255, alpha: 1)//전시관
-                        default:
-                            recentlyGetStamp1.tintColor = UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1)//그 외
-                        }
-                    }
+                    recentlyGetStamp1.tintColor = firstStamp?.getTint()
                 }
             }
             
@@ -80,20 +67,7 @@ final class MypageViewController: UIViewController {
                             image.withRenderingMode(.alwaysTemplate)
                         })
                     ])
-                    if let stampno = secondStamp?.stampno {
-                        switch stampno {
-                        case 1...79:
-                            recentlyGetStamp2.tintColor = UIColor(red: 11/255, green: 160/255, blue: 172/255, alpha: 1)//박물관
-                        case 80...128:
-                            recentlyGetStamp2.tintColor = UIColor(red: 247/255, green: 106/255, blue: 1/255, alpha: 1)//미술관
-                        case 129...153:
-                            recentlyGetStamp2.tintColor = UIColor(red: 101/255, green: 0/255, blue: 0/255, alpha: 1)//기념관
-                        case 154...176:
-                            recentlyGetStamp2.tintColor = UIColor(red: 0/255, green: 2/255, blue: 105/255, alpha: 1)//전시관
-                        default:
-                            recentlyGetStamp2.tintColor = UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1)//그 외
-                        }
-                    }
+                    recentlyGetStamp2.tintColor = secondStamp?.getTint()
                 }
             }
             recentlyGetStamp2.translatesAutoresizingMaskIntoConstraints = false
@@ -114,20 +88,7 @@ final class MypageViewController: UIViewController {
                             image.withRenderingMode(.alwaysTemplate)
                         })
                     ])
-                    if let stampno = thirdStamp?.stampno {
-                        switch stampno {
-                        case 1...79:
-                            recentlyGetStamp3.tintColor = UIColor(red: 11/255, green: 160/255, blue: 172/255, alpha: 1)//박물관
-                        case 80...128:
-                            recentlyGetStamp3.tintColor = UIColor(red: 247/255, green: 106/255, blue: 1/255, alpha: 1)//미술관
-                        case 129...153:
-                            recentlyGetStamp3.tintColor = UIColor(red: 101/255, green: 0/255, blue: 0/255, alpha: 1)//기념관
-                        case 154...176:
-                            recentlyGetStamp3.tintColor = UIColor(red: 0/255, green: 2/255, blue: 105/255, alpha: 1)//전시관
-                        default:
-                            recentlyGetStamp3.tintColor = UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1)//그 외
-                        }
-                    }
+                    recentlyGetStamp3.tintColor = thirdStamp?.getTint()
                 }
             }
             recentlyGetStamp3.translatesAutoresizingMaskIntoConstraints = false

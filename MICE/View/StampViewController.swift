@@ -351,20 +351,7 @@ class StampViewController: UIViewController {
                 })
             ])
             firstHeaderStampLabel.text = firstStamp?.title
-            if let stampno = firstStamp?.stampno {
-                switch stampno {
-                case 1...79:
-                    firstHeaderStampView.tintColor = UIColor(red: 11/255, green: 160/255, blue: 172/255, alpha: 1)//박물관
-                case 80...128:
-                    firstHeaderStampView.tintColor = UIColor(red: 247/255, green: 106/255, blue: 1/255, alpha: 1)//미술관
-                case 129...153:
-                    firstHeaderStampView.tintColor = UIColor(red: 101/255, green: 0/255, blue: 0/255, alpha: 1)//기념관
-                case 154...176:
-                    firstHeaderStampView.tintColor = UIColor(red: 0/255, green: 2/255, blue: 105/255, alpha: 1)//전시관
-                default:
-                    firstHeaderStampView.tintColor = UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1)//그 외
-                }
-            }
+            firstHeaderStampView.tintColor = firstStamp?.getTint()
         } else {
             firstHeaderStampView.image = UIImage(named: "Mystery")
             firstHeaderStampLabel.text = ""
@@ -379,20 +366,7 @@ class StampViewController: UIViewController {
                     })
                 ])
                 secondHeaderStampLabel.text = secondStamp?.title
-                if let stampno = secondStamp?.stampno {
-                    switch stampno {
-                    case 1...79:
-                        secondHeaderStampView.tintColor = UIColor(red: 11/255, green: 160/255, blue: 172/255, alpha: 1)//박물관
-                    case 80...128:
-                        secondHeaderStampView.tintColor = UIColor(red: 247/255, green: 106/255, blue: 1/255, alpha: 1)//미술관
-                    case 129...153:
-                        secondHeaderStampView.tintColor = UIColor(red: 101/255, green: 0/255, blue: 0/255, alpha: 1)//기념관
-                    case 154...176:
-                        secondHeaderStampView.tintColor = UIColor(red: 0/255, green: 2/255, blue: 105/255, alpha: 1)//전시관
-                    default:
-                        secondHeaderStampView.tintColor = UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1)//그 외
-                    }
-                }
+                secondHeaderStampView.tintColor = secondStamp?.getTint()
         }
         
         //헤더스탬프 3
@@ -404,20 +378,7 @@ class StampViewController: UIViewController {
                     })
                 ])
                 thirdHeaderStampLabel.text = thirdStamp?.title
-                if let stampno = thirdStamp?.stampno {
-                    switch stampno {
-                    case 1...79:
-                        thirdHeaderStampView.tintColor = UIColor(red: 11/255, green: 160/255, blue: 172/255, alpha: 1)//박물관
-                    case 80...128:
-                        thirdHeaderStampView.tintColor = UIColor(red: 247/255, green: 106/255, blue: 1/255, alpha: 1)//미술관
-                    case 129...153:
-                        thirdHeaderStampView.tintColor = UIColor(red: 101/255, green: 0/255, blue: 0/255, alpha: 1)//기념관
-                    case 154...176:
-                        thirdHeaderStampView.tintColor = UIColor(red: 0/255, green: 2/255, blue: 105/255, alpha: 1)//전시관
-                    default:
-                        thirdHeaderStampView.tintColor = UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1)//그 외
-                    }
-                }
+                thirdHeaderStampView.tintColor = thirdStamp?.getTint()
             }
     }
     
@@ -450,22 +411,7 @@ extension StampViewController: UICollectionViewDataSource, UICollectionViewDeleg
         }
         let stamp = displayedStamps[indexPath.item]
         if let urlString = stamp.stampimg, let url = URL(string: urlString) {
-            var tint: UIColor? = {
-                guard let no = stamp.stampno else { return nil }
-                switch no {
-                case 1...79:   return UIColor(red: 11/255, green: 160/255, blue: 172/255, alpha: 1) // 박물관
-                case 80...128: return UIColor(red: 247/255, green: 106/255, blue: 1/255,   alpha: 1) // 미술관
-                case 129...153:return UIColor(red: 101/255, green: 0/255,   blue: 0/255,   alpha: 1) // 기념관
-                case 154...176:return UIColor(red: 0/255,   green: 2/255,   blue: 105/255, alpha: 1) // 전시관
-                default:       return UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1) // 기타
-                }
-            }()
-            if stamp.isAcquired {
-                
-            } else {
-                tint = UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1)
-            }
-            cell.configure(with: url, tintColor: tint)
+            cell.configure(with: url, tintColor: stamp.getTint())
         } else {
             cell.imageView.image = nil
             cell.imageView.tintColor = nil

@@ -27,8 +27,24 @@ struct Stamp: Codable, Identifiable {
     let acquiredAt: Date?
     var isBookmarked: Bool
     func getTint() -> UIColor {
-        
-        
+        if let stampno = stampno {
+            if isAcquired {
+                switch stampno {
+                case 1...79:
+                    return UIColor(red: 11/255, green: 160/255, blue: 172/255, alpha: 1)//박물관
+                case 80...128:
+                    return UIColor(red: 247/255, green: 106/255, blue: 1/255, alpha: 1)//미술관
+                case 129...153:
+                    return UIColor(red: 101/255, green: 0/255, blue: 0/255, alpha: 1)//기념관
+                case 154...176:
+                    return UIColor(red: 0/255, green: 2/255, blue: 105/255, alpha: 1)//전시관
+                default:
+                    return UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1)//그 외
+                }
+            } else {
+                return UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1)
+            }
+        }
         return .clear
     }
 }
