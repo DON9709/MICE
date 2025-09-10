@@ -45,4 +45,19 @@ final class MypageViewModel: ObservableObject {
             }
         }
     }
+    
+    func deleteAccount() {
+       Task {
+           do {
+               try await SupabaseManager.shared.deleteAccount()
+               await SupabaseManager.shared.signOut()
+               await MainActor.run {
+                   self.isLoggedIn = false
+                   self.email = nil
+               }
+           } catch {
+               print("회원 탈퇴 실패: \(error)")
+            }
+        }
+    }
 }

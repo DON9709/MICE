@@ -21,12 +21,14 @@ class SupabaseManager {
     static let shared = SupabaseManager()
 
     let supabase: SupabaseClient
+    private let baseURL: URL
 
     private init() {
         let dict = Bundle.parsePlist(ofName: "SecureAPIKeys")
         let value = dict["SUPABASE_ANON_KEY"] as! String
         let value2 = dict["SUPABASE_URL"] as! String
         let supabaseUrl = URL(string: value2)!
+        self.baseURL = supabaseUrl
         let supabaseKey = value
         self.supabase = SupabaseClient(supabaseURL: supabaseUrl, supabaseKey: supabaseKey)
     }
@@ -152,6 +154,33 @@ class SupabaseManager {
             try await supabase.auth.signOut()
         } catch {
             print("Supabase signOut error: \(error)")
+        }
+    }
+    
+    /// 회원 탈퇴: Edge Function("delete-user") 호출하여 서버에서 실제 삭제를 수행
+    func deleteAccount() async throws {
+        // 1) 현재 액세스 토큰 확보
+        guard let token = supabase.auth.currentSession?.accessToken else {
+            throw NSError(domain: "SupabaseManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "No access token. Please log in again."])
+        }
+
+        // 2) 함수 엔드포인트 URL 구성
+        let functionURL = self.baseURL.appendingPathComponent("functions/v1/delete-user")
+
+        // 3) 요청 생성
+        var request = URLRequest(url: functionURL)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = Data("{}".utf8)
+
+        // 4) 네트워크 호출
+        let (_, response) = try await URLSession.shared.data(for: request)
+
+        // 5) 상태 코드 검사
+        guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+            let status = (response as? HTTPURLResponse)?.statusCode ?? -1
+            throw NSError(domain: "SupabaseManager", code: status, userInfo: [NSLocalizedDescriptionKey: "Delete account failed. status=\(status)"])
         }
     }
 }
