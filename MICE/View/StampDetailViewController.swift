@@ -157,6 +157,12 @@ class StampDetailViewController: UIViewController {
         setupViews()
         setupLayout()
         setupActions()
+        
+        //Bookmark 표시 로직
+        isBookmarked = stamp?.isBookmarked ?? false
+        if isBookmarked {
+            favoriteButton.isSelected = true
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -196,7 +202,6 @@ class StampDetailViewController: UIViewController {
         favoriteButton.layer.shadowOpacity = 0.15
         favoriteButton.layer.shadowOffset = CGSize(width: 0, height: 2)
         favoriteButton.layer.shadowRadius = 4
-        favoriteButton.isSelected = stamp?.isAcquired ?? false
         
         //스탬프이미지(획득시 컬러)
         stampImageView.backgroundColor = .white
@@ -433,10 +438,26 @@ private extension StampDetailViewController {
             dismiss(animated: true)
         }
     }
-    
+
     @objc private func toggleFavorite() {
-        favoriteButton.isSelected.toggle()
-    }
+        guard let contentId = stamp?.contentid
+        else {
+            return
+        }
+        isBookmarked.toggle()
+            Task {
+                do {
+                    if isBookmarked {
+                        try await StampService.shared.addWishlist(contentId: contentId)
+                    } else {
+                        try await StampService.shared.deleteWishlist(contentId: contentId)
+                    }
+                    favoriteButton.isSelected.toggle()
+                } catch {
+                    print("북마크 업데이트 실패: \(error)")
+                }
+            }
+        }
 
     @objc private func tapGetStamp() {
         guard let stamp = self.stamp else { return }
@@ -466,6 +487,7 @@ private extension StampDetailViewController {
         alert.addAction(UIAlertAction(title: "확인", style: .default))
         self.present(alert, animated: true)
     }
+    
 }
 //#Preview {
 //    StampDetailViewController()
