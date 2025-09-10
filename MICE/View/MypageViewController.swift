@@ -183,6 +183,7 @@ final class MypageViewController: UIViewController {
             deleteAccountButton.setTitleColor(.black, for: .normal)
             deleteAccountButton.titleLabel?.font = UIFont.systemFont(ofSize: 11)
             deleteAccountButton.contentHorizontalAlignment = .center
+            deleteAccountButton.addTarget(self, action: #selector(handleDeleteAccountTapped), for: .touchUpInside)
 
             let buttonStackView = UIStackView(arrangedSubviews: [favoritesButton, logoutButton])
             buttonStackView.translatesAutoresizingMaskIntoConstraints = false
@@ -351,5 +352,18 @@ extension MypageViewController {
 extension MypageViewController {
     @objc private func handleLogoutTapped() {
         viewModel.logOut()
+    }
+}
+
+extension MypageViewController {
+    @objc private func handleDeleteAccountTapped() {
+        let alert = UIAlertController(title: "회원 탈퇴",
+                                      message: "탈퇴 시 모든 데이터가 삭제됩니다. 계속하시겠습니까?",
+                                      preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "취소", style: .cancel))
+        alert.addAction(UIAlertAction(title: "탈퇴", style: .destructive) { _ in
+            self.viewModel.deleteAccount()
+        })
+        present(alert, animated: true)
     }
 }
