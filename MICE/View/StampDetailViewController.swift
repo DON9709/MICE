@@ -157,6 +157,12 @@ class StampDetailViewController: UIViewController {
         setupViews()
         setupLayout()
         setupActions()
+        
+        //Bookmark 표시 로직
+        isBookmarked = stamp?.isBookmarked ?? false
+        if isBookmarked {
+            favoriteButton.isSelected = true
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -433,10 +439,26 @@ private extension StampDetailViewController {
             dismiss(animated: true)
         }
     }
-    
+
     @objc private func toggleFavorite() {
-        favoriteButton.isSelected.toggle()
-    }
+        guard let contentId = stamp?.contentid
+        else {
+            return
+        }
+        isBookmarked.toggle()
+            Task {
+                do {
+                    if isBookmarked {
+                        try await StampService.shared.addWishlist(contentId: contentId)
+                    } else {
+                        try await StampService.shared.deleteWishlist(contentId: contentId)
+                    }
+                    favoriteButton.isSelected.toggle()
+                } catch {
+                    print("북마크 업데이트 실패: \(error)")
+                }
+            }
+        }
 
     @objc private func tapGetStamp() {
         guard let stamp = self.stamp else { return }
@@ -466,6 +488,7 @@ private extension StampDetailViewController {
         alert.addAction(UIAlertAction(title: "확인", style: .default))
         self.present(alert, animated: true)
     }
+    
 }
 //#Preview {
 //    StampDetailViewController()
