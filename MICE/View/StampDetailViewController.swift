@@ -202,7 +202,6 @@ class StampDetailViewController: UIViewController {
         favoriteButton.layer.shadowOpacity = 0.15
         favoriteButton.layer.shadowOffset = CGSize(width: 0, height: 2)
         favoriteButton.layer.shadowRadius = 4
-        favoriteButton.isSelected = stamp?.isAcquired ?? false
         
         //스탬프이미지(획득시 컬러)
         stampImageView.backgroundColor = .white
