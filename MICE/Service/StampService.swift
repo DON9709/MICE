@@ -23,6 +23,7 @@ struct Stamp: Codable, Identifiable {
     let overview: String?
     let stampno: Int?
     let stampimg: String?
+    let hours: String?
     let isAcquired: Bool
     let acquiredAt: Date?
     var isBookmarked: Bool
@@ -69,6 +70,7 @@ struct StampRow: Decodable {
     let overview: String?
     let stampno: Int?
     let stampimg: String?
+    let hours: String?
     // LEFT JOIN으로 들어오는 중첩 결과 (사용자 본인 것만)
     let mystamp: [MyStampRow]?
     let wishlist: [WishRow]?
@@ -120,6 +122,7 @@ class StampService {
                 overview: $0.overview,
                 stampno: $0.stampno,
                 stampimg: $0.stampimg,
+                hours: $0.hours,
                 isAcquired: $0.isAcquired,
                 acquiredAt: $0.acquiredAt,
                 isBookmarked: $0.isBookmarked
