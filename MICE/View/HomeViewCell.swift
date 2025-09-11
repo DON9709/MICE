@@ -124,10 +124,10 @@ class ExhibitionCell: UICollectionViewCell {
            // MARK: - 변경점: 하드코딩된 텍스트를 Supabase 데이터로 교체
            if let hours = stamp.hours, !hours.isEmpty {
                // hours 데이터가 있으면 해당 값을 표시
-               hoursLabel.text = "영업 시간 \(hours)"
+               hoursLabel.text = "이용 시간 \(hours)"
            } else {
                // hours 데이터가 없으면 대체 텍스트 표시
-               hoursLabel.text = "영업 시간 정보 없음"
+               hoursLabel.text = "이용 시간 정보 없음"
            }
            
            bookmarkButton.isSelected = stamp.isBookmarked
