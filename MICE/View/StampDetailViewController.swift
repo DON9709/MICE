@@ -57,7 +57,7 @@ class StampDetailViewController: UIViewController {
     let homePageLabel = UILabel()
     
     //스탬프 홈페이지 이미지
-    let heomePageImageView = UIImageView()
+    let homePageImageView = UIImageView()
     
     // 섹션 구분선
     private let separatorTop = UIView()
@@ -119,23 +119,7 @@ class StampDetailViewController: UIViewController {
             getStampButton.isEnabled = false
             
             //stampno에 따라 획득한 스탬프 색상 다르게 처리
-            if let stampno = stamp?.stampno {
-                switch stampno {
-                case 1...79:
-                    stampImageView.tintColor = UIColor(red: 11/255, green: 160/255, blue: 172/255, alpha: 1)//박물관
-                case 80...128:
-                    stampImageView.tintColor = UIColor(red: 247/255, green: 106/255, blue: 1/255, alpha: 1)//미술관
-                case 129...153:
-                    stampImageView.tintColor = UIColor(red: 101/255, green: 0/255, blue: 0/255, alpha: 1)//기념관
-                case 154...176:
-                    stampImageView.tintColor = UIColor(red: 0/255, green: 2/255, blue: 105/255, alpha: 1)//전시관
-                default:
-                    stampImageView.tintColor = UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1)//그 외
-                }
-            } else {
-                print("스탬프가 없습니다.")
-            }
-            
+            stampImageView.tintColor = stamp?.getTint()
         } else {
             achievedStampImageView.isHidden = true
             stampImageView.tintColor = UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1)
@@ -161,6 +145,10 @@ class StampDetailViewController: UIViewController {
         } else {
             stampImageView.image = nil
         }
+
+        if let stamp = stamp {
+            viewModel.setStamp(stamp)
+        }
         
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -169,6 +157,12 @@ class StampDetailViewController: UIViewController {
         setupViews()
         setupLayout()
         setupActions()
+        
+        //Bookmark 표시 로직
+        isBookmarked = stamp?.isBookmarked ?? false
+        if isBookmarked {
+            favoriteButton.isSelected = true
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -208,7 +202,6 @@ class StampDetailViewController: UIViewController {
         favoriteButton.layer.shadowOpacity = 0.15
         favoriteButton.layer.shadowOffset = CGSize(width: 0, height: 2)
         favoriteButton.layer.shadowRadius = 4
-        favoriteButton.isSelected = stamp?.isAcquired ?? false
         
         //스탬프이미지(획득시 컬러)
         stampImageView.backgroundColor = .white
@@ -238,7 +231,7 @@ class StampDetailViewController: UIViewController {
         //스탬프 주소, 전화번호, 홈페이지 이미지
         addressImageView.image = UIImage(named: "Marker")
         phoneNumberImageView.image = UIImage(named: "Phone")
-        heomePageImageView.image = UIImage(named: "Link")
+        homePageImageView.image = UIImage(named: "Link")
         
         //스탬프 전화번호
         phoneNumberLabel.font = .systemFont(ofSize: 15)
@@ -254,9 +247,18 @@ class StampDetailViewController: UIViewController {
         //홈페이지 언래핑
         if let stamp = stamp {
             homePageLabel.text = stamp.homepage
+            homePageLabel.lineBreakMode = .byTruncatingTail
+            homePageLabel.numberOfLines = 1
+            applyHomepageLinkStyle()
         }else{
             print("홈페이지 주소 없음")
         }
+        // 라벨 탭 제스처로도 전체 보기/복사 지원
+        homePageLabel.isUserInteractionEnabled = true
+        let homePageTap = UITapGestureRecognizer(target: self, action: #selector(didTapHomePageLabel(_:)))
+        homePageLabel.addGestureRecognizer(homePageTap)
+        homePageLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        homePageLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
         //회득날짜(미획득시-> 미획득 스탬프)
         achievedDateLabel.font = .systemFont(ofSize: 15)
@@ -296,7 +298,7 @@ class StampDetailViewController: UIViewController {
         contentView.addSubview(stampImageView)
         contentView.addSubview(addressImageView)
         contentView.addSubview(phoneNumberImageView)
-        contentView.addSubview(heomePageImageView)
+        contentView.addSubview(homePageImageView)
         
         
         // 섹션 구분선 스타일
@@ -381,7 +383,7 @@ class StampDetailViewController: UIViewController {
             make.leading.equalToSuperview().offset(42)
         }
         
-        heomePageImageView.snp.makeConstraints { make in
+        homePageImageView.snp.makeConstraints { make in
             make.top.equalTo(phoneNumberImageView.snp.bottom).offset(12)
             make.leading.equalToSuperview().offset(16)
             make.centerY.equalTo(homePageLabel)
@@ -390,6 +392,7 @@ class StampDetailViewController: UIViewController {
         homePageLabel.snp.makeConstraints { make in
             make.top.equalTo(phoneNumberLabel.snp.bottom).offset(12)
             make.leading.equalToSuperview().offset(42)
+            make.trailing.equalToSuperview().inset(18)
         }
         
         achievedDateLabel.snp.makeConstraints { make in
@@ -433,7 +436,36 @@ class StampDetailViewController: UIViewController {
     private func setupActions() {
         backButton.addTarget(self, action: #selector(tapBack), for: .touchUpInside)
         favoriteButton.addTarget(self, action: #selector(toggleFavorite), for: .touchUpInside)
-        getStampButton.addTarget(self, action: #selector(tapBack), for: .touchUpInside)
+        getStampButton.addTarget(self, action: #selector(tapGetStamp), for: .touchUpInside)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+    }
+    
+    private func applyHomepageLinkStyle() {
+        guard let text = homePageLabel.text, !text.isEmpty else { return }
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: homePageLabel.font as Any,
+            .foregroundColor: UIColor.systemBlue,
+            .underlineStyle: NSUnderlineStyle.single.rawValue
+        ]
+        homePageLabel.attributedText = NSAttributedString(string: text, attributes: attributes)
+        homePageLabel.accessibilityTraits.insert(.link)
+    }
+
+    @objc private func tapHomePageMore() {
+        guard let fullText = homePageLabel.text, !fullText.isEmpty else {
+            return }
+        let alert = UIAlertController(title: "홈페이지", message: fullText, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "복사", style: .default,
+                                      handler: { _ in UIPasteboard.general.string = fullText}))
+        alert.addAction(UIAlertAction(title: "닫기", style: .cancel))
+        present(alert, animated: true)
+    }
+
+    @objc private func didTapHomePageLabel(_ gesture: UITapGestureRecognizer) {
+        tapHomePageMore()
     }
 }
 
@@ -445,10 +477,56 @@ private extension StampDetailViewController {
             dismiss(animated: true)
         }
     }
-    
+
     @objc private func toggleFavorite() {
-        favoriteButton.isSelected.toggle()
+        guard let contentId = stamp?.contentid
+        else {
+            return
+        }
+        isBookmarked.toggle()
+            Task {
+                do {
+                    if isBookmarked {
+                        try await StampService.shared.addWishlist(contentId: contentId)
+                    } else {
+                        try await StampService.shared.deleteWishlist(contentId: contentId)
+                    }
+                    favoriteButton.isSelected.toggle()
+                } catch {
+                    print("북마크 업데이트 실패: \(error)")
+                }
+            }
+        }
+
+    @objc private func tapGetStamp() {
+        guard let stamp = self.stamp else { return }
+        Task { [weak self] in
+            guard let self = self else { return }
+            let result = await self.viewModel.tryUnlockStamp()
+            switch result {
+            case .success(let date):
+                self.applyAcquiredUI(with: date, for: stamp)
+            case .tooFar, .failed:
+                self.showAlert(title: "위치를 확인해주세요", message: "아직 전시공간 근처가 아니네요. 스탬프는 해당 장소에서 400m 이내일 때만 획득할 수 있습니다.")
+            }
+        }
     }
+
+    private func applyAcquiredUI(with date: Date, for stamp: Stamp) {
+        achievedStampImageView.isHidden = false
+        achievedDateLabel.text = dataFormatter.string(from: date)
+        getStampButton.setTitleColor(UIColor(red: 117/255, green: 117/255, blue: 117/255, alpha: 1), for: .normal)
+        getStampButton.backgroundColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1)
+        getStampButton.isEnabled = false
+        stampImageView.tintColor = stamp.getTint()
+    }
+
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        self.present(alert, animated: true)
+    }
+    
 }
 //#Preview {
 //    StampDetailViewController()

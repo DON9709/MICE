@@ -118,17 +118,26 @@ class ExhibitionCell: UICollectionViewCell {
     }
     
     public func configure(with stamp: Stamp) {
-        self.contentId = stamp.contentid
-        titleLabel.text = stamp.title
-        hoursLabel.text = "영업 시간 09:00 ~ 20:00"
-        bookmarkButton.isSelected = stamp.isBookmarked
-        
-        if let imageURLString = stamp.image, let url = URL(string: imageURLString) {
-            thumbnailImageView.kf.setImage(with: url, placeholder: UIImage(systemName: "photo"))
-        } else {
-            thumbnailImageView.image = UIImage(systemName: "photo")
-        }
-    }
+           self.contentId = stamp.contentid
+           titleLabel.text = stamp.title
+           
+           // MARK: - 변경점: 하드코딩된 텍스트를 Supabase 데이터로 교체
+           if let hours = stamp.hours, !hours.isEmpty {
+               // hours 데이터가 있으면 해당 값을 표시
+               hoursLabel.text = "이용 시간 \(hours)"
+           } else {
+               // hours 데이터가 없으면 대체 텍스트 표시
+               hoursLabel.text = "이용 시간 정보 없음"
+           }
+           
+           bookmarkButton.isSelected = stamp.isBookmarked
+           
+           if let imageURLString = stamp.image, let url = URL(string: imageURLString) {
+               thumbnailImageView.kf.setImage(with: url, placeholder: UIImage(systemName: "photo"))
+           } else {
+               thumbnailImageView.image = UIImage(systemName: "photo")
+           }
+       }
     
     @objc private func bookmarkButtonTapped() {
         bookmarkButton.isSelected.toggle()
@@ -137,3 +146,4 @@ class ExhibitionCell: UICollectionViewCell {
         }
     }
 }
+
