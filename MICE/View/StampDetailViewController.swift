@@ -56,10 +56,6 @@ class StampDetailViewController: UIViewController {
     //스탬프 홈페이지
     let homePageLabel = UILabel()
     
-    //스탬프 홈페이지 더보기 버튼
-    let homePageMoreButton = UIButton(type: .system)
-    var isHomepageTruncated = false
-    
     //스탬프 홈페이지 이미지
     let homePageImageView = UIImageView()
     
@@ -261,14 +257,8 @@ class StampDetailViewController: UIViewController {
         homePageLabel.isUserInteractionEnabled = true
         let homePageTap = UITapGestureRecognizer(target: self, action: #selector(didTapHomePageLabel(_:)))
         homePageLabel.addGestureRecognizer(homePageTap)
-        homePageMoreButton.setTitle("더보기", for: .normal)
-        homePageMoreButton.titleLabel?.font = .systemFont(ofSize: 15, weight: .medium)
-        homePageMoreButton.contentEdgeInsets = UIEdgeInsets(top: 4, left: 6, bottom: 4, right: 6)
-        homePageMoreButton.isHidden = true
         homePageLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         homePageLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        homePageMoreButton.setContentCompressionResistancePriority(.required, for: .horizontal)
-        homePageMoreButton.setContentHuggingPriority(.required, for: .horizontal)
         
         //회득날짜(미획득시-> 미획득 스탬프)
         achievedDateLabel.font = .systemFont(ofSize: 15)
@@ -309,7 +299,6 @@ class StampDetailViewController: UIViewController {
         contentView.addSubview(addressImageView)
         contentView.addSubview(phoneNumberImageView)
         contentView.addSubview(homePageImageView)
-        contentView.addSubview(homePageMoreButton)
         
         
         // 섹션 구분선 스타일
@@ -403,12 +392,7 @@ class StampDetailViewController: UIViewController {
         homePageLabel.snp.makeConstraints { make in
             make.top.equalTo(phoneNumberLabel.snp.bottom).offset(12)
             make.leading.equalToSuperview().offset(42)
-            make.trailing.equalTo(homePageMoreButton.snp.leading).offset(-2)
-        }
-        
-        homePageMoreButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(16)
-            make.centerY.equalTo(homePageLabel)
+            make.trailing.equalToSuperview().inset(18)
         }
         
         achievedDateLabel.snp.makeConstraints { make in
@@ -453,12 +437,10 @@ class StampDetailViewController: UIViewController {
         backButton.addTarget(self, action: #selector(tapBack), for: .touchUpInside)
         favoriteButton.addTarget(self, action: #selector(toggleFavorite), for: .touchUpInside)
         getStampButton.addTarget(self, action: #selector(tapGetStamp), for: .touchUpInside)
-        homePageMoreButton.addTarget(self, action: #selector(tapHomePageMore), for: .touchUpInside)
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        updateHomePageTruncationIfNeeded()
     }
     
     private func applyHomepageLinkStyle() {
@@ -472,21 +454,6 @@ class StampDetailViewController: UIViewController {
         homePageLabel.accessibilityTraits.insert(.link)
     }
 
-    private func updateHomePageTruncationIfNeeded() {
-        guard let text = homePageLabel.text, !text.isEmpty else {
-            homePageMoreButton.isHidden = true
-            isHomepageTruncated = false
-            return
-        }
-        
-        let maxWidth = homePageLabel.bounds.width
-        let attributes: [NSAttributedString.Key: Any] = [.font: homePageLabel.font as Any]
-        let measured = (text as NSString).boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: homePageLabel.bounds.height), options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: attributes, context: nil).width
-        let truncated = measured > maxWidth
-        isHomepageTruncated = truncated
-        homePageMoreButton.isHidden = !truncated
-    }
-    
     @objc private func tapHomePageMore() {
         guard let fullText = homePageLabel.text, !fullText.isEmpty else {
             return }
