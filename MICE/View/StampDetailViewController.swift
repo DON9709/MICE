@@ -57,7 +57,7 @@ class StampDetailViewController: UIViewController {
     let homePageLabel = UILabel()
     
     //스탬프 홈페이지 이미지
-    let heomePageImageView = UIImageView()
+    let homePageImageView = UIImageView()
     
     // 섹션 구분선
     private let separatorTop = UIView()
@@ -231,7 +231,7 @@ class StampDetailViewController: UIViewController {
         //스탬프 주소, 전화번호, 홈페이지 이미지
         addressImageView.image = UIImage(named: "Marker")
         phoneNumberImageView.image = UIImage(named: "Phone")
-        heomePageImageView.image = UIImage(named: "Link")
+        homePageImageView.image = UIImage(named: "Link")
         
         //스탬프 전화번호
         phoneNumberLabel.font = .systemFont(ofSize: 15)
@@ -247,9 +247,18 @@ class StampDetailViewController: UIViewController {
         //홈페이지 언래핑
         if let stamp = stamp {
             homePageLabel.text = stamp.homepage
+            homePageLabel.lineBreakMode = .byTruncatingTail
+            homePageLabel.numberOfLines = 1
+            applyHomepageLinkStyle()
         }else{
             print("홈페이지 주소 없음")
         }
+        // 라벨 탭 제스처로도 전체 보기/복사 지원
+        homePageLabel.isUserInteractionEnabled = true
+        let homePageTap = UITapGestureRecognizer(target: self, action: #selector(didTapHomePageLabel(_:)))
+        homePageLabel.addGestureRecognizer(homePageTap)
+        homePageLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        homePageLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
         //회득날짜(미획득시-> 미획득 스탬프)
         achievedDateLabel.font = .systemFont(ofSize: 15)
@@ -289,7 +298,7 @@ class StampDetailViewController: UIViewController {
         contentView.addSubview(stampImageView)
         contentView.addSubview(addressImageView)
         contentView.addSubview(phoneNumberImageView)
-        contentView.addSubview(heomePageImageView)
+        contentView.addSubview(homePageImageView)
         
         
         // 섹션 구분선 스타일
@@ -374,7 +383,7 @@ class StampDetailViewController: UIViewController {
             make.leading.equalToSuperview().offset(42)
         }
         
-        heomePageImageView.snp.makeConstraints { make in
+        homePageImageView.snp.makeConstraints { make in
             make.top.equalTo(phoneNumberImageView.snp.bottom).offset(12)
             make.leading.equalToSuperview().offset(16)
             make.centerY.equalTo(homePageLabel)
@@ -383,6 +392,7 @@ class StampDetailViewController: UIViewController {
         homePageLabel.snp.makeConstraints { make in
             make.top.equalTo(phoneNumberLabel.snp.bottom).offset(12)
             make.leading.equalToSuperview().offset(42)
+            make.trailing.equalToSuperview().inset(18)
         }
         
         achievedDateLabel.snp.makeConstraints { make in
@@ -427,6 +437,35 @@ class StampDetailViewController: UIViewController {
         backButton.addTarget(self, action: #selector(tapBack), for: .touchUpInside)
         favoriteButton.addTarget(self, action: #selector(toggleFavorite), for: .touchUpInside)
         getStampButton.addTarget(self, action: #selector(tapGetStamp), for: .touchUpInside)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+    }
+    
+    private func applyHomepageLinkStyle() {
+        guard let text = homePageLabel.text, !text.isEmpty else { return }
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: homePageLabel.font as Any,
+            .foregroundColor: UIColor.systemBlue,
+            .underlineStyle: NSUnderlineStyle.single.rawValue
+        ]
+        homePageLabel.attributedText = NSAttributedString(string: text, attributes: attributes)
+        homePageLabel.accessibilityTraits.insert(.link)
+    }
+
+    @objc private func tapHomePageMore() {
+        guard let fullText = homePageLabel.text, !fullText.isEmpty else {
+            return }
+        let alert = UIAlertController(title: "홈페이지", message: fullText, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "복사", style: .default,
+                                      handler: { _ in UIPasteboard.general.string = fullText}))
+        alert.addAction(UIAlertAction(title: "닫기", style: .cancel))
+        present(alert, animated: true)
+    }
+
+    @objc private func didTapHomePageLabel(_ gesture: UITapGestureRecognizer) {
+        tapHomePageMore()
     }
 }
 
