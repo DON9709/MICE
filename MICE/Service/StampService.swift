@@ -6,6 +6,8 @@
 //
 import Foundation
 import Supabase
+import UIKit
+
 // MARK: - Stamp 구조체 (stamp 테이블)
 struct Stamp: Codable, Identifiable {
     var id: String { contentid }
@@ -21,9 +23,31 @@ struct Stamp: Codable, Identifiable {
     let overview: String?
     let stampno: Int?
     let stampimg: String?
+    let hours: String?
     let isAcquired: Bool
     let acquiredAt: Date?
     var isBookmarked: Bool
+    func getTint() -> UIColor {
+        if let stampno = stampno {
+            if isAcquired {
+                switch stampno {
+                case 1...79:
+                    return UIColor(red: 11/255, green: 160/255, blue: 172/255, alpha: 1)//박물관
+                case 80...128:
+                    return UIColor(red: 247/255, green: 106/255, blue: 1/255, alpha: 1)//미술관
+                case 129...153:
+                    return UIColor(red: 101/255, green: 0/255, blue: 0/255, alpha: 1)//기념관
+                case 154...176:
+                    return UIColor(red: 0/255, green: 2/255, blue: 105/255, alpha: 1)//전시관
+                default:
+                    return UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1)//그 외
+                }
+            } else {
+                return UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1)
+            }
+        }
+        return .clear
+    }
 }
 struct MyStampRow: Decodable {
     let user_id: UUID
@@ -46,6 +70,7 @@ struct StampRow: Decodable {
     let overview: String?
     let stampno: Int?
     let stampimg: String?
+    let hours: String?
     // LEFT JOIN으로 들어오는 중첩 결과 (사용자 본인 것만)
     let mystamp: [MyStampRow]?
     let wishlist: [WishRow]?
@@ -61,7 +86,7 @@ struct MyStamp: Codable, Identifiable {
     let acquired_at: String
     let user_id: String
 }
-// MARK: - Stamp 구조체 (stamp 테이블)
+// MARK: - Wishlist 구조체 (stamp 테이블)
 struct Wishlist: Codable, Identifiable {
     let id: String
     let contentid: String
@@ -97,6 +122,7 @@ class StampService {
                 overview: $0.overview,
                 stampno: $0.stampno,
                 stampimg: $0.stampimg,
+                hours: $0.hours,
                 isAcquired: $0.isAcquired,
                 acquiredAt: $0.acquiredAt,
                 isBookmarked: $0.isBookmarked
@@ -113,7 +139,7 @@ class StampService {
         return response
     }
     //MARK: - 특정 사용자가 특정 버튼을 누르면 mystamp 테이블에 기록됨
-    func addMyStamp(appleUid: String, contentId: String) async throws {
+    func addMyStamp(contentId: String) async throws { //테스트 후 비작동시 appleUid: String도 포함할 것
         try await client
             .from("mystamp")
             .insert(["contentid": contentId])
@@ -144,12 +170,4 @@ class StampService {
             .execute()
     }
 }
-
-
-
-
-
-
-
-
 
