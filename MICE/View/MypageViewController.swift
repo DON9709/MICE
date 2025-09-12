@@ -51,6 +51,7 @@ final class MypageViewController: UIViewController {
             }
             
             recentlyGetStamp1.translatesAutoresizingMaskIntoConstraints = false
+            recentlyGetStamp1.image = UIImage(named: "Mystery")
             recentlyGetStamp1.contentMode = .scaleAspectFill
             recentlyGetStamp1.layer.cornerRadius = 40
             recentlyGetStamp1.clipsToBounds = true
