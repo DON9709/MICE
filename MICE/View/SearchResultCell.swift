@@ -126,7 +126,6 @@ class SearchResultCell: UITableViewCell {
     }
 
     func configure(with stamp: Stamp) {
-        // ▼▼▼▼▼ contentId를 셀 내부에 저장 ▼▼▼▼▼
         self.contentId = stamp.contentid
         
         placeNameLabel.text = stamp.title ?? "이름 없음"
@@ -155,7 +154,6 @@ class SearchResultCell: UITableViewCell {
     }
     
     @objc private func bookmarkButtonTapped() {
-        // ▼▼▼▼▼ 버튼 상태를 바꾸고 콜백으로 이벤트 전달 ▼▼▼▼▼
         bookmarkButton.isSelected.toggle()
         if let id = contentId {
             onBookmarkTapped?(id, bookmarkButton.isSelected)

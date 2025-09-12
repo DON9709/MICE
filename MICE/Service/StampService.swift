@@ -23,6 +23,7 @@ struct Stamp: Codable, Identifiable {
     let overview: String?
     let stampno: Int?
     let stampimg: String?
+    let hours: String?
     let isAcquired: Bool
     let acquiredAt: Date?
     var isBookmarked: Bool
@@ -69,6 +70,7 @@ struct StampRow: Decodable {
     let overview: String?
     let stampno: Int?
     let stampimg: String?
+    let hours: String?
     // LEFT JOIN으로 들어오는 중첩 결과 (사용자 본인 것만)
     let mystamp: [MyStampRow]?
     let wishlist: [WishRow]?
@@ -120,6 +122,7 @@ class StampService {
                 overview: $0.overview,
                 stampno: $0.stampno,
                 stampimg: $0.stampimg,
+                hours: $0.hours,
                 isAcquired: $0.isAcquired,
                 acquiredAt: $0.acquiredAt,
                 isBookmarked: $0.isBookmarked
@@ -136,11 +139,17 @@ class StampService {
         return response
     }
     //MARK: - 특정 사용자가 특정 버튼을 누르면 mystamp 테이블에 기록됨
-    func addMyStamp(contentId: String) async throws { //테스트 후 비작동시 appleUid: String도 포함할 것
-        try await client
-            .from("mystamp")
-            .insert(["contentid": contentId])
-            .execute()
+    func addMyStamp(contentId: String) async throws {
+        do {
+            try await client
+                .from("mystamp")
+                .insert(["contentid": contentId])
+                .execute()
+            print("mystamp insert 성공: \(contentId)")
+        } catch {
+            print("mystamp insert 에러:", error)   // 디버깅 로그
+            throw error
+        }
     }
     // MARK: - 특정 사용자의 위시리스트 조회 (wishlist 테이블)
     func getWishlist() async throws -> [Wishlist] {
