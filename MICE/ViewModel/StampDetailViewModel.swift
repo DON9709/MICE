@@ -51,6 +51,7 @@ class StampDetailViewModel {
             try await StampService.shared.addMyStamp(contentId: contentId)
             return .success(Date())
         } catch {
+            print("addMyStamp 실패:", error)   // 디버깅 로그
             return .failed
         }
     }
