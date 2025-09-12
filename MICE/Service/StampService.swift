@@ -136,11 +136,17 @@ class StampService {
         return response
     }
     //MARK: - 특정 사용자가 특정 버튼을 누르면 mystamp 테이블에 기록됨
-    func addMyStamp(contentId: String) async throws { //테스트 후 비작동시 appleUid: String도 포함할 것
-        try await client
-            .from("mystamp")
-            .insert(["contentid": contentId])
-            .execute()
+    func addMyStamp(contentId: String) async throws {
+        do {
+            try await client
+                .from("mystamp")
+                .insert(["contentid": contentId])
+                .execute()
+            print("mystamp insert 성공: \(contentId)")
+        } catch {
+            print("mystamp insert 에러:", error)   // 디버깅 로그
+            throw error
+        }
     }
     // MARK: - 특정 사용자의 위시리스트 조회 (wishlist 테이블)
     func getWishlist() async throws -> [Wishlist] {
