@@ -128,9 +128,9 @@ final class LogInViewController: UIViewController, CLLocationManagerDelegate {
         //        }
         
         appleLoginButton.snp.makeConstraints {
-            $0.top.equalTo(logoImageView.snp.bottom).offset(285)
-            $0.centerX.equalToSuperview()
+            $0.top.greaterThanOrEqualTo(logoImageView.snp.bottom).offset(40)
             $0.leading.trailing.equalToSuperview().inset(40)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(100)
             $0.height.equalTo(48)
         }
     }
