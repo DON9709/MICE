@@ -104,7 +104,6 @@ class StampDetailViewController: UIViewController {
     // 3. 미획득 스탬프 = 나타나지않게끔
     
     override func viewDidLoad() {
-
         //획득한 스탬프 연결
         if stamp?.isAcquired == true {
             achievedStampImageView.isHidden = false
@@ -148,6 +147,29 @@ class StampDetailViewController: UIViewController {
 
         if let stamp = stamp {
             viewModel.setStamp(stamp)
+            // Start monitoring proximity continuously
+            viewModel.onProximityUpdate = { [weak self] isNear in
+                guard let self = self else { return }
+                DispatchQueue.main.async {
+                    if stamp.isAcquired == true {
+                        self.getStampButton.setTitle("획득 완료", for: .normal)
+                        self.getStampButton.isEnabled = false
+                        self.getStampButton.setTitleColor(UIColor(red: 117/255, green: 117/255, blue: 117/255, alpha: 1), for: .normal)
+                        self.getStampButton.backgroundColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1)
+                    } else if isNear {
+                        self.getStampButton.setTitle("스탬프 획득하기", for: .normal)
+                        self.getStampButton.isEnabled = true
+                        self.getStampButton.setTitleColor(UIColor.white, for: .normal)
+                        self.getStampButton.backgroundColor = UIColor(red: 114/255, green: 76/255, blue: 249/255, alpha: 1)
+                    } else {
+                        self.getStampButton.setTitle("스탬프 획득하기", for: .normal)
+                        self.getStampButton.isEnabled = false
+                        self.getStampButton.setTitleColor(UIColor(red: 117/255, green: 117/255, blue: 117/255, alpha: 1), for: .normal)
+                        self.getStampButton.backgroundColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1)
+                    }
+                }
+            }
+            viewModel.startProximityMonitoring()
         }
         
         super.viewDidLoad()
@@ -172,6 +194,8 @@ class StampDetailViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        // 화면을 떠나면 위치 추적 멈추도록
+        viewModel.stopProximityMonitoring()
         navigationController?.setNavigationBarHidden(false, animated: false)
     }
     
@@ -500,6 +524,10 @@ private extension StampDetailViewController {
 
     @objc private func tapGetStamp() {
         guard let stamp = self.stamp else { return }
+        if stamp.isAcquired {
+            self.showAlert(title: "스탬프 획득 불가", message: "이미 획득한 스탬프입니다.")
+            return
+        }
         Task { [weak self] in
             guard let self = self else { return }
             let result = await self.viewModel.tryUnlockStamp()
@@ -515,6 +543,7 @@ private extension StampDetailViewController {
     private func applyAcquiredUI(with date: Date, for stamp: Stamp) {
         achievedStampImageView.isHidden = false
         achievedDateLabel.text = dataFormatter.string(from: date)
+        getStampButton.setTitle("획득 완료", for: .normal)
         getStampButton.setTitleColor(UIColor(red: 117/255, green: 117/255, blue: 117/255, alpha: 1), for: .normal)
         getStampButton.backgroundColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1)
         getStampButton.isEnabled = false
