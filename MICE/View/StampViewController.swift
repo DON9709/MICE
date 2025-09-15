@@ -451,7 +451,7 @@ final class StampColletionCell: UICollectionViewCell {
         imageView.layer.borderWidth = 0.0
         imageView.layer.borderColor = UIColor.clear.cgColor
         imageView.layer.shouldRasterize = true
-        imageView.backgroundColor = .systemGray6
+        imageView.backgroundColor = .white
         imageView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
