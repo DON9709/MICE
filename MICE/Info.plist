@@ -7,7 +7,7 @@
 	<key>SUPABASE_URL</key>
 	<string>$(SUPABASE_URL)</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>위치 기반 추천 및 서비스를 위해 위치정보를 사용합니다.</string>
+	<string>가까운 스탬프 추천 및 스탬프 획득을 위해 위치정보를 사용합니다.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
