@@ -12,6 +12,8 @@ import Kingfisher
 
 class StampViewController: UIViewController {
     
+//    var stamp: Stamp?
+    
     //ViewModel
     private let viewModel = StampViewModel()
     private var cancellables = Set<AnyCancellable>()
@@ -19,13 +21,13 @@ class StampViewController: UIViewController {
     // DataSource
     private var stamps: [Stamp] = []
     
-    //데이터 호출 카테코리 분류
+    //데이터 호출 카테고리 분류
     private enum StampCategory {
         case museum      // 박물관 1~79
         case gallery     // 미술관 80~128
         case memorial    // 기념관 129~153
-        case exhibition  // 전시관 154~177
-
+        case exhibition  // 전시관 154~176
+        
         var title: String {
             switch self {
             case .museum: return "박물관"
@@ -34,32 +36,35 @@ class StampViewController: UIViewController {
             case .exhibition: return "전시관"
             }
         }
-
+        
         var oneBasedRange: ClosedRange<Int> {
             switch self {
             case .museum: return 1...79
             case .gallery: return 80...128
             case .memorial: return 129...153
-            case .exhibition: return 154...177
+            case .exhibition: return 154...176
             }
         }
     }
-
+    
     private var selectedCategory: StampCategory = .museum
-
+    
     private var displayedStamps: [Stamp] {
         guard !stamps.isEmpty else { return [] }
         let r = selectedCategory.oneBasedRange
         let start = max(r.lowerBound - 1, 0)
         let end = min(r.upperBound - 1, max(stamps.count - 1, 0))
         if start > end { return [] }
-        return Array(stamps[start...end])
+        let array = Array(stamps[start...end]).sorted { leftStamp, rightStamp in
+            leftStamp.acquiredAt ?? Date() < rightStamp.acquiredAt ?? Date()
+        }
+        return array
     }
-
+    
     //HeaderRecnetlyStamps
-    let firstHeaderStampView = UIView()
-    let secondHeaderStampView = UIView()
-    let thirdHeaderStampView = UIView()
+    let firstHeaderStampView = UIImageView()
+    let secondHeaderStampView = UIImageView()
+    let thirdHeaderStampView = UIImageView()
     let firstHeaderStampLabel = UILabel()
     let secondHeaderStampLabel = UILabel()
     let thirdHeaderStampLabel = UILabel()
@@ -80,30 +85,30 @@ class StampViewController: UIViewController {
     private let stampCollectionView: UICollectionView//전체 스탬프
     
     //StampFilterButton items
-       var items: [UIAction] {
-           let museum = UIAction(title: "박물관") { [unowned self] _ in
-               self.selectedCategory = .museum
-               self.stampFilterLabel.text = StampCategory.museum.title
-               self.reloadCategory()
-           }
-           let gallery = UIAction(title: "미술관") { [unowned self] _ in
-               self.selectedCategory = .gallery
-               self.stampFilterLabel.text = StampCategory.gallery.title
-               self.reloadCategory()
-           }
-           let exhibition = UIAction(title: "전시관") { [unowned self] _ in
-               self.selectedCategory = .exhibition
-               self.stampFilterLabel.text = StampCategory.exhibition.title
-               self.reloadCategory()
-           }
-           let memorial = UIAction(title: "기념관") { [unowned self] _ in
-               self.selectedCategory = .memorial
-               self.stampFilterLabel.text = StampCategory.memorial.title
-               self.reloadCategory()
-           }
-           return [museum, gallery, exhibition, memorial]
-       }
-       
+    var items: [UIAction] {
+        let museum = UIAction(title: "박물관") { [unowned self] _ in
+            self.selectedCategory = .museum
+            self.stampFilterLabel.text = StampCategory.museum.title
+            self.reloadCategory()
+        }
+        let gallery = UIAction(title: "미술관") { [unowned self] _ in
+            self.selectedCategory = .gallery
+            self.stampFilterLabel.text = StampCategory.gallery.title
+            self.reloadCategory()
+        }
+        let exhibition = UIAction(title: "전시관") { [unowned self] _ in
+            self.selectedCategory = .exhibition
+            self.stampFilterLabel.text = StampCategory.exhibition.title
+            self.reloadCategory()
+        }
+        let memorial = UIAction(title: "기념관") { [unowned self] _ in
+            self.selectedCategory = .memorial
+            self.stampFilterLabel.text = StampCategory.memorial.title
+            self.reloadCategory()
+        }
+        return [museum, gallery, exhibition, memorial]
+    }
+    
     
     // MARK: - Init (콜렉션 레이아웃)
     init() {
@@ -117,70 +122,72 @@ class StampViewController: UIViewController {
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
+    //획득 날짜 표시
+    private let dataFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "획득 날짜 : yyyy.MM.dd"
+        return formatter
+    }()
+    
     
     override func viewDidLoad() {
+        //Stamp 데이터를 불러오는 로직
+        let downloader = KingfisherManager.shared.downloader
+        downloader.downloadTimeout = 15
+        downloader.sessionConfiguration.waitsForConnectivity = true
+        downloader.sessionConfiguration.httpMaximumConnectionsPerHost = 4
+        
         super.viewDidLoad()
         view.backgroundColor = .white
         setupViews()
         setupLayout()
         setupMenu()
         setupActions()
-        let downloader = KingfisherManager.shared.downloader
-        downloader.downloadTimeout = 15
-        downloader.sessionConfiguration.waitsForConnectivity = true
-        downloader.sessionConfiguration.httpMaximumConnectionsPerHost = 4
-        Task { [weak self] in
-            do {
-                let result = try await StampService.shared.getAllStamps()
-                await MainActor.run {
-                    self?.stamps = result
-                    self?.reloadCategory()
-                }
-            } catch {
-                print("[StampViewController] fetch error: \(error)")
-            }
-        }
-//        viewModel.$selectedCategory
-//            .receive(on: RunLoop.main)
-//            .sink { [weak self] category in
-//                self?.stampFilterButton.setTitle(category, for: .normal)
-//            }
-//            .store(in: &cancellables)
+        
+        //        viewModel.$selectedCategory
+        //            .receive(on: RunLoop.main)
+        //            .sink { [weak self] category in
+        //                self?.stampFilterButton.setTitle(category, for: .normal)
+        //            }
+        //            .store(in: &cancellables)
     }
     
     private func setupViews() {
         //헤더 스탬프1
-        firstHeaderStampView.backgroundColor = .gray
         firstHeaderStampView.layer.cornerRadius = 64
         firstHeaderStampView.clipsToBounds = false
-        
-        //헤더 스탬프2
-        secondHeaderStampView.backgroundColor = .blue
+        firstHeaderStampView.image = UIImage(named: "Mystery")
+        firstHeaderStampLabel.text = ""
+
+        //헤더 스탬프2//로그인된화면에서도 미스테리스탬프가 보이고 스탬프가 나오는 이슈 있음
         secondHeaderStampView.layer.cornerRadius = 48
         secondHeaderStampView.clipsToBounds = false
+        secondHeaderStampView.image = UIImage(named: "Mystery")
+        secondHeaderStampLabel.text = ""
         
-        //헤더 스탬프3
-        thirdHeaderStampView.backgroundColor = .red
+        //헤더 스탬프3//로그인된화면에서도 미스테리스탬프가 보이고 스탬프가 나오는 이슈 있음
         thirdHeaderStampView.layer.cornerRadius = 48
         thirdHeaderStampView.clipsToBounds = false
+        thirdHeaderStampView.image = UIImage(named: "Mystery")
+        thirdHeaderStampLabel.text = ""
         
         //헤더 스탬프1 라벨
-        firstHeaderStampLabel.text = "헤더스탬프 1"
         firstHeaderStampLabel.font = .systemFont(ofSize: 18, weight: .semibold)
         firstHeaderStampLabel.textColor = .black
         firstHeaderStampLabel.textAlignment = .center
+        //획득한 스탬프 중에서 획득날짜 기준으로 최신순으로 정리
         
         //헤더 스탬프2 라벨
-        secondHeaderStampLabel.text = "헤더스탬프 2"
         secondHeaderStampLabel.font = .systemFont(ofSize: 14, weight: .regular)
         secondHeaderStampLabel.textColor = .black
         secondHeaderStampLabel.textAlignment = .center
+        //획득한 스탬프 중에서 획득날짜 기준으로 최신순으로 정리
         
         //헤더 스탬프3 라벨
-        thirdHeaderStampLabel.text = "헤더스탬프 3"
         thirdHeaderStampLabel.font = .systemFont(ofSize: 14, weight: .regular)
         thirdHeaderStampLabel.textColor = .black
         thirdHeaderStampLabel.textAlignment = .center
+        //획득한 스탬프 중에서 획득날짜 기준으로 최신순으로 정리
         
         //필터버튼
         stampFilterButton.backgroundColor = .clear
@@ -202,7 +209,7 @@ class StampViewController: UIViewController {
         stampCollectionView.register(StampColletionCell.self, forCellWithReuseIdentifier: StampColletionCell.identifier)
         stampCollectionView.dataSource = self
         stampCollectionView.delegate = self
-
+        
         view.addSubview(firstHeaderStampView)
         view.addSubview(secondHeaderStampView)
         view.addSubview(thirdHeaderStampView)
@@ -219,8 +226,34 @@ class StampViewController: UIViewController {
         //        drawHeaderStamp(in: headerStampContainer)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        
+        //Stamp 데이터를 불러오는 로직
+        Task { [weak self] in
+            do {
+                let result = try await StampService.shared.getAllStamps()
+                await MainActor.run {
+                    self?.stamps = result.sorted { $0.stampno ?? 0 < $1.stampno ?? 0 }
+                    self?.reloadCategory()
+                    Task {
+                        await self?.acquiredStampsLoad() }
+                    
+                }
+            } catch {
+                print("[StampViewController] fetch error: \(error)")
+            }
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: false)
+    }
+    
     private func setupLayout() {
-
+        
         //헤더 스탬프1
         firstHeaderStampView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(77)
@@ -275,13 +308,13 @@ class StampViewController: UIViewController {
             make.width.greaterThanOrEqualTo(81)
             make.height.equalTo(32)
         }
-            
+        
         //filterButtonLabel
         stampFilterLabel.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
             make.leading.equalToSuperview().inset(15.5)
         }
-            
+        
         //filterButtonImage
         stampFilterImageView.snp.makeConstraints { make in
             make.trailing.equalTo(stampFilterContainerView).inset(17.5)
@@ -289,7 +322,7 @@ class StampViewController: UIViewController {
             make.height.equalTo(4)
             make.centerY.equalToSuperview()
         }
-
+        
         //스탬프 그리드
         stampCollectionView.snp.makeConstraints { make in
             make.top.equalTo(stampFilterButton.snp.bottom).offset(18)
@@ -300,15 +333,64 @@ class StampViewController: UIViewController {
     }
     
     private func setupMenu() {
-            let menu = UIMenu(title: "카테고리 ▼",
-                              children: items)
+        let menu = UIMenu(title: "카테고리 ▼",
+                          children: items)
         
         stampFilterButton.menu = menu
         stampFilterButton.showsMenuAsPrimaryAction = true
     }
     
-    private func setupActions() {
+    //헤더 스탬프 획득한 일자 최신순 나타나게끔하는 로직 + 카테고리별 색상 분류 + 획득한 스탬프 레이블 표시
+    private func acquiredStampsLoad() async{
+        let firstStamp = await StampImageDataManager.shared.getAcquiredFirstStampImageUrl()
+        //헤더스탬프 1
+        if let urlString = firstStamp?.stampimg, let url = URL(string: urlString) {
+            firstHeaderStampView.kf.setImage(with: url, options: [
+                .imageModifier(AnyImageModifier { image in
+                    image.withRenderingMode(.alwaysTemplate)
+                })
+            ])
+            firstHeaderStampLabel.text = firstStamp?.title
+            firstHeaderStampView.tintColor = firstStamp?.getTint()
+        } else {
+            firstHeaderStampView.image = UIImage(named: "Mystery")
+            firstHeaderStampLabel.text = ""
+        }
+
+        //헤더스탬프 2
+        let secondStamp = await StampImageDataManager.shared.getAcquiredSecondStampImageUrl()
+            if let urlString = secondStamp?.stampimg, let url = URL(string: urlString) {
+                secondHeaderStampView.kf.setImage(with: url, options: [
+                    .imageModifier(AnyImageModifier { image in
+                        image.withRenderingMode(.alwaysTemplate)
+                    })
+                ])
+                secondHeaderStampLabel.text = secondStamp?.title
+                secondHeaderStampView.tintColor = secondStamp?.getTint()
+        }
         
+        //헤더스탬프 3
+        let thirdStamp = await StampImageDataManager.shared.getAcquiredThirdStampImageUrl()
+            if let urlString = thirdStamp?.stampimg, let url = URL(string: urlString) {
+                thirdHeaderStampView.kf.setImage(with: url, options: [
+                    .imageModifier(AnyImageModifier { image in
+                        image.withRenderingMode(.alwaysTemplate)
+                    })
+                ])
+                thirdHeaderStampLabel.text = thirdStamp?.title
+                thirdHeaderStampView.tintColor = thirdStamp?.getTint()
+            }
+    }
+    
+    private func setupActions() {
+        firstHeaderStampView.isUserInteractionEnabled = true
+        firstHeaderStampView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapFirstHeaderStamp)))
+
+        secondHeaderStampView.isUserInteractionEnabled = true
+        secondHeaderStampView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapSecondHeaderStamp)))
+
+        thirdHeaderStampView.isUserInteractionEnabled = true
+        thirdHeaderStampView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapThirdHeaderStamp)))
     }
     
     private func reloadCategory() {
@@ -317,7 +399,7 @@ class StampViewController: UIViewController {
     }
     
 }
-// MARK: - DataSource & Delegate
+// MARK: - DataSource & Delegate //콜렉션뷰에서 중복된 이미지들이 나타나는 이슈가있음.
 extension StampViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return displayedStamps.count
@@ -329,16 +411,16 @@ extension StampViewController: UICollectionViewDataSource, UICollectionViewDeleg
         }
         let stamp = displayedStamps[indexPath.item]
         if let urlString = stamp.stampimg, let url = URL(string: urlString) {
-            cell.imageView.kf.setImage(with: url)
+            cell.configure(with: url, tintColor: stamp.getTint())
         } else {
             cell.imageView.image = nil
+            cell.imageView.tintColor = nil
         }
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selected = displayedStamps[indexPath.item]
-        print("\(selected.contentid)")
         let detailVC = StampDetailViewController()
         detailVC.stamp = selected
         if let nav = self.navigationController {
@@ -349,6 +431,12 @@ extension StampViewController: UICollectionViewDataSource, UICollectionViewDeleg
             self.present(nav, animated: true)
         }
     }
+    
+//    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+//        guard let stampCell = cell as? StampColletionCell else { return }
+//        stampCell.imageView.kf.cancelDownloadTask()
+//        stampCell.imageView.image = nil
+//    }
 }
 
 final class StampColletionCell: UICollectionViewCell {
@@ -368,11 +456,38 @@ final class StampColletionCell: UICollectionViewCell {
             make.edges.equalToSuperview()
         }
     }
-    
     override func prepareForReuse() {
         super.prepareForReuse()
         imageView.kf.cancelDownloadTask()
         imageView.image = nil
+    }
+    
+    func configure(with url: URL, tintColor: UIColor?) {
+        let processor = DownsamplingImageProcessor(size: bounds.size)
+        var options: KingfisherOptionsInfo = [
+            .processor(processor),
+            .scaleFactor(UIScreen.main.scale),
+            .cacheOriginalImage,
+            .transition(.fade(0.2)),
+            .backgroundDecode,
+            .retryStrategy(DelayRetryStrategy(maxRetryCount: 2, retryInterval: .seconds(2)))
+        ]
+
+        if let tint = tintColor {
+            // Force template rendering so UIImageView's tintColor applies
+            options.append(.imageModifier(AnyImageModifier { image in
+                image.withRenderingMode(.alwaysTemplate)
+            }))
+            imageView.tintColor = tint
+        } else {
+            imageView.tintColor = nil
+        }
+
+        imageView.kf.setImage(
+            with: url,
+            placeholder: nil,
+            options: options
+        )
     }
     
     required init?(coder: NSCoder) {
@@ -386,6 +501,57 @@ private extension StampViewController {
             nav.popViewController(animated: true)
         } else {
             self.dismiss(animated: true)
+        }
+    }
+    
+    @objc private func didTapFirstHeaderStamp() {
+        let ordered = stamps
+            .filter { $0.isAcquired == true }
+            .sorted { ($0.acquiredAt ?? .distantPast) > ($1.acquiredAt ?? .distantPast) }
+        guard ordered.indices.contains(0) else { return }
+        let selected = ordered[0]
+        let detailVC = StampDetailViewController()
+        detailVC.stamp = selected
+        if let nav = self.navigationController {
+            nav.pushViewController(detailVC, animated: true)
+        } else {
+            let nav = UINavigationController(rootViewController: detailVC)
+            nav.modalPresentationStyle = .fullScreen
+            self.present(nav, animated: true)
+        }
+    }
+    
+    @objc private func didTapSecondHeaderStamp() {
+        let ordered = stamps
+            .filter { $0.isAcquired == true }
+            .sorted { ($0.acquiredAt ?? .distantPast) > ($1.acquiredAt ?? .distantPast) }
+        guard ordered.indices.contains(1) else { return }
+        let selected = ordered[1]
+        let detailVC = StampDetailViewController()
+        detailVC.stamp = selected
+        if let nav = self.navigationController {
+            nav.pushViewController(detailVC, animated: true)
+        } else {
+            let nav = UINavigationController(rootViewController: detailVC)
+            nav.modalPresentationStyle = .fullScreen
+            self.present(nav, animated: true)
+        }
+    }
+    
+    @objc private func didTapThirdHeaderStamp()  {
+        let ordered = stamps
+            .filter { $0.isAcquired == true }
+            .sorted { ($0.acquiredAt ?? .distantPast) > ($1.acquiredAt ?? .distantPast) }
+        guard ordered.indices.contains(2) else { return }
+        let selected = ordered[2]
+        let detailVC = StampDetailViewController()
+        detailVC.stamp = selected
+        if let nav = self.navigationController {
+            nav.pushViewController(detailVC, animated: true)
+        } else {
+            let nav = UINavigationController(rootViewController: detailVC)
+            nav.modalPresentationStyle = .fullScreen
+            self.present(nav, animated: true)
         }
     }
 }

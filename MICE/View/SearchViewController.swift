@@ -7,13 +7,14 @@
 
 import UIKit
 import SnapKit
+import Combine 
 
-// MARK: - SearchViewController
 class SearchViewController: UIViewController {
 
     private let viewModel = SearchViewModel()
+    private var cancellables = Set<AnyCancellable>() // Combine 구독 관리를 위한 변수
     
-    // MARK: - UI Components
+    
     private lazy var categoryStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
@@ -33,16 +34,7 @@ class SearchViewController: UIViewController {
         sb.placeholder = "카테고리를 먼저 선택해주세요."
         sb.searchBarStyle = .minimal
         sb.isUserInteractionEnabled = false
-        // [수정] 'Cancel' 버튼 표시 라인을 삭제하여 버튼을 제거합니다.
-        // sb.showsCancelButton = true
         return sb
-    }()
-    
-    private let recentSearchesTitleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "최근 검색어"
-        label.font = .systemFont(ofSize: 18, weight: .bold)
-        return label
     }()
     
     private let tableView: UITableView = {
@@ -52,8 +44,46 @@ class SearchViewController: UIViewController {
         tv.keyboardDismissMode = .onDrag
         return tv
     }()
+    
+    
+    private let emptyStateStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 16
+        stackView.alignment = .center
+        stackView.isHidden = true // 처음에는 숨겨둠
+        return stackView
+    }()
+    
+    private let emptyImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "EmptyImage") // 에셋에 추가한 이미지 이름
+        imageView.contentMode = .scaleAspectFit
+        imageView.snp.makeConstraints { $0.width.height.equalTo(100) }
+        return imageView
+    }()
+    
+    private let emptyLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 16, weight: .medium)
+        label.textColor = .systemGray
+        return label
+    }()
+    
+   
+    private lazy var recentSearchesHeaderView: UIView = {
+        let container = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 44))
+        let label = UILabel()
+        label.text = "최근 검색어"
+        label.font = .systemFont(ofSize: 18, weight: .bold)
+        container.addSubview(label)
+        label.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(20)
+            make.centerY.equalToSuperview()
+        }
+        return container
+    }()
 
-    // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -61,9 +91,26 @@ class SearchViewController: UIViewController {
         setupDelegates()
         setupUI()
         fetchAllData()
+        bindViewModel() // ViewModel 바인딩 함수 호출
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
-    // MARK: - Setup & Data Fetching
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: false)
+    }
+    private func bindViewModel() {
+        viewModel.$filteredStamps
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] stamps in
+                self?.updateViewForSearchResults(stamps)
+            }
+            .store(in: &cancellables)
+    }
+    
     private func setupDelegates() {
         searchBar.delegate = self
         tableView.dataSource = self
@@ -75,8 +122,12 @@ class SearchViewController: UIViewController {
     private func setupUI() {
         view.addSubview(categoryStackView)
         view.addSubview(searchBar)
-        view.addSubview(recentSearchesTitleLabel)
         view.addSubview(tableView)
+        
+        // '결과 없음' 뷰 추가
+        emptyStateStackView.addArrangedSubview(emptyImageView)
+        emptyStateStackView.addArrangedSubview(emptyLabel)
+        view.addSubview(emptyStateStackView)
         
         categoryStackView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).offset(10)
@@ -89,22 +140,23 @@ class SearchViewController: UIViewController {
             make.leading.trailing.equalToSuperview().inset(12)
         }
         
-        recentSearchesTitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(searchBar.snp.bottom).offset(20)
-            make.leading.equalToSuperview().offset(20)
-        }
         
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(recentSearchesTitleLabel.snp.bottom).offset(8)
+            make.top.equalTo(searchBar.snp.bottom).offset(8) // 검색창 바로 아래에 붙도록 수정
             make.leading.trailing.bottom.equalToSuperview()
+        }
+        
+        emptyStateStackView.snp.makeConstraints { make in
+            make.center.equalTo(tableView)
+            make.leading.trailing.equalToSuperview().inset(40)
         }
     }
     
+
     private func fetchAllData() {
         Task {
             do {
                 try await viewModel.fetchAllStamps()
-                // 데이터 로딩 성공 후, 첫 번째 카테고리를 자동으로 선택
                 if let firstButton = categoryStackView.arrangedSubviews.first as? CategoryButton {
                     selectCategoryButton(firstButton)
                 }
@@ -114,38 +166,55 @@ class SearchViewController: UIViewController {
         }
     }
     
-    // MARK: - Actions & Logics
     @objc private func categoryButtonTapped(_ sender: CategoryButton) {
         selectCategoryButton(sender)
     }
     
     private func selectCategoryButton(_ button: CategoryButton) {
-        // 모든 버튼을 비선택 상태로 초기화
         categoryStackView.arrangedSubviews.forEach { ($0 as? CategoryButton)?.isSelected = false }
-        // 선택된 버튼만 선택 상태로 변경
         button.isSelected = true
         
         if let category = button.category {
             viewModel.selectCategory(category)
             searchBar.isUserInteractionEnabled = true
             searchBar.placeholder = "\(category.title)에서 검색"
-            searchBar.text = "" // 카테고리 변경 시 검색어 초기화
-            updateViewForSearchBarState()
+            searchBar.text = ""
+            viewModel.searchQuery = "" // 카테고리 변경 시 검색어도 초기화
         }
     }
     
-    private func updateViewForSearchBarState() {
-        let isSearchBarEmpty = searchBar.text?.isEmpty ?? true
-        recentSearchesTitleLabel.isHidden = !isSearchBarEmpty
-        tableView.reloadData()
+
+    private func updateViewForSearchResults(_ stamps: [Stamp]) {
+        let isSearching = !(searchBar.text?.isEmpty ?? true)
+        
+        if isSearching {
+            tableView.tableHeaderView = nil // 검색 중에는 '최근 검색어' 헤더 숨김
+            if stamps.isEmpty {
+                // 검색 결과가 없을 때
+                tableView.isHidden = true
+                emptyStateStackView.isHidden = false
+                let categoryTitle = viewModel.selectedCategory?.title ?? "항목"
+                emptyLabel.text = "발견된 \(categoryTitle)이 없네요"
+            } else {
+                // 검색 결과가 있을 때
+                tableView.isHidden = false
+                emptyStateStackView.isHidden = true
+                tableView.reloadData()
+            }
+        } else {
+            // 검색어가 없을 때 (최근 검색어 표시)
+            tableView.isHidden = false
+            emptyStateStackView.isHidden = true
+            tableView.tableHeaderView = recentSearchesHeaderView
+            tableView.reloadData()
+        }
     }
 }
 
 // MARK: - UISearchBarDelegate
 extension SearchViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        viewModel.performSearch(with: searchText)
-        updateViewForSearchBarState()
+        viewModel.searchQuery = searchText
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -153,70 +222,64 @@ extension SearchViewController: UISearchBarDelegate {
         viewModel.addRecentSearch(term: searchTerm)
         searchBar.resignFirstResponder()
     }
-    
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.text = ""
-        viewModel.performSearch(with: "")
-        updateViewForSearchBarState()
-        searchBar.resignFirstResponder()
-    }
 }
 
 // MARK: - UITableViewDataSource, UITableViewDelegate
 extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let isSearchBarEmpty = searchBar.text?.isEmpty ?? true
-        return isSearchBarEmpty ? viewModel.recentSearches.count : viewModel.filteredStamps.count
+        let isSearching = !(searchBar.text?.isEmpty ?? true)
+        return isSearching ? viewModel.filteredStamps.count : viewModel.recentSearches.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let isSearchBarEmpty = searchBar.text?.isEmpty ?? true
+        let isSearching = !(searchBar.text?.isEmpty ?? true)
         
-        if isSearchBarEmpty {
+        if isSearching {
+            let cell = tableView.dequeueReusableCell(withIdentifier: SearchResultCell.identifier, for: indexPath) as! SearchResultCell
+            let stamp = viewModel.filteredStamps[indexPath.row]
+            cell.configure(with: stamp)
+            cell.onBookmarkTapped = { [weak self] (contentId, isBookmarked) in
+                guard let self = self else { return }
+                Task {
+                    do {
+                        if isBookmarked {
+                            try await StampService.shared.addWishlist(contentId: contentId)
+                        } else {
+                            try await StampService.shared.deleteWishlist(contentId: contentId)
+                        }
+                        self.viewModel.updateBookmarkStatus(contentId: contentId, isBookmarked: isBookmarked)
+                    } catch {
+                        print("북마크 업데이트 실패: \(error)")
+                    }
+                }
+            }
+            return cell
+        } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: RecentSearchCell.identifier, for: indexPath) as! RecentSearchCell
             cell.queryLabel.text = viewModel.recentSearches[indexPath.row]
             cell.delegate = self
             return cell
-        } else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: SearchResultCell.identifier, for: indexPath) as! SearchResultCell
-            let stamp = viewModel.filteredStamps[indexPath.row]
-            cell.configure(with: stamp)
-            return cell
         }
     }
     
-    // [수정] 셀을 탭했을 때의 동작을 구현합니다.
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
+        let isSearching = !(searchBar.text?.isEmpty ?? true)
         
-        let isSearchBarEmpty = searchBar.text?.isEmpty ?? true
-        
-        // 최근 검색어 목록 상태일 때 (검색창이 비어있을 때) 탭한 경우
-        if isSearchBarEmpty {
-            // 1. 선택된 최근 검색어를 가져옵니다.
-            let selectedTerm = viewModel.recentSearches[indexPath.row]
-            
-            // 2. 검색창에 텍스트를 설정합니다.
-            searchBar.text = selectedTerm
-            
-            // 3. 해당 검색어로 검색을 수행합니다.
-            viewModel.performSearch(with: selectedTerm)
-            
-            // 4. UI를 검색 결과 화면으로 업데이트합니다.
-            updateViewForSearchBarState()
-            
-            // 5. 탭한 검색어를 다시 최근 검색어 맨 위로 올립니다.
-            viewModel.addRecentSearch(term: selectedTerm)
-            searchBar.resignFirstResponder()
+        if isSearching {
+            let detailVC = StampDetailViewController()
+            detailVC.stamp = viewModel.filteredStamps[indexPath.row]
+            self.navigationController?.pushViewController(detailVC, animated: true)
         } else {
-            // 검색 결과 셀을 탭했을 때의 동작 (예: 상세 화면으로 이동)
-            // let selectedStamp = viewModel.filteredStamps[indexPath.row]
-            // print("\(selectedStamp.title ?? "") 선택됨")
+            let selectedTerm = viewModel.recentSearches[indexPath.row]
+            searchBar.text = selectedTerm
+            viewModel.addRecentSearch(term: selectedTerm)
+            viewModel.searchQuery = selectedTerm // searchQuery를 업데이트하여 검색 실행
+            searchBar.resignFirstResponder()
         }
     }
 }
 
-// MARK: - RecentSearchCellDelegate
+
 extension SearchViewController: RecentSearchCellDelegate {
     func didTapDeleteButton(on cell: UITableViewCell) {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
@@ -225,7 +288,6 @@ extension SearchViewController: RecentSearchCellDelegate {
     }
 }
 
-// MARK: - CategoryButton (SearchViewController 전용 컴포넌트)
 class CategoryButton: UIButton {
     
     var category: SearchCategory?

@@ -36,17 +36,17 @@ final class LogInViewController: UIViewController, CLLocationManagerDelegate {
         return imageView
     }()
     
-    private let guestButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("비회원 둘러보기", for: .normal)
-        button.setTitleColor(.black, for: .normal)
-        button.backgroundColor = .white
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        button.layer.borderColor = UIColor.lightGray.cgColor
-        button.layer.borderWidth = 1
-        button.layer.cornerRadius = 12
-        return button
-    }()
+    /*private let guestButton: UIButton = {
+     let button = UIButton(type: .system)
+     button.setTitle("비회원 둘러보기", for: .normal)
+     button.setTitleColor(.black, for: .normal)
+     button.backgroundColor = .white
+     button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+     button.layer.borderColor = UIColor.lightGray.cgColor
+     button.layer.borderWidth = 1
+     button.layer.cornerRadius = 12
+     return button
+     }()*/
     
     private let appleLoginButton: ASAuthorizationAppleIDButton = {
         let button = ASAuthorizationAppleIDButton(type: .signIn, style: .black)
@@ -76,17 +76,19 @@ final class LogInViewController: UIViewController, CLLocationManagerDelegate {
     
     // MARK: - Bind ViewModel
     private func bindViewModel() {
-        guestButton.addTarget(self, action: #selector(guestButtonTapped), for: .touchUpInside)
+        //      guestButton.addTarget(self, action: #selector(guestButtonTapped), for: .touchUpInside)
         appleLoginButton.addTarget(self, action: #selector(appleLoginButtonTapped), for: .touchUpInside)
         
         viewModel.output
             .sink { [weak self] output in
                 switch output {
                 case .navigateToMain:
-                    let tabBarController = MainTabBarController()
-                    tabBarController.selectedIndex = (self?.launchSource == .firstInstall) ? 0 : 4
-                    tabBarController.modalPresentationStyle = .fullScreen
-                    self?.present(tabBarController, animated: true, completion: nil)
+                    DispatchQueue.main.async {
+                        let tabBarController = MainTabBarController()
+                        tabBarController.selectedIndex = (self?.launchSource == .firstInstall) ? 0 : 4
+                        tabBarController.modalPresentationStyle = .fullScreen
+                        self?.present(tabBarController, animated: true, completion: nil)
+                    }
                 case .showAppleLogin:
                     // Handle showAppleLogin if needed
                     break
@@ -109,7 +111,7 @@ final class LogInViewController: UIViewController, CLLocationManagerDelegate {
     // MARK: - UI 셋업
     private func setupUI() {
         view.addSubview(logoImageView)
-        view.addSubview(guestButton)
+        //      view.addSubview(guestButton)
         view.addSubview(appleLoginButton)
         
         logoImageView.snp.makeConstraints {
@@ -118,16 +120,17 @@ final class LogInViewController: UIViewController, CLLocationManagerDelegate {
             $0.width.height.equalTo(160) // 적당한 크기 (1200x1200 → 160x160 등)
         }
         
-        guestButton.snp.makeConstraints {
-            $0.top.equalTo(logoImageView.snp.bottom).offset(265)
-            $0.centerX.equalToSuperview()
-            $0.leading.trailing.equalToSuperview().inset(40)
-            $0.height.equalTo(48)
-        }
+        //        guestButton.snp.makeConstraints {
+        //            $0.top.equalTo(logoImageView.snp.bottom).offset(265)
+        //            $0.centerX.equalToSuperview()
+        //            $0.leading.trailing.equalToSuperview().inset(40)
+        //            $0.height.equalTo(48)
+        //        }
         
         appleLoginButton.snp.makeConstraints {
-            $0.top.equalTo(guestButton.snp.bottom).offset(20)
-            $0.leading.trailing.equalTo(guestButton)
+            $0.top.greaterThanOrEqualTo(logoImageView.snp.bottom).offset(40)
+            $0.leading.trailing.equalToSuperview().inset(40)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(100)
             $0.height.equalTo(48)
         }
     }

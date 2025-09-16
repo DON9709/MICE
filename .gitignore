@@ -13,7 +13,6 @@ xcuserdata/
 .swiftpm/
 .build/
 Packages/
-Package.resolved
 
 # Cocoapods (사용한다면)
 Pods/

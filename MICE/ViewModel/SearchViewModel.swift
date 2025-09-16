@@ -6,8 +6,9 @@
 //
 
 import Foundation
+import Combine
 
-// SearchViewController의 CategoryButton에서 사용됩니다.
+
 enum StampCategoryType {
     case museum, artGallery, memorial, exhibition
 
@@ -16,7 +17,7 @@ enum StampCategoryType {
         case .museum: return 1...79
         case .artGallery: return 80...128
         case .memorial: return 129...153
-        case .exhibition: return 154...177
+        case .exhibition: return 154...176
         }
     }
 }
@@ -27,6 +28,7 @@ struct SearchCategory {
     let selectedIconName: String
     let type: StampCategoryType
 }
+
 
 @MainActor
 class SearchViewModel {
@@ -39,49 +41,54 @@ class SearchViewModel {
         SearchCategory(title: "미술관", iconName: "ArtGallery", selectedIconName: "ArtGalleryActive", type: .artGallery)
     ]
 
-    // StampService에서 가져온 모든 스탬프 원본 데이터
     private var allStamps: [Stamp] = []
-    
-    // 현재 UI에 표시될, 필터링된 스탬프 데이터
-    var filteredStamps: [Stamp] = []
-    
-    // 최근 검색어 목록
     var recentSearches: [String] = ["국립중앙박물관", "독립기념관"]
-    
-    // 현재 선택된 카테고리
     var selectedCategory: SearchCategory?
+
+    
+    @Published var searchQuery: String = ""
+    @Published var filteredStamps: [Stamp] = []
+    private var cancellables = Set<AnyCancellable>()
+    
+    init() {
+        
+        $searchQuery
+            .debounce(for: .milliseconds(500), scheduler: RunLoop.main) // 0.5초 딜레이
+            .removeDuplicates() // 중복된 검색어는 무시
+            .sink { [weak self] query in
+                self?.performSearch(with: query)
+            }
+            .store(in: &cancellables)
+    }
 
     // MARK: - Data Fetching
     func fetchAllStamps() async throws {
-        // StampService를 통해 Supabase에서 데이터를 가져옵니다.
         self.allStamps = try await StampService.shared.getAllStamps()
     }
 
     // MARK: - Logic
     func selectCategory(_ category: SearchCategory) {
         selectedCategory = category
-        // 카테고리 선택 시, 검색어 없이 먼저 필터링합니다.
-        performSearch(with: "")
+        // 카테고리 변경 시, 현재 검색어를 사용하여 즉시 검색 실행
+        performSearch(with: self.searchQuery)
     }
     
-    func performSearch(with query: String) {
+   
+    private func performSearch(with query: String) {
         guard let category = selectedCategory else {
-            filteredStamps = []
+            self.filteredStamps = []
             return
         }
         
-        // 1. 카테고리의 stampno 범위로 1차 필터링
         let categoryFiltered = allStamps.filter { stamp in
             guard let stampNo = stamp.stampno else { return false }
             return category.type.range.contains(stampNo)
         }
 
-        // 2. 검색어가 없으면 1차 필터링 결과만 사용
         if query.isEmpty {
-            filteredStamps = categoryFiltered
+            self.filteredStamps = categoryFiltered
         } else {
-            // 3. 검색어가 있으면, 1차 필터링 결과 내에서 이름으로 2차 필터링
-            filteredStamps = categoryFiltered.filter {
+            self.filteredStamps = categoryFiltered.filter {
                 $0.title?.lowercased().contains(query.lowercased()) ?? false
             }
         }
@@ -94,5 +101,14 @@ class SearchViewModel {
     
     func removeRecentSearch(at index: Int) {
         recentSearches.remove(at: index)
+    }
+    
+    func updateBookmarkStatus(contentId: String, isBookmarked: Bool) {
+        if let index = allStamps.firstIndex(where: { $0.contentid == contentId }) {
+            allStamps[index].isBookmarked = isBookmarked
+        }
+        if let filteredIndex = filteredStamps.firstIndex(where: { $0.contentid == contentId }) {
+            filteredStamps[filteredIndex].isBookmarked = isBookmarked
+        }
     }
 }

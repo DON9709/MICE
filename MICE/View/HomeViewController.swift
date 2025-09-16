@@ -7,30 +7,49 @@
 
 import UIKit
 import SnapKit
+import Combine
 
 class HomeViewController: UIViewController {
 
     private let viewModel = HomeViewModel()
+    private var cancellables = Set<AnyCancellable>()
     
-    // MARK: - UI Components
     private let scrollView = UIScrollView()
     private let contentView = UIView()
+    
+    private lazy var achievedCountLabel = createCountLabel(text: "0")
+    private lazy var unachievedCountLabel = createCountLabel(text: "0")
 
+    private let logoImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "Title")
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
+    
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.text = viewModel.mainTitle
+        label.text = "MICE"
         label.font = .systemFont(ofSize: 24, weight: .bold)
+        label.textColor = UIColor(red: 114/255.0, green: 76/255.0, blue: 249/255.0, alpha: 1)
         return label
     }()
+    
+    private lazy var titleStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [logoImageView, titleLabel])
+        stackView.axis = .horizontal
+        stackView.spacing = 8
+        stackView.alignment = .center
+        return stackView
+    }()
 
-    private lazy var notificationButton: UIButton = {
+/*    private lazy var notificationButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "bell"), for: .normal)
         button.tintColor = .black
-        return button
-    }()
+      return button
+    }()*/
     
-    // --- 수집한 스탬프 섹션 ---
     private lazy var stampSectionTitleLabel: UILabel = createSectionTitle(title: viewModel.stampSectionTitle)
     
     private let stampSummaryContainerView: UIView = {
@@ -45,21 +64,17 @@ class HomeViewController: UIViewController {
         layout.scrollDirection = .horizontal
         layout.itemSize = CGSize(width: 120, height: 130)
         layout.minimumLineSpacing = 16
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
-        
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
         collectionView.showsHorizontalScrollIndicator = false
         return collectionView
     }()
 
-    // --- 주변 문화 전시 공간 섹션 ---
     private lazy var nearbySectionTitleLabel: UILabel = createSectionTitle(title: viewModel.nearbySectionTitle)
-    private lazy var nearbyCollectionView: UICollectionView = createCollectionView()
+    private lazy var nearbyCollectionView: UICollectionView = createExhibitionCollectionView()
 
-    // --- 지금 핫한 전시 공간 섹션 ---
     private lazy var hotSectionTitleLabel: UILabel = createSectionTitle(title: viewModel.hotSectionTitle)
-    private lazy var hotCollectionView: UICollectionView = createCollectionView()
+    private lazy var hotCollectionView: UICollectionView = createExhibitionCollectionView()
 
     // MARK: - Life Cycle
     override func viewDidLoad() {
@@ -68,17 +83,75 @@ class HomeViewController: UIViewController {
         
         setupCollectionView()
         setupUI()
+        
+        bindViewModel()
+        Task {
+            await viewModel.fetchAllHomeData()
+        }
     }
     
-    // MARK: - UI Setup & Layout
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
+    
+    private func bindViewModel() {
+        viewModel.$achievedStampCount
+            .map { "\($0)" }
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.text, on: achievedCountLabel)
+            .store(in: &cancellables)
+            
+        viewModel.$unachievedStampCount
+            .map { "\($0)" }
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.text, on: unachievedCountLabel)
+            .store(in: &cancellables)
+            
+        viewModel.$recentlyAcquiredStamps
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] stamps in
+                if let layout = self?.stampExamplesCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+                    if stamps.count == 1 {
+                        let totalCellWidth = layout.itemSize.width
+                        let totalSpacing = self?.view.frame.width ?? 0 - totalCellWidth - 20
+                        layout.sectionInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: totalSpacing)
+                    } else {
+                        layout.sectionInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
+                    }
+                }
+                self?.stampExamplesCollectionView.reloadData()
+            }
+            .store(in: &cancellables)
+            
+        viewModel.$nearbyStamps
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.nearbyCollectionView.reloadData()
+            }
+            .store(in: &cancellables)
+            
+        viewModel.$hotStamps
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.hotCollectionView.reloadData()
+            }
+            .store(in: &cancellables)
+    }
+    
     private func setupCollectionView() {
-        stampExamplesCollectionView.dataSource = self
+        [stampExamplesCollectionView, nearbyCollectionView, hotCollectionView].forEach {
+            $0.dataSource = self
+            $0.delegate = self
+        }
+        
         stampExamplesCollectionView.register(StampExampleCell.self, forCellWithReuseIdentifier: StampExampleCell.identifier)
-        
-        nearbyCollectionView.dataSource = self
         nearbyCollectionView.register(ExhibitionCell.self, forCellWithReuseIdentifier: ExhibitionCell.identifier)
-        
-        hotCollectionView.dataSource = self
         hotCollectionView.register(ExhibitionCell.self, forCellWithReuseIdentifier: ExhibitionCell.identifier)
     }
 
@@ -86,34 +159,31 @@ class HomeViewController: UIViewController {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         
-        [titleLabel, notificationButton, stampSectionTitleLabel, stampSummaryContainerView, stampExamplesCollectionView, nearbySectionTitleLabel, nearbyCollectionView, hotSectionTitleLabel, hotCollectionView].forEach { contentView.addSubview($0) }
+        [titleStackView, /*notificationButton,*/ stampSectionTitleLabel, stampSummaryContainerView, stampExamplesCollectionView, nearbySectionTitleLabel, nearbyCollectionView, hotSectionTitleLabel, hotCollectionView].forEach { contentView.addSubview($0) }
         
         setupStampSummaryView()
 
-        // --- SnapKit 제약조건 설정 ---
-        scrollView.snp.makeConstraints { make in
-            make.edges.equalTo(view.safeAreaLayoutGuide)
+        scrollView.snp.makeConstraints { $0.edges.equalTo(view.safeAreaLayoutGuide) }
+        contentView.snp.makeConstraints { $0.edges.width.equalToSuperview() }
+
+        logoImageView.snp.makeConstraints { make in
+            make.width.height.equalTo(30)
         }
         
-        contentView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-            make.width.equalToSuperview()
-        }
-
-        titleLabel.snp.makeConstraints { make in
+        titleStackView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(20)
             make.leading.equalToSuperview().offset(20)
         }
 
-        notificationButton.snp.makeConstraints { make in
-            make.centerY.equalTo(titleLabel)
+        /*notificationButton.snp.makeConstraints { make in
+            make.centerY.equalTo(titleStackView)
             make.trailing.equalToSuperview().inset(20)
             make.width.height.equalTo(30)
-        }
+        }*/
         
         stampSectionTitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(30)
-            make.leading.equalTo(titleLabel)
+            make.top.equalTo(titleStackView.snp.bottom).offset(30)
+            make.leading.equalTo(titleStackView)
         }
         
         stampSummaryContainerView.snp.makeConstraints { make in
@@ -130,33 +200,30 @@ class HomeViewController: UIViewController {
         
         nearbySectionTitleLabel.snp.makeConstraints { make in
             make.top.equalTo(stampExamplesCollectionView.snp.bottom).offset(40)
-            make.leading.equalTo(titleLabel)
+            make.leading.equalTo(titleStackView)
         }
 
         nearbyCollectionView.snp.makeConstraints { make in
             make.top.equalTo(nearbySectionTitleLabel.snp.bottom).offset(12)
             make.leading.trailing.equalToSuperview()
-            make.height.equalTo(200)
+            make.height.equalTo(250)
         }
 
         hotSectionTitleLabel.snp.makeConstraints { make in
             make.top.equalTo(nearbyCollectionView.snp.bottom).offset(40)
-            make.leading.equalTo(titleLabel)
+            make.leading.equalTo(titleStackView)
         }
 
         hotCollectionView.snp.makeConstraints { make in
             make.top.equalTo(hotSectionTitleLabel.snp.bottom).offset(12)
             make.leading.trailing.equalToSuperview()
-            make.height.equalTo(200)
+            make.height.equalTo(250)
             make.bottom.equalToSuperview().inset(20)
         }
     }
     
     private func setupStampSummaryView() {
-        let achievedCountLabel = createCountLabel(text: "\(viewModel.achievedStampCount)")
         let achievedTitleLabel = createTitleLabel(text: "달성한 스탬프")
-        
-        let unachievedCountLabel = createCountLabel(text: "\(viewModel.unachievedStampCount)")
         let unachievedTitleLabel = createTitleLabel(text: "미달성 스탬프")
         
         let leftStack = UIStackView(arrangedSubviews: [achievedCountLabel, achievedTitleLabel])
@@ -172,30 +239,20 @@ class HomeViewController: UIViewController {
         let separator = UIView()
         separator.backgroundColor = .systemGray4
         
-        // [수정] mainStack의 distribution 규칙을 .fill로 변경
         let mainStack = UIStackView(arrangedSubviews: [leftStack, separator, rightStack])
         mainStack.axis = .horizontal
-        mainStack.distribution = .fill // .fillEqually에서 .fill로 변경
+        mainStack.distribution = .fill
         mainStack.alignment = .center
         
         stampSummaryContainerView.addSubview(mainStack)
-        
-        mainStack.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        
+        mainStack.snp.makeConstraints { $0.edges.equalToSuperview() }
         separator.snp.makeConstraints { make in
-            make.width.equalTo(1) // 구분선 너비는 1로 고정
+            make.width.equalTo(1)
             make.height.equalToSuperview().multipliedBy(0.5)
         }
-        
-        // [추가] leftStack과 rightStack의 너비가 같도록 직접 설정
-        leftStack.snp.makeConstraints { make in
-            make.width.equalTo(rightStack)
-        }
+        leftStack.snp.makeConstraints { $0.width.equalTo(rightStack) }
     }
     
-    // --- Helper Methods ---
     private func createCountLabel(text: String) -> UILabel {
         let label = UILabel()
         label.text = text
@@ -219,13 +276,11 @@ class HomeViewController: UIViewController {
         return label
     }
 
-    private func createCollectionView() -> UICollectionView {
+    private func createExhibitionCollectionView() -> UICollectionView {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.itemSize = CGSize(width: 150, height: 200)
         layout.minimumLineSpacing = 16
         layout.sectionInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
-
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
         collectionView.showsHorizontalScrollIndicator = false
@@ -237,33 +292,72 @@ class HomeViewController: UIViewController {
 extension HomeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == stampExamplesCollectionView {
-            return viewModel.stampExamples.count
+            return viewModel.recentlyAcquiredStamps.count
         } else if collectionView == nearbyCollectionView {
-            return viewModel.nearbyExhibitions.count
-        } else { // hotCollectionView
-            return viewModel.hotExhibitions.count
+            return viewModel.nearbyStamps.count
+        } else {
+            return viewModel.hotStamps.count
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if collectionView == stampExamplesCollectionView {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: StampExampleCell.identifier, for: indexPath) as? StampExampleCell else {
-                return UICollectionViewCell()
-            }
-            cell.configure(with: viewModel.stampExamples[indexPath.item])
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: StampExampleCell.identifier, for: indexPath) as! StampExampleCell
+            let stamp = viewModel.recentlyAcquiredStamps[indexPath.item]
+            cell.configure(with: stamp)
             return cell
         } else {
-             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ExhibitionCell.identifier, for: indexPath) as? ExhibitionCell else {
-                return UICollectionViewCell()
-            }
-            if collectionView == nearbyCollectionView {
-                 let exhibition = viewModel.nearbyExhibitions[indexPath.item]
-                 cell.configure(with: exhibition)
-            } else { // hotCollectionView
-                 let exhibition = viewModel.hotExhibitions[indexPath.item]
-                 cell.configure(with: exhibition)
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ExhibitionCell.identifier, for: indexPath) as! ExhibitionCell
+            let stamp = (collectionView == nearbyCollectionView) ? viewModel.nearbyStamps[indexPath.item] : viewModel.hotStamps[indexPath.item]
+            cell.configure(with: stamp)
+            
+            cell.onBookmarkTapped = { [weak self] (contentId, isBookmarked) in
+                guard let self = self else { return }
+                Task {
+                    do {
+                        if isBookmarked {
+                            try await StampService.shared.addWishlist(contentId: contentId)
+                        } else {
+                            try await StampService.shared.deleteWishlist(contentId: contentId)
+                        }
+                        self.viewModel.updateBookmarkStatus(contentId: contentId, isBookmarked: isBookmarked)
+                    } catch {
+                        print("북마크 업데이트 실패: \(error)")
+                    }
+                }
             }
             return cell
         }
+    }
+}
+
+// MARK: - UICollectionViewDelegate, UICollectionViewDelegateFlowLayout
+extension HomeViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let selectedStamp: Stamp
+        
+        if collectionView == stampExamplesCollectionView {
+            guard !viewModel.recentlyAcquiredStamps.isEmpty else { return }
+            selectedStamp = viewModel.recentlyAcquiredStamps[indexPath.item]
+        } else if collectionView == nearbyCollectionView {
+            guard !viewModel.nearbyStamps.isEmpty else { return }
+            selectedStamp = viewModel.nearbyStamps[indexPath.item]
+        } else {
+            guard !viewModel.hotStamps.isEmpty else { return }
+            selectedStamp = viewModel.hotStamps[indexPath.item]
+        }
+        
+        let detailVC = StampDetailViewController()
+        detailVC.stamp = selectedStamp
+        detailVC.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(detailVC, animated: true)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        if collectionView == nearbyCollectionView || collectionView == hotCollectionView {
+            return CGSize(width: 310, height: 248)
+        }
+        return CGSize(width: 120, height: 130)
     }
 }

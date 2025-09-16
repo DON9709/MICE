@@ -7,8 +7,11 @@
 
 import UIKit
 import Combine
+import Kingfisher
 
 final class MypageViewController: UIViewController {
+    
+    let stampImageDataManager = StampImageDataManager.shared
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -18,7 +21,6 @@ final class MypageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        setupView()
         bindViewModel()
     }
 
@@ -32,29 +34,101 @@ final class MypageViewController: UIViewController {
             titleLabel.textColor = .black
             titleLabel.textAlignment = .left
             titleLabel.widthAnchor.constraint(equalToConstant: 350).isActive = true
-
-            let profileImageView = UIImageView()
-            profileImageView.translatesAutoresizingMaskIntoConstraints = false
-            profileImageView.image = UIImage(systemName: "person.crop.circle.fill") // 기본 아이콘
-            profileImageView.tintColor = .lightGray
-            profileImageView.contentMode = .scaleAspectFit
-
+            
+            //최근획득스탬프1
+            let recentlyGetStamp1 = UIImageView()
+            Task {
+                let firstStamp = await StampImageDataManager.shared.getAcquiredFirstStampImageUrl()
+                //헤더스탬프 1
+                if let urlString = firstStamp?.stampimg, let url = URL(string: urlString) {
+                    recentlyGetStamp1.kf.setImage(with: url, options: [
+                        .imageModifier(AnyImageModifier { image in
+                            image.withRenderingMode(.alwaysTemplate)
+                        })
+                    ])
+                    recentlyGetStamp1.tintColor = firstStamp?.getTint()
+                }
+            }
+            
+            recentlyGetStamp1.translatesAutoresizingMaskIntoConstraints = false
+            recentlyGetStamp1.image = UIImage(named: "Mystery")
+            recentlyGetStamp1.contentMode = .scaleAspectFill
+            recentlyGetStamp1.layer.cornerRadius = 40
+            recentlyGetStamp1.clipsToBounds = true
+            recentlyGetStamp1.backgroundColor = .white
+                
+            //최근획득스탬프2
+            let recentlyGetStamp2 = UIImageView()
+            //헤더스탬프 2
+            Task {
+                let secondStamp = await StampImageDataManager.shared.getAcquiredSecondStampImageUrl()
+                if let urlString = secondStamp?.stampimg, let url = URL(string: urlString) {
+                    recentlyGetStamp2.kf.setImage(with: url, options: [
+                        .imageModifier(AnyImageModifier { image in
+                            image.withRenderingMode(.alwaysTemplate)
+                        })
+                    ])
+                    recentlyGetStamp2.tintColor = secondStamp?.getTint()
+                }
+            }
+            recentlyGetStamp2.translatesAutoresizingMaskIntoConstraints = false
+            recentlyGetStamp2.image = UIImage(named: "Mystery")
+            recentlyGetStamp2.contentMode = .scaleAspectFit
+            recentlyGetStamp2.layer.cornerRadius = 40
+            recentlyGetStamp2.clipsToBounds = true
+            recentlyGetStamp2.backgroundColor = .white
+            
+            //최근획득스탬프3
+            let recentlyGetStamp3 = UIImageView()
+            //헤더스탬프 3
+            Task {
+                let thirdStamp = await StampImageDataManager.shared.getAcquiredThirdStampImageUrl()
+                if let urlString = thirdStamp?.stampimg, let url = URL(string: urlString) {
+                    recentlyGetStamp3.kf.setImage(with: url, options: [
+                        .imageModifier(AnyImageModifier { image in
+                            image.withRenderingMode(.alwaysTemplate)
+                        })
+                    ])
+                    recentlyGetStamp3.tintColor = thirdStamp?.getTint()
+                }
+            }
+            recentlyGetStamp3.translatesAutoresizingMaskIntoConstraints = false
+            recentlyGetStamp3.image = UIImage(named: "Mystery")
+            recentlyGetStamp3.contentMode = .scaleAspectFit
+            recentlyGetStamp3.layer.cornerRadius = 40
+            recentlyGetStamp3.clipsToBounds = true
+            recentlyGetStamp3.backgroundColor = .white
+            
             let profileContainer = UIView()
             profileContainer.translatesAutoresizingMaskIntoConstraints = false
-            profileContainer.addSubview(profileImageView)
+            profileContainer.addSubview(recentlyGetStamp3)
+            profileContainer.addSubview(recentlyGetStamp2)
+            profileContainer.addSubview(recentlyGetStamp1)
 
             NSLayoutConstraint.activate([
-                profileImageView.leadingAnchor.constraint(equalTo: profileContainer.leadingAnchor),
-                profileImageView.topAnchor.constraint(equalTo: profileContainer.topAnchor),
-                profileImageView.bottomAnchor.constraint(equalTo: profileContainer.bottomAnchor),
-                profileImageView.widthAnchor.constraint(equalToConstant: 80),
-                profileImageView.heightAnchor.constraint(equalToConstant: 80),
+                recentlyGetStamp3.leadingAnchor.constraint(equalTo: recentlyGetStamp2.centerXAnchor),
+                recentlyGetStamp3.topAnchor.constraint(equalTo: profileContainer.topAnchor),
+                recentlyGetStamp3.bottomAnchor.constraint(equalTo: profileContainer.bottomAnchor),
+                recentlyGetStamp3.widthAnchor.constraint(equalToConstant: 80),
+                recentlyGetStamp3.heightAnchor.constraint(equalToConstant: 80),
+                recentlyGetStamp2.leadingAnchor.constraint(equalTo: recentlyGetStamp1.centerXAnchor),
+                recentlyGetStamp2.topAnchor.constraint(equalTo: profileContainer.topAnchor),
+                recentlyGetStamp2.bottomAnchor.constraint(equalTo: profileContainer.bottomAnchor),
+                recentlyGetStamp2.widthAnchor.constraint(equalToConstant: 80),
+                recentlyGetStamp2.heightAnchor.constraint(equalToConstant: 80),
+                recentlyGetStamp1.leadingAnchor.constraint(equalTo: profileContainer.leadingAnchor),
+                recentlyGetStamp1.topAnchor.constraint(equalTo: profileContainer.topAnchor),
+                recentlyGetStamp1.bottomAnchor.constraint(equalTo: profileContainer.bottomAnchor),
+                recentlyGetStamp1.widthAnchor.constraint(equalToConstant: 80),
+                recentlyGetStamp1.heightAnchor.constraint(equalToConstant: 80),
                 profileContainer.widthAnchor.constraint(equalToConstant: 350)
             ])
+            
+            view.addSubview(profileContainer)
 
             let emailLabel = UILabel()
             emailLabel.translatesAutoresizingMaskIntoConstraints = false
-            emailLabel.text = "abc1234@gmail.com"
+            emailLabel.text = viewModel.email ?? "  "
             emailLabel.textColor = .darkGray
             emailLabel.font = UIFont.systemFont(ofSize: 16)
             emailLabel.textAlignment = .left
@@ -93,12 +167,24 @@ final class MypageViewController: UIViewController {
             favoritesButton.setTitle("찜한 목록", for: .normal)
             favoritesButton.setTitleColor(.black, for: .normal)
             favoritesButton.contentHorizontalAlignment = .leading
+            favoritesButton.titleLabel?.font = UIFont.systemFont(ofSize: 18)
+            favoritesButton.addTarget(self, action: #selector(handleFavoritesTapped), for: .touchUpInside)
 
             let logoutButton = UIButton(type: .system)
             logoutButton.translatesAutoresizingMaskIntoConstraints = false
             logoutButton.setTitle("로그아웃", for: .normal)
             logoutButton.setTitleColor(.black, for: .normal)
             logoutButton.contentHorizontalAlignment = .leading
+            logoutButton.titleLabel?.font = UIFont.systemFont(ofSize: 18)
+            logoutButton.addTarget(self, action: #selector(handleLogoutTapped), for: .touchUpInside)
+            
+            let deleteAccountButton = UIButton(type: .system)
+            deleteAccountButton.translatesAutoresizingMaskIntoConstraints = false
+            deleteAccountButton.setTitle("회원 탈퇴", for: .normal)
+            deleteAccountButton.setTitleColor(.black, for: .normal)
+            deleteAccountButton.titleLabel?.font = UIFont.systemFont(ofSize: 11)
+            deleteAccountButton.contentHorizontalAlignment = .center
+            deleteAccountButton.addTarget(self, action: #selector(handleDeleteAccountTapped), for: .touchUpInside)
 
             let buttonStackView = UIStackView(arrangedSubviews: [favoritesButton, logoutButton])
             buttonStackView.translatesAutoresizingMaskIntoConstraints = false
@@ -112,6 +198,13 @@ final class MypageViewController: UIViewController {
                 buttonStackView.topAnchor.constraint(equalTo: separatorView.bottomAnchor, constant: 16),
                 buttonStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
                 buttonStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24)
+            ])
+            
+            view.addSubview(deleteAccountButton)
+            NSLayoutConstraint.activate([
+                deleteAccountButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
+                deleteAccountButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
+                deleteAccountButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
             ])
         } else {
             showGuestView()
@@ -127,25 +220,60 @@ final class MypageViewController: UIViewController {
         titleLabel.textColor = .black
         titleLabel.textAlignment = .left
         titleLabel.widthAnchor.constraint(equalToConstant: 350).isActive = true
-
-        let profileImageView = UIImageView()
-        profileImageView.translatesAutoresizingMaskIntoConstraints = false
-        profileImageView.image = UIImage(systemName: "person.crop.circle.fill") // 기본 아이콘
-        profileImageView.tintColor = .lightGray
-        profileImageView.contentMode = .scaleAspectFit
+        
+        //최근획득스탬프1
+        let recentlyGetStamp1 = UIImageView()
+        recentlyGetStamp1.translatesAutoresizingMaskIntoConstraints = false
+        recentlyGetStamp1.image = UIImage(named: "Mystery")
+        recentlyGetStamp1.contentMode = .scaleAspectFit
+        recentlyGetStamp1.layer.cornerRadius = 40
+        recentlyGetStamp1.clipsToBounds = true
+        recentlyGetStamp1.backgroundColor = .white
+            
+        //최근획득스탬프2
+        let recentlyGetStamp2 = UIImageView()
+        recentlyGetStamp2.translatesAutoresizingMaskIntoConstraints = false
+        recentlyGetStamp2.image = UIImage(named: "Mystery")
+        recentlyGetStamp2.contentMode = .scaleAspectFit
+        recentlyGetStamp2.layer.cornerRadius = 40
+        recentlyGetStamp2.clipsToBounds = true
+        recentlyGetStamp2.backgroundColor = .white
+        
+        //최근획득스탬프3
+        let recentlyGetStamp3 = UIImageView()
+        recentlyGetStamp3.translatesAutoresizingMaskIntoConstraints = false
+        recentlyGetStamp3.image = UIImage(named: "Mystery")
+        recentlyGetStamp3.contentMode = .scaleAspectFit
+        recentlyGetStamp3.layer.cornerRadius = 40
+        recentlyGetStamp3.clipsToBounds = true
+        recentlyGetStamp3.backgroundColor = .white
 
         let profileContainer = UIView()
         profileContainer.translatesAutoresizingMaskIntoConstraints = false
-        profileContainer.addSubview(profileImageView)
+        profileContainer.addSubview(recentlyGetStamp3)
+        profileContainer.addSubview(recentlyGetStamp2)
+        profileContainer.addSubview(recentlyGetStamp1)
 
         NSLayoutConstraint.activate([
-            profileImageView.leadingAnchor.constraint(equalTo: profileContainer.leadingAnchor),
-            profileImageView.topAnchor.constraint(equalTo: profileContainer.topAnchor),
-            profileImageView.bottomAnchor.constraint(equalTo: profileContainer.bottomAnchor),
-            profileImageView.widthAnchor.constraint(equalToConstant: 80),
-            profileImageView.heightAnchor.constraint(equalToConstant: 80),
+            recentlyGetStamp3.leadingAnchor.constraint(equalTo: recentlyGetStamp2.centerXAnchor),
+            recentlyGetStamp3.topAnchor.constraint(equalTo: profileContainer.topAnchor),
+            recentlyGetStamp3.bottomAnchor.constraint(equalTo: profileContainer.bottomAnchor),
+            recentlyGetStamp3.widthAnchor.constraint(equalToConstant: 80),
+            recentlyGetStamp3.heightAnchor.constraint(equalToConstant: 80),
+            recentlyGetStamp2.leadingAnchor.constraint(equalTo: recentlyGetStamp1.centerXAnchor),
+            recentlyGetStamp2.topAnchor.constraint(equalTo: profileContainer.topAnchor),
+            recentlyGetStamp2.bottomAnchor.constraint(equalTo: profileContainer.bottomAnchor),
+            recentlyGetStamp2.widthAnchor.constraint(equalToConstant: 80),
+            recentlyGetStamp2.heightAnchor.constraint(equalToConstant: 80),
+            recentlyGetStamp1.leadingAnchor.constraint(equalTo: profileContainer.leadingAnchor),
+            recentlyGetStamp1.topAnchor.constraint(equalTo: profileContainer.topAnchor),
+            recentlyGetStamp1.bottomAnchor.constraint(equalTo: profileContainer.bottomAnchor),
+            recentlyGetStamp1.widthAnchor.constraint(equalToConstant: 80),
+            recentlyGetStamp1.heightAnchor.constraint(equalToConstant: 80),
             profileContainer.widthAnchor.constraint(equalToConstant: 350)
         ])
+        
+        view.addSubview(profileContainer)
 
         let loginButton = UIButton(type: .system)
         loginButton.translatesAutoresizingMaskIntoConstraints = false
@@ -203,7 +331,13 @@ final class MypageViewController: UIViewController {
         loginVC.modalPresentationStyle = .fullScreen
         present(loginVC, animated: true, completion: nil)
     }
+    @objc private func handleFavoritesTapped() {
+        let bookmarkVC = BookmarkViewController()
+        navigationController?.pushViewController(bookmarkVC, animated: true)
+    }
 }
+
+
 
 // Ensure SettingView exists and is a UIViewController subclass
 // If not, add a stub here or in its own file.
@@ -213,5 +347,24 @@ extension MypageViewController {
         let settingsVC = SettingViewController()
         settingsVC.launchSource = .mypage
         navigationController?.pushViewController(settingsVC, animated: true)
+    }
+}
+
+extension MypageViewController {
+    @objc private func handleLogoutTapped() {
+        viewModel.logOut()
+    }
+}
+
+extension MypageViewController {
+    @objc private func handleDeleteAccountTapped() {
+        let alert = UIAlertController(title: "회원 탈퇴",
+                                      message: "탈퇴 시 모든 데이터가 삭제됩니다. 계속하시겠습니까?",
+                                      preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "취소", style: .cancel))
+        alert.addAction(UIAlertAction(title: "탈퇴", style: .destructive) { _ in
+            self.viewModel.deleteAccount()
+        })
+        present(alert, animated: true)
     }
 }
