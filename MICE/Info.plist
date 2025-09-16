@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>UIUserInterfaceStyle</key>
+	<string>Light</string>
 	<key>SUPABASE_KEY</key>
 	<string>$(SUPABASE_KEY)</string>
 	<key>SUPABASE_URL</key>
@@ -42,7 +44,5 @@
 	</dict>
 	<key>CFBundleIdentifier</key>
 	<string></string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>위치 기반 추천 및 서비스를 위해 위치정보를 사용합니다.</string>
 </dict>
 </plist>
