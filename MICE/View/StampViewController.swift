@@ -55,12 +55,23 @@ class StampViewController: UIViewController {
         let start = max(r.lowerBound - 1, 0)
         let end = min(r.upperBound - 1, max(stamps.count - 1, 0))
         if start > end { return [] }
-        let array = Array(stamps[start...end]).sorted { leftStamp, rightStamp in
-            leftStamp.acquiredAt ?? Date() < rightStamp.acquiredAt ?? Date()
+        let slice = stamps[start...end]
+        return Array(slice).sorted { a, b in
+          let aGroup = a.isAcquired ? 0 : 1
+          let bGroup = b.isAcquired ? 0 : 1
+          if aGroup != bGroup { return aGroup < bGroup }
+          // 둘 다 획득 상태면 날짜 비교(옵셔널은 뒤로)
+          if a.isAcquired && b.isAcquired {
+            let aDate = a.acquiredAt ?? .distantFuture
+            let bDate = b.acquiredAt ?? .distantFuture
+            if aDate != bDate { return aDate > bDate }  // ⬅︎ 오름차순
+            // 최신순(내림차순)을 원하시면 위 한 줄을 `aDate > bDate`로 바꾸세요.
+          }
+          // 마지막 tie-breaker: stampno
+          return (a.stampno ?? .max) < (b.stampno ?? .max)
         }
-        return array
-    }
-    
+      }
+
     //HeaderRecnetlyStamps
     let firstHeaderStampView = UIImageView()
     let secondHeaderStampView = UIImageView()
