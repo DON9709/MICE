@@ -59,7 +59,7 @@ class SearchViewController: UIViewController {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "EmptyImage") // 에셋에 추가한 이미지 이름
         imageView.contentMode = .scaleAspectFit
-        imageView.snp.makeConstraints { $0.width.height.equalTo(100) }
+        imageView.snp.makeConstraints { $0.width.height.equalTo(50) }
         return imageView
     }()
     
@@ -147,7 +147,8 @@ class SearchViewController: UIViewController {
         }
         
         emptyStateStackView.snp.makeConstraints { make in
-            make.center.equalTo(tableView)
+            make.top.equalTo(searchBar.snp.bottom).offset(140)
+            make.centerX.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(40)
         }
     }
@@ -194,7 +195,7 @@ class SearchViewController: UIViewController {
                 tableView.isHidden = true
                 emptyStateStackView.isHidden = false
                 let categoryTitle = viewModel.selectedCategory?.title ?? "항목"
-                emptyLabel.text = "발견된 \(categoryTitle)이 없네요"
+                emptyLabel.text = "일치하는 \(categoryTitle)이 없네요"
             } else {
                 // 검색 결과가 있을 때
                 tableView.isHidden = false
