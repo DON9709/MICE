@@ -186,7 +186,9 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = MICE/MICE.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20250912;
+
+				CURRENT_PROJECT_VERSION = 20250916;
+
 				DEVELOPMENT_TEAM = FL83497G8F;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MICE/Info.plist;
@@ -202,7 +204,9 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.4;
+
+				MARKETING_VERSION = 1.1.5;
+
 				PRODUCT_BUNDLE_IDENTIFIER = com.MyeongGyun.MICE;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -222,7 +226,9 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = MICE/MICE.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20250912;
+
+				CURRENT_PROJECT_VERSION = 20250916;
+
 				DEVELOPMENT_TEAM = FL83497G8F;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MICE/Info.plist;
@@ -238,7 +244,9 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.4;
+
+				MARKETING_VERSION = 1.1.5;
+
 				PRODUCT_BUNDLE_IDENTIFIER = com.MyeongGyun.MICE;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
