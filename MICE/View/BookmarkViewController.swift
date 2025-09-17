@@ -80,7 +80,7 @@ class BookmarkViewController: UIViewController {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "EmptyImage")
         imageView.contentMode = .scaleAspectFit
-        imageView.snp.makeConstraints { $0.width.height.equalTo(100) }
+        imageView.snp.makeConstraints { $0.width.height.equalTo(50) }
         return imageView
     }()
     

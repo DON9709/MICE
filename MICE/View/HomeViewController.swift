@@ -114,20 +114,27 @@ class HomeViewController: UIViewController {
             .store(in: &cancellables)
             
         viewModel.$recentlyAcquiredStamps
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] stamps in
-                if let layout = self?.stampExamplesCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                    if stamps.count == 1 {
-                        let totalCellWidth = layout.itemSize.width
-                        let totalSpacing = self?.view.frame.width ?? 0 - totalCellWidth - 20
-                        layout.sectionInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: totalSpacing)
-                    } else {
-                        layout.sectionInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
+                    .receive(on: DispatchQueue.main)
+                    .sink { [weak self] stamps in
+                        guard let self = self else { return }
+
+                        // MARK: - 1. 스크롤 가능 여부 설정
+                        // 획득한 스탬프가 3개 이상이면 스크롤을 활성화하고, 그렇지 않으면 비활성화합니다.
+                        self.stampExamplesCollectionView.isScrollEnabled = stamps.count >= 3
+
+                        // MARK: - 2. 단일 아이템 중앙 정렬 로직
+                        if let layout = self.stampExamplesCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+                            if stamps.count == 1 {
+                                let totalCellWidth = layout.itemSize.width
+                                let totalSpacing = self.view.frame.width - totalCellWidth - 40 
+                                layout.sectionInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: totalSpacing)
+                            } else {
+                                layout.sectionInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
+                            }
+                        }
+                        self.stampExamplesCollectionView.reloadData()
                     }
-                }
-                self?.stampExamplesCollectionView.reloadData()
-            }
-            .store(in: &cancellables)
+                    .store(in: &cancellables)
             
         viewModel.$nearbyStamps
             .receive(on: DispatchQueue.main)
