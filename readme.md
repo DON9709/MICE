@@ -23,10 +23,6 @@
   - 원하는 전시관/스탬프를 찜 목록에 추가/삭제
   - 별도 Bookmark 화면에서 확인 가능
 
-- **게스트 모드**
-  - 로그인하지 않고도 기본 UI 둘러보기 가능
-  - 일부 기능은 로그인 시만 활성화
-
 ---
 
 ## 🛠 기술 스택 (Tech Stack)
@@ -62,7 +58,7 @@
 ## 지원 (Support)
 
 - **문의**: 저장소 Issues 탭에 등록해주세요. 또는 TestFlight를 통한 이슈 리포트도 가능합니다.
-- **이메일**: booby9709@gmail.com
+- **이메일**: booby9709@gmail.com / gksmf0160@gmail.com / jesbio@naver.com
 
 ---
 
@@ -70,7 +66,7 @@
 
 MIT License
 
-Copyright (c) 2025 [Donhyuk Lee]
+Copyright (c) 2025 [Myunggyun Song, Eunsae Jang, Ginam Kang, Donhyuk Lee]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
