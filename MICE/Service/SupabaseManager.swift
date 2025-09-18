@@ -30,7 +30,13 @@ class SupabaseManager {
         let supabaseUrl = URL(string: value2)!
         self.baseURL = supabaseUrl
         let supabaseKey = value
-        self.supabase = SupabaseClient(supabaseURL: supabaseUrl, supabaseKey: supabaseKey)
+        self.supabase = SupabaseClient(
+            supabaseURL: supabaseUrl,
+            supabaseKey: supabaseKey
+        )
+        
+        print("DEBUG [SupabaseManager.init] currentSession:", supabase.auth.currentSession as Any) // 디버깅로그
+        print("DEBUG [SupabaseManager.init] currentUser:", supabase.auth.currentUser as Any) // 디버깅로그
     }
 
     func registerOrUpdateUser(appleUID: String, name: String?, email: String?, provider: String) {
@@ -134,6 +140,9 @@ class SupabaseManager {
             let session = try await supabase.auth.signInWithIdToken(
                 credentials: .init(provider: .apple, idToken: idToken, nonce: nonce)
             )
+            
+            print("DEBUG [signInWithApple] session:", session) // 디버깅로그
+            
             return session
         } catch {
             print("Apple 로그인 실패: \(error)")
