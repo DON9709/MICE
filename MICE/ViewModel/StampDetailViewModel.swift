@@ -11,6 +11,14 @@ import Supabase
 class StampDetailViewModel {
     private let unlockDistance: Double = 400.0 // 기준 거리
     private var targetStamp: Stamp?
+    private var hasAcquired: Bool = false
+
+    // VC가 구독할 콜백: 400m 이내 여부(true/false)
+    var onProximityUpdate: ((Bool) -> Void)?
+
+    // 지속 모니터링 제어용
+    private var monitorTask: Task<Void, Never>?
+    private let monitorIntervalNs: UInt64 = 2_000_000_000 // 2초 간격
 
     enum UnlockResult {
         case success(Date)
@@ -49,10 +57,33 @@ class StampDetailViewModel {
         guard let contentId = targetStamp?.contentid else { return .failed }
         do {
             try await StampService.shared.addMyStamp(contentId: contentId)
+            hasAcquired = true
             return .success(Date())
         } catch {
             print("addMyStamp 실패:", error)   // 디버깅 로그
             return .failed
         }
+    }
+
+    /// 상세 화면 진입 시 호출: 주기적으로 canUnlockStamp()를 확인하여 콜백으로 전달
+    func startProximityMonitoring() {
+        monitorTask?.cancel()
+        monitorTask = Task { [weak self] in
+            guard let self = self else { return }
+            while !Task.isCancelled {
+                if self.hasAcquired {
+                    break
+                }
+                let can = await self.canUnlockStamp()
+                await MainActor.run { self.onProximityUpdate?(can) }
+                try? await Task.sleep(nanoseconds: self.monitorIntervalNs)
+            }
+        }
+    }
+
+    /// 상세 화면 이탈 시 호출: 모니터링 중단
+    func stopProximityMonitoring() {
+        monitorTask?.cancel()
+        monitorTask = nil
     }
 }
