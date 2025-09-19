@@ -114,27 +114,43 @@ class HomeViewController: UIViewController {
             .store(in: &cancellables)
             
         viewModel.$recentlyAcquiredStamps
-                    .receive(on: DispatchQueue.main)
-                    .sink { [weak self] stamps in
-                        guard let self = self else { return }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] stamps in
+                guard let self = self else { return }
 
-                        // MARK: - 1. 스크롤 가능 여부 설정
-                        // 획득한 스탬프가 3개 이상이면 스크롤을 활성화하고, 그렇지 않으면 비활성화합니다.
+                UIView.animate(withDuration: 0.3) {
+                    if stamps.isEmpty {
+                        self.stampExamplesCollectionView.isHidden = true
+                        self.nearbySectionTitleLabel.snp.remakeConstraints { make in
+                            make.top.equalTo(self.stampSummaryContainerView.snp.bottom).offset(40)
+                            make.leading.equalTo(self.titleStackView)
+                        }
+                    } else {
+                        self.stampExamplesCollectionView.isHidden = false
+                        self.nearbySectionTitleLabel.snp.remakeConstraints { make in
+                            make.top.equalTo(self.stampExamplesCollectionView.snp.bottom).offset(40)
+                            make.leading.equalTo(self.titleStackView)
+                        }
+
                         self.stampExamplesCollectionView.isScrollEnabled = stamps.count >= 3
-
-                        // MARK: - 2. 단일 아이템 중앙 정렬 로직
+                        
+                        // MARK: - 오류 수정: as? UICollectionViewFlowLayout으로 형 변환
                         if let layout = self.stampExamplesCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
                             if stamps.count == 1 {
                                 let totalCellWidth = layout.itemSize.width
-                                let totalSpacing = self.view.frame.width - totalCellWidth - 40 
-                                layout.sectionInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: totalSpacing)
+                                let rightInset = self.view.frame.width - totalCellWidth - 20
+                                layout.sectionInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: rightInset)
                             } else {
                                 layout.sectionInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
                             }
                         }
-                        self.stampExamplesCollectionView.reloadData()
                     }
-                    .store(in: &cancellables)
+                    self.view.layoutIfNeeded()
+                }
+                
+                self.stampExamplesCollectionView.reloadData()
+            }
+            .store(in: &cancellables)
             
         viewModel.$nearbyStamps
             .receive(on: DispatchQueue.main)
@@ -150,7 +166,6 @@ class HomeViewController: UIViewController {
             }
             .store(in: &cancellables)
     }
-    
     private func setupCollectionView() {
         [stampExamplesCollectionView, nearbyCollectionView, hotCollectionView].forEach {
             $0.dataSource = self
@@ -166,7 +181,7 @@ class HomeViewController: UIViewController {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         
-        [titleStackView, /*notificationButton,*/ stampSectionTitleLabel, stampSummaryContainerView, stampExamplesCollectionView, nearbySectionTitleLabel, nearbyCollectionView, hotSectionTitleLabel, hotCollectionView].forEach { contentView.addSubview($0) }
+        [titleStackView, stampSectionTitleLabel, stampSummaryContainerView, stampExamplesCollectionView, nearbySectionTitleLabel, nearbyCollectionView, hotSectionTitleLabel, hotCollectionView].forEach { contentView.addSubview($0) }
         
         setupStampSummaryView()
 
@@ -181,12 +196,6 @@ class HomeViewController: UIViewController {
             make.top.equalToSuperview().offset(20)
             make.leading.equalToSuperview().offset(20)
         }
-
-        /*notificationButton.snp.makeConstraints { make in
-            make.centerY.equalTo(titleStackView)
-            make.trailing.equalToSuperview().inset(20)
-            make.width.height.equalTo(30)
-        }*/
         
         stampSectionTitleLabel.snp.makeConstraints { make in
             make.top.equalTo(titleStackView.snp.bottom).offset(30)

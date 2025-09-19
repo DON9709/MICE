@@ -9,6 +9,20 @@ import UIKit
 import SnapKit
 import Kingfisher
 
+extension UILabel {
+    func setLineSpacing(_ spacing: CGFloat) {
+        guard let text = self.text, !text.isEmpty else { return }
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = spacing
+        let attributes: [NSAttributedString.Key: Any] = [
+            .paragraphStyle: paragraphStyle,
+            .font: self.font as Any,
+            .foregroundColor: self.textColor as Any
+        ]
+        self.attributedText = NSAttributedString(string: text, attributes: attributes)
+    }
+}
+
 class StampDetailViewController: UIViewController {
     
     var isBookmarked = false
@@ -68,6 +82,7 @@ class StampDetailViewController: UIViewController {
     
     //개요(라벨)
     let overviewLabel = UILabel()
+    
     
     //개요(내용)
     let overviewContentLabel = UILabel()
@@ -301,6 +316,8 @@ class StampDetailViewController: UIViewController {
             overviewContentLabel.text = "내용 없음"
         }
         overviewContentLabel.numberOfLines = 0
+        overviewContentLabel.setLineSpacing(8)
+        
         
         //스탬프획득하기(버튼)
         getStampButton.setTitle("스탬프 획득하기", for: .normal)
