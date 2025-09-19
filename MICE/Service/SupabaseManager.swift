@@ -8,6 +8,34 @@
 import Foundation
 import Supabase
 
+
+struct EventLogger {
+    struct EventDetail: Encodable {
+        let button: String
+        let screen: String
+    }
+
+    struct UserLog: Encodable {
+        let user_id: String
+        let event_type: String
+        let event_detail: EventDetail
+    }
+
+    static func logButtonClick(userId: String, buttonName: String, screen: String) async {
+        let client = SupabaseManager.shared.client
+        let detail = EventDetail(button: buttonName, screen: screen)
+        let log = UserLog(user_id: userId, event_type: "button_click", event_detail: detail)
+        do {
+            try await client
+                .from("user_logs")
+                .insert(log)
+                .execute()
+        } catch {
+            print("로그 저장 실패: \(error)")
+        }
+    }
+}
+
 struct User: Encodable {
     // The 'id' field stores UUID strings representing unique user identifiers.
     let id: UUID
@@ -30,7 +58,13 @@ class SupabaseManager {
         let supabaseUrl = URL(string: value2)!
         self.baseURL = supabaseUrl
         let supabaseKey = value
-        self.supabase = SupabaseClient(supabaseURL: supabaseUrl, supabaseKey: supabaseKey)
+        self.supabase = SupabaseClient(
+            supabaseURL: supabaseUrl,
+            supabaseKey: supabaseKey
+        )
+        
+        print("DEBUG [SupabaseManager.init] currentSession:", supabase.auth.currentSession as Any) // 디버깅로그
+        print("DEBUG [SupabaseManager.init] currentUser:", supabase.auth.currentUser as Any) // 디버깅로그
     }
 
     func registerOrUpdateUser(appleUID: String, name: String?, email: String?, provider: String) {
@@ -134,6 +168,9 @@ class SupabaseManager {
             let session = try await supabase.auth.signInWithIdToken(
                 credentials: .init(provider: .apple, idToken: idToken, nonce: nonce)
             )
+            
+            print("DEBUG [signInWithApple] session:", session) // 디버깅로그
+            
             return session
         } catch {
             print("Apple 로그인 실패: \(error)")

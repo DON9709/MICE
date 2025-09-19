@@ -7,7 +7,7 @@
 
 import UIKit
 import SnapKit
-import Combine 
+import Combine
 
 class SearchViewController: UIViewController {
 
@@ -34,6 +34,13 @@ class SearchViewController: UIViewController {
         sb.placeholder = "카테고리를 먼저 선택해주세요."
         sb.searchBarStyle = .minimal
         sb.isUserInteractionEnabled = false
+        
+        // MARK: - 변경점 1: 서치바 배경색 설정
+        if let textField = sb.searchTextField as? UITextField {
+            textField.backgroundColor = .systemGray6
+            textField.layer.cornerRadius = 10
+            textField.clipsToBounds = true
+        }
         return sb
     }()
     
@@ -92,7 +99,11 @@ class SearchViewController: UIViewController {
         setupUI()
         fetchAllData()
         bindViewModel() // ViewModel 바인딩 함수 호출
+        
+        // MARK: - 변경점 3: 키보드 외부 탭 시 내리기 설정
+        setupKeyboardDismissal()
     }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
@@ -102,6 +113,7 @@ class SearchViewController: UIViewController {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
     }
+    
     private func bindViewModel() {
         viewModel.$filteredStamps
             .receive(on: DispatchQueue.main)
@@ -137,7 +149,11 @@ class SearchViewController: UIViewController {
         
         searchBar.snp.makeConstraints { make in
             make.top.equalTo(categoryStackView.snp.bottom).offset(16)
-            make.leading.trailing.equalToSuperview().inset(12)
+            make.centerX.equalToSuperview()
+            
+            // MARK: - 변경점 1: 서치바 크기 343x44로 설정
+            make.width.equalTo(343)
+            make.height.equalTo(44)
         }
         
         
@@ -179,8 +195,10 @@ class SearchViewController: UIViewController {
             viewModel.selectCategory(category)
             searchBar.isUserInteractionEnabled = true
             searchBar.placeholder = "\(category.title)에서 검색"
-            searchBar.text = ""
-            viewModel.searchQuery = "" // 카테고리 변경 시 검색어도 초기화
+            
+            // MARK: - 변경점 2: 검색어 초기화 코드 삭제하여 검색 상태 유지
+            // searchBar.text = ""
+            // viewModel.searchQuery = ""
         }
     }
     
@@ -209,6 +227,17 @@ class SearchViewController: UIViewController {
             tableView.tableHeaderView = recentSearchesHeaderView
             tableView.reloadData()
         }
+    }
+    
+    // MARK: - 변경점 3: 키보드 내리기 함수 추가
+    private func setupKeyboardDismissal() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false // 테이블 뷰 셀 선택을 방해하지 않도록 설정
+        view.addGestureRecognizer(tapGesture)
+    }
+
+    @objc private func dismissKeyboard() {
+        view.endEditing(true) // 현재 뷰의 모든 편집 상태를 종료시킴 (키보드 내려감)
     }
 }
 

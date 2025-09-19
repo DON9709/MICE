@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "Exhibition 2.png",
+      "filename" : "Exhibition.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "Exhibition 1.png",
+      "filename" : "Exhibition@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "Exhibition.png",
+      "filename" : "Exhibition@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
