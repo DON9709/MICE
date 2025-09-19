@@ -6,12 +6,12 @@
       "scale" : "1x"
     },
     {
-      "filename" : "HomeActive 1.png",
+      "filename" : "HomeActive@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "HomeActive 2.png",
+      "filename" : "HomeActive@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
