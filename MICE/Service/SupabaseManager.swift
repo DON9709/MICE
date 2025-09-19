@@ -8,6 +8,34 @@
 import Foundation
 import Supabase
 
+
+struct EventLogger {
+    struct EventDetail: Encodable {
+        let button: String
+        let screen: String
+    }
+
+    struct UserLog: Encodable {
+        let user_id: String
+        let event_type: String
+        let event_detail: EventDetail
+    }
+
+    static func logButtonClick(userId: String, buttonName: String, screen: String) async {
+        let client = SupabaseManager.shared.client
+        let detail = EventDetail(button: buttonName, screen: screen)
+        let log = UserLog(user_id: userId, event_type: "button_click", event_detail: detail)
+        do {
+            try await client
+                .from("user_logs")
+                .insert(log)
+                .execute()
+        } catch {
+            print("로그 저장 실패: \(error)")
+        }
+    }
+}
+
 struct User: Encodable {
     // The 'id' field stores UUID strings representing unique user identifiers.
     let id: UUID
