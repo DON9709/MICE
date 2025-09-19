@@ -296,9 +296,9 @@ class StampDetailViewController: UIViewController {
         homePageLabel.isUserInteractionEnabled = true
         let homePageTap = UITapGestureRecognizer(target: self, action: #selector(didTapHomePageLabel(_:)))
         homePageLabel.addGestureRecognizer(homePageTap)
-        homePageLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        homePageLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        
+//        homePageLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+//        homePageLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+//
         //회득날짜(미획득시-> 미획득 스탬프)
         achievedDateLabel.font = .systemFont(ofSize: 15)
         achievedDateLabel.textColor = UIColor(red: 114/255, green: 76/255, blue: 249/255, alpha: 1)
@@ -495,22 +495,21 @@ class StampDetailViewController: UIViewController {
         homePageLabel.accessibilityTraits.insert(.link)
     }
 
-    @objc private func tapHomePageMore() {
-        guard let fullText = homePageLabel.text, !fullText.isEmpty else {
-            return }
-        let alert = UIAlertController(title: "홈페이지", message: fullText, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "복사", style: .default,
-                                      handler: { _ in UIPasteboard.general.string = fullText}))
-        alert.addAction(UIAlertAction(title: "닫기", style: .cancel))
-        present(alert, animated: true)
-    }
-
     @objc private func didTapHomePageLabel(_ gesture: UITapGestureRecognizer) {
-        tapHomePageMore()
+        guard let raw = homePageLabel.text, !raw.isEmpty,
+              let url = normalizedURL(from: raw) else { return }
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
 }
 
 private extension StampDetailViewController {
+    private func normalizedURL(from text: String) -> URL? {
+        var s = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !s.lowercased().hasPrefix("http://") && !s.lowercased().hasPrefix("https://") {
+            s = "https://" + s
+        }
+        return URL(string: s)
+    }
     @objc private func tapBack() {
         if let nav = self.navigationController {
             nav.popViewController(animated: true)
