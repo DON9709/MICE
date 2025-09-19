@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "MuseumActive 2.png",
+      "filename" : "MuseumActive.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "MuseumActive 1.png",
+      "filename" : "MuseumActive@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "MuseumActive.png",
+      "filename" : "MuseumActive@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

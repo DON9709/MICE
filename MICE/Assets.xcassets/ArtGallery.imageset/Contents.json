@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "ArtGallery 2.png",
+      "filename" : "ArtGallery.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "ArtGallery 1.png",
+      "filename" : "ArtGallery@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "ArtGallery.png",
+      "filename" : "ArtGallery@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

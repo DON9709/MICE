@@ -6,12 +6,12 @@
       "scale" : "1x"
     },
     {
-      "filename" : "Stamp 1.png",
+      "filename" : "Stamp@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "Stamp 2.png",
+      "filename" : "Stamp@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
