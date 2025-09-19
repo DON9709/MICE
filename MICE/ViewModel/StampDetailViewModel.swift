@@ -11,6 +11,7 @@ import Supabase
 class StampDetailViewModel {
     private let unlockDistance: Double = 400.0 // 기준 거리
     private var targetStamp: Stamp?
+    private var hasAcquired: Bool = false
 
     // VC가 구독할 콜백: 400m 이내 여부(true/false)
     var onProximityUpdate: ((Bool) -> Void)?
@@ -56,6 +57,7 @@ class StampDetailViewModel {
         guard let contentId = targetStamp?.contentid else { return .failed }
         do {
             try await StampService.shared.addMyStamp(contentId: contentId)
+            hasAcquired = true
             return .success(Date())
         } catch {
             print("addMyStamp 실패:", error)   // 디버깅 로그
@@ -69,6 +71,9 @@ class StampDetailViewModel {
         monitorTask = Task { [weak self] in
             guard let self = self else { return }
             while !Task.isCancelled {
+                if self.hasAcquired {
+                    break
+                }
                 let can = await self.canUnlockStamp()
                 await MainActor.run { self.onProximityUpdate?(can) }
                 try? await Task.sleep(nanoseconds: self.monitorIntervalNs)

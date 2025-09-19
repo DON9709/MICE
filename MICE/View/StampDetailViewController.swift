@@ -178,7 +178,7 @@ class StampDetailViewController: UIViewController {
                         self.getStampButton.backgroundColor = UIColor(red: 114/255, green: 76/255, blue: 249/255, alpha: 1)
                     } else {
                         self.getStampButton.setTitle("스탬프 획득하기", for: .normal)
-                        self.getStampButton.isEnabled = false
+                        self.getStampButton.isEnabled = true
                         self.getStampButton.setTitleColor(UIColor(red: 117/255, green: 117/255, blue: 117/255, alpha: 1), for: .normal)
                         self.getStampButton.backgroundColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1)
                     }
