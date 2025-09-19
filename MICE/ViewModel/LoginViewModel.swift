@@ -49,7 +49,16 @@ final class LoginViewModel {
                             print("idToken 변환 실패")
                             return
                         }
-                        _ = try await SupabaseManager.shared.signInWithApple(idToken: idTokenString, nonce: nil)
+                        let session = try await SupabaseManager.shared.signInWithApple(idToken: idTokenString, nonce: nil)
+
+                        // 사용자 등록/업데이트 호출
+                        try await SupabaseManager.shared.registerOrUpdateUser(
+                            appleUID: appleUID,
+                            name: session.user.userMetadata["name"] as? String,
+                            email: session.user.userMetadata["email"] as? String,
+                            provider: "apple"
+                        )
+
                         if SupabaseManager.shared.isLoggedIn() {
                             self?.outputSubject.send(.navigateToMain)
                         }

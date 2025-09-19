@@ -6,12 +6,12 @@
       "scale" : "1x"
     },
     {
-      "filename" : "EmptyImage 1.png",
+      "filename" : "EmptyImage@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "EmptyImage 2.png",
+      "filename" : "EmptyImage@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
